@@ -35,7 +35,7 @@ export default async function api42(method, path, config) {
 			method,
 			url: `${process.env.API_FT_ENDPOINT}${path}`,
 			headers,
-			validateStatus: status => status < 500,
+			validateStatus: status => status == 200,
 		}).then(x => x.data);
 	} catch(e) {throw e;}
 }
