@@ -10,7 +10,7 @@ async function getAccessToken(issuedToken) {
 			return issuedToken;
 	}
 	try {
-		issuedToken = await axios({
+		return await axios({
 			method: "post",
 			url: `${process.env.API_FT_ENDPOINT}/oauth/token`,
 			data: {
@@ -18,8 +18,7 @@ async function getAccessToken(issuedToken) {
 				client_id: process.env.API_FT_UID,
 				client_secret: process.env.API_FT_SECRET,
 			}
-		}).then(x => x.data);
-		return issuedToken;
+		}).then(x => x.data).catch(e => {throw new Api42Error(e)});
 	} catch(e) {throw e;}
 }
 
@@ -36,6 +35,13 @@ export default async function api42(method, path, config) {
 			url: `${process.env.API_FT_ENDPOINT}${path}`,
 			headers,
 			validateStatus: status => status == 200,
-		}).then(x => x.data);
+		}).then(x => x.data).catch(e => {throw new Api42Error(e)});
 	} catch(e) {throw e;}
+}
+
+export class Api42Error extends Error {
+	constructor(originError, ...params) {
+		super(...params);
+		this.originError = originError;
+	}
 }
