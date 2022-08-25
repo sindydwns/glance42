@@ -1,5 +1,7 @@
+import { channel } from "diagnostics_channel";
 import app from "express";
 import api42 from "../api42.js";
+import { postDM } from "../apiSlack.js";
 
 const router = app.Router();
 router.get("/:user_id/location", async (req, res, next) => {
@@ -16,5 +18,21 @@ router.get("/:user_id/location", async (req, res, next) => {
 		});
 	} catch(e) {next(e);}
 });
+
+router.get("/:user_id/post", async (req, res, next) => {
+	try {
+		const userId = req.params.user_id;
+		const result = await postDM(userId, "Hello Slack");
+		res.json(result);
+	} catch(e) {next(e);}
+})
+
+router.post("/dm", async (req, res, next) => {
+	try {
+		const userId = "U03V8K0H9PS";
+		const result = await postDM(userId, "Hello Slack");
+		res.json(result);
+	} catch(e) {next(e);}	
+})
 
 export default router;
