@@ -29,10 +29,16 @@ router.get("/:user_id/post", async (req, res, next) => {
 
 router.post("/dm", async (req, res, next) => {
 	try {
-		const userId = "U03V8K0H9PS";
-		const result = await postDM(userId, "Hello Slack");
-		res.json(result);
+		const json = req.body;
+		if (json.challenge) {
+			res.json({challenge:json.challenge});
+			return;
+		}
+		if (json?.event?.user) {
+			await postDM(json.event.user, `${json.event.text}`);
+		}
+		res.sendStatus(200);
 	} catch(e) {next(e);}	
-})
+});
 
 export default router;
