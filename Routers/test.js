@@ -1,7 +1,7 @@
 import { channel } from "diagnostics_channel";
 import app from "express";
 import api42 from "../api42.js";
-import { postDM } from "../apiSlack.js";
+import { postDM, reactDM } from "../apiSlack.js";
 
 const router = app.Router();
 router.get("/:user_id/location", async (req, res, next) => {
@@ -34,8 +34,10 @@ router.post("/dm", async (req, res, next) => {
 			res.json({challenge:json.challenge});
 			return;
 		}
-		if (json?.event?.user) {
-			await postDM(json.event.user, `${json.event.text}`);
+		if (json?.event?.client_msg_id) {
+			const o = json.event;
+			await reactDM(o.channel, o.ts, "white_check_mark");
+			await postDM(o.user, `${o.text}`);
 		}
 		res.sendStatus(200);
 	} catch(e) {next(e);}	

@@ -31,6 +31,23 @@ export async function postDM(users, text) {
 	});
 }
 
+/**
+ * add reaction to message
+ * @param {string} channel 
+ * @param {string} ts 
+ * @param {string} name 
+ * @returns 
+ */
+export async function reactDM(channel, ts, name) {
+	return await errorHandler(async () => {
+		return await web.reactions.add({
+			channel,
+			name,
+			timestamp: ts,
+		});
+	});
+}
+
 export class SlackError extends Error {
 	constructor(originError, ...params) {
 		super(...params);
