@@ -18,10 +18,10 @@ export async function getUserList() {
 
 /**
  * post direct message to user
- * @param {string} userId 
+ * @param {string} userId example XXXXXXXXXXX
  * @param {string} text 
  */
-export async function postDM(users, text) {
+export async function postDM2User(users, text) {
 	return await errorHandler(async () => {
 		const conversation = await web.conversations.open({users})
 		if (!conversation.ok)
@@ -29,6 +29,12 @@ export async function postDM(users, text) {
 		const channel = conversation.channel.id;
 		return await web.chat.postMessage({channel, text});
 	});
+}
+
+export async function postDM2Channel(channel, text) {
+	return await errorHandler(async () => {
+		return await web.chat.postMessage({channel, text});
+	})
 }
 
 /**
