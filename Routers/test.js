@@ -31,7 +31,11 @@ router.get("/userInfo/:user_id", async(req, res, next) => {
         const data = await api42("GET", path);
         res.json(data);
     } catch(e) {
-        next(e.originError.response.statusText);
+        const errorMsg = e.originError.response.statusText;
+        if(errorMsg)
+            next(errorMsg);
+        else
+            next(e);
     }
 })
 
