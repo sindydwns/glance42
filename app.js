@@ -4,16 +4,18 @@ import bodyParser from "body-parser";
 import logMiddleware from "./log.js";
 import homeRouter from "./Routers/home.js";
 import apiRouter from "./Routers/api.js";
+import slackRouter from "./Routers/slack.js";
 import testRouter from "./Routers/test.js";
 import errorMiddleware from "./error.js";
+import router from "./Routers/home.js";
 
 dotenv.config();
 const app = express();
-app.use(bodyParser.json())
-
+app.use(bodyParser.json());
 app.use(logMiddleware);
 app.use("/", homeRouter);
 app.use("/api", apiRouter);
+app.use("/slack", slackRouter);
 if (process.env.DEV_MODE) {
 	app.use("/test", testRouter);
 }
