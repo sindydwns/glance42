@@ -2,7 +2,6 @@ import { channel } from "diagnostics_channel";
 import app from "express";
 
 import api42 from "../api42.js";
-import { postDM2User, postDM2Channel, reactDM } from "../apiSlack.js";
 
 const router = app.Router();
 
