@@ -58,6 +58,26 @@ export function BlockLabelInput(text, actionId) {
     };
 }
 
+export function BlockLabelButton(label, text, actionId) {
+	return {
+		type: "section",
+		text: {
+			type: "mrkdwn",
+			text: label
+		},
+		accessory: {
+			type: "button",
+			text: {
+				type: "plain_text",
+				text,
+				emoji: true
+			},
+			value: "click_me_123",
+			action_id: actionId
+		}
+	};
+}
+
 export function BlockHeader(text) {
     return {
         type: "header",
@@ -67,4 +87,26 @@ export function BlockHeader(text) {
             emoji: true
         }
     };
+}
+
+/**
+ * 
+ * @param {Array<text:String, actionId:String>} items 
+ * @returns 
+ */
+export function BlockButtons(items)
+{
+	return {
+		type: "actions",
+		elements: items.map(x => ({
+			type: "button",
+			text: {
+				type: "plain_text",
+				text: x.text,
+				emoji: true
+			},
+			value: "그룹관리",
+			action_id: x.actionId
+		}))
+	}
 }

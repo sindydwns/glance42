@@ -1,4 +1,4 @@
-import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader } from "./block.js";
+import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockButtons } from "./block.js";
 
 export default app => {
 	app.event("app_home_opened", async ({ event, client, logger }) => {
@@ -41,11 +41,16 @@ export default app => {
         blocks: [
             BlockHeader("👀 염탐하기"),
             BlockSelect("염탐할 대상을 선택해주세요", [
-                { title: "과묵한동반자들", value: "value-0" },
+                { title: "과묵한동55555반자들", value: "value-0" },
                 { title: "염탐42멤버", value: "value-1" },
                 { title: "👤 워크스페이스에서 유저 선택...", value: "value-2" },
             ], "test-select-id"),
             ...memberArrTestTempXYZ.map(x => BlockMrkdwn(x)),
+			BlockHeader("⚙️ 설정"),
+			BlockButtons([
+				{ text: "그룹관리", actionId: "action-group" },
+				{ text: "알람설정", actionId: "action-group" },
+			]),
             BlockLabelInput("test plain text", "test-action-id"),
         ]
     }
