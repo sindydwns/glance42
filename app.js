@@ -8,6 +8,9 @@ import slackRouter from "./Routers/slack.js";
 import testRouter from "./Routers/test.js";
 import errorMiddleware from "./error.js";
 import router from "./Routers/home.js";
+import { schedule } from "./schedule.js";
+
+schedule.loadLocations();
 
 dotenv.config();
 const app = express();

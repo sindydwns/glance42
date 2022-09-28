@@ -1,6 +1,30 @@
 import pool from "../apiDataBase.js";
 
 const connection = await pool.getConnection(async (conn) => conn);
+export async function getAllLocationTable() {
+    const [locations, ...other] = await connection.query("select target_id, host from location_status");
+    const result = [];
+    for (let location of locations) {
+        result[location.target_id] = location.host;
+    }
+    return result;
+}
+
+export async function setAllLocationTable(table) {
+    const keys = Object.keys(table);
+    if (keys.length == 0) {
+        await connection.query("update location_status set host = null");
+        return;
+    }
+    await connection.query("replace into location_status(target_id, host) values ?", [
+        keys.map(x => [x, table[x]])
+    ]);
+    await connection.query("update location_status set host = null where target_id not in (?)", [
+        keys
+    ]);
+    return null;
+}
+
 export async function getGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
         "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.selected = true;",
