@@ -56,7 +56,7 @@ export default (app) => {
                     "염탐할 대상을 선택해주세요",
                     [
                         { title: "과묵한동반자들", value: "value-0" },
-                        { title: "염탐42멤버", value: "value-1" },
+                        { title: "염탐42멤버", value: "value-1", selected: true },
                         { title: "👤 워크스페이스에서 유저 선택...", value: "value-2" },
                     ],
                     "test-select-id"

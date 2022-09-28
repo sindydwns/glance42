@@ -1,12 +1,20 @@
 /**
  * Select
  * @param {string} title 
- * @param {Array<{title:String, value:String}} items 
+ * @param {Array<{title:String, value:String, selected:Boolean}>} items 
  * @param {string} actionId 
  * @returns 
  */
  export function BlockSelect(title, items, actionId) {
-    return {
+    const options = items.map(x => ({
+        text: {
+            type: "plain_text",
+            text: x.title,
+            emoji: true,
+        },
+        value: x.value
+    }));
+    const res = {
         type: "section",
         text: {
             type: "mrkdwn",
@@ -19,17 +27,15 @@
                 text: "Select an item",
                 emoji: true
             },
-            options: items.map(x => ({
-                text: {
-                    type: "plain_text",
-                    text: x.title,
-                    emoji: true,
-                },
-                value: x.value
-            })),
+            options,
             action_id: actionId
         }
-    }
+    };
+    const selectedItem = items.filter(x => x.selected)[0];
+    const selectedOption = selectedItem ? options.filter(x => x.value === selectedItem.value) : null;
+    if (selectedOption)
+        res.accessory.initial_option = selectedOption[0];
+    return res;
 }
 
 export function BlockMrkdwn(text) {
