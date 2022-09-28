@@ -1,5 +1,5 @@
 import { getGls, getGroupId, getGroupUser } from "../DataBase/utils.js";
-import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, Button } from "./block.js";
+import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockButtons } from "./block.js";
 
 export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {
@@ -8,11 +8,11 @@ export default (app) => {
             const userName = await client.users.info({
                 user: userId,
             });
-			const seekerId = userName.user.profile.display_name;
+            const seekerId = userName.user.profile.display_name;
 
-			const gls = await getGls(seekerId);
-			const groupId =  await getGroupId(seekerId, "fashion");
-			const groupUser = await getGroupUser(groupId);
+            const gls = await getGls(seekerId);
+            const groupId = await getGroupId(seekerId, "fashion");
+            const groupUser = await getGroupUser(groupId);
 
             // const locationIn
 
@@ -64,10 +64,16 @@ export default (app) => {
                 ...memberArrTestTempXYZ.map((x) => BlockMrkdwn(x)),
                 BlockLabelInput("test plain text", "test-action-id"),
                 BlockHeader("⚙️ 설정"),
-                {
-                    type: "actions",
-                    elements: [Button("그룹추가", "groupAdd"), Button("그룹삭제", "groupDel"), Button("멤버관리", "member")],
-                },
+                BlockButtons([
+                    {
+                        text: "그룹관리",
+                        actionId: "manageGroup",
+                    },
+                    {
+                        text: "알람 설정",
+                        actionId: "alarmConfigure",
+                    },
+                ]),
             ],
         };
     }

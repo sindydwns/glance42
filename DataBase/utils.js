@@ -6,6 +6,8 @@ export async function getGroupId(seekerId, groupName) {
         seekerId,
         groupName,
     ]);
+    if (groupId.length === 0)
+        return null;
     const returnVal = groupId[0].group_id;
     console.log(returnVal);
     return returnVal;
