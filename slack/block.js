@@ -141,3 +141,27 @@ export function BlockManual() {
         },
     };
 }
+
+export function BlockList(items)
+{
+	if (items == null || items.length === 0)
+		return ;
+	let text = "";
+	for (let i in items) {
+		text = text + `•  ${items[i]} \n`;
+	}
+	return {
+		type: "section",
+		text: {
+				type: "mrkdwn",
+				text: text
+		},
+	}
+}
+
+export function BlockDivider()
+{
+	return ({
+		type: "divider",
+	})
+}

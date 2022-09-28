@@ -21,3 +21,10 @@ export async function getSeekerId(body, event, client) {
     });
     return userName.user.profile.display_name;
 }
+
+export function createView(blocks) {
+	return {
+		type: "home",
+		blocks: blocks
+	};
+};
