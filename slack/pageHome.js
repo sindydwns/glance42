@@ -7,6 +7,7 @@ export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {
         try {
             const seekerId = await getSeekerId(null, event, client);
+
             const result = await client.views.publish({
                 user_id: event.user,
                 view: await createHomeView(seekerId),
