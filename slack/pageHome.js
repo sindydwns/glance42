@@ -1,6 +1,6 @@
 import { getGls, getGroupId, getGroupLocationInfo, getGroupUser, SelectGroup, unSelectGroup } from "../DataBase/utils.js";
 import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockButtons, BlockDivider, BlockLabelButton } from "./block.js";
-import createGroupView from "./pageGroup.js";
+import {createGroupView} from "./pageGroup.js";
 import { formatLocationStr, getSeekerId } from "./utils.js";
 
 export default (app) => {
@@ -24,7 +24,7 @@ export default (app) => {
             await client.views.update({
                 view_id: body.view.id,
                 hash: body.view.hash,
-                view: createGroupView(seekerId),
+                view: await createGroupView(seekerId),
             });
         } catch (error) {
             logger.error(error);

@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import pkg from "@slack/bolt";
 import pageHome from "./slack/pageHome.js";
 import { WebClient } from "@slack/web-api";
+import pageGroup from "./slack/pageGroup.js";
 
 const { App, LogLevel } = pkg;
 dotenv.config();
@@ -12,10 +13,11 @@ const app = new App({
     socketMode: true,
     appToken: process.env.SLACK_APP_TOKEN,
     port: process.env.PORT || 3000,
-    logLevel: process.env.SLACK_DEBUG_LEVEL || LogLevel.INFO,
+    logLevel: process.env.SLACK_DEBUG_LEVEL || LogLevel.LOG,
 });
 
 pageHome(app);
+pageGroup(app);
 
 /**
  * post direct message to user
