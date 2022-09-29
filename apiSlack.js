@@ -3,6 +3,8 @@ import pkg from "@slack/bolt";
 import pageHome from "./slack/pageHome.js";
 import { WebClient } from "@slack/web-api";
 import pageGroup from "./slack/pageGroup.js";
+import pageMember from "./slack/pageMember.js";
+import pageAlarm from "./slack/pageAlarm.js";
 
 const { App, LogLevel } = pkg;
 dotenv.config();
@@ -18,6 +20,8 @@ const app = new App({
 
 pageHome(app);
 pageGroup(app);
+pageMember(app);
+pageAlarm(app);
 
 /**
  * post direct message to user

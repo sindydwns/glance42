@@ -48,7 +48,6 @@ export async function getGroupUser(groupId) {
         "select gm.target_id from group_list gl inner join group_member gm on gl.group_id = gm.group_id where 1=1 and gl.group_id = ?",
         [groupId]
     );
-
     return groupUser;
 }
 
@@ -57,9 +56,9 @@ export async function getGroupLocationInfo(seekerId, groupId) {
         "select gm.target_id, ls.host from group_list gl inner join group_member gm on gl.group_id = gm.group_id left join location_status ls on gm.target_id = ls.target_id where 1=1 and gl.seeker_id=? and gl.group_id=?",
         [seekerId, groupId]
     );
-
     return locationInfo;
 }
+
 
 export async function unSelectGroup(seekerId, groupName) {
     await connection.query("update group_list set selected=false where seeker_id=? and group_name=?", [seekerId, groupName]);
@@ -67,4 +66,9 @@ export async function unSelectGroup(seekerId, groupName) {
 
 export async function SelectGroup(seekerId, groupName) {
     await connection.query("update group_list set selected=true where seeker_id=? and group_name=?", [seekerId, groupName]);
+}
+
+export async function getAlarmList(seekerId) {
+	const [alarmList, ...other] = await connection.query("select target_id from alarm where seeker_id=?", [seekerId]);
+	return alarmList;
 }

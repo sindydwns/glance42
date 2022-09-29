@@ -2,9 +2,10 @@ import { getGls, getGroupId, getGroupUser } from "../DataBase/utils.js";
 import { getSeekerId, createView } from "./utils.js";
 import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockButtons, BlockDivider, BlockList, ModalTemplate } from "./block.js";
 import { createHomeView } from "./pageHome.js";
+import { createMemberManageView } from "./pageMember.js";
 
 export default (app) => {
-	app.action("goBackHome", async ({ack, body, client, logger }) => {
+	app.action("goBackHome", async ({ack, body, client, logger}) => {
 		await ack();
 		const seekerId = await getSeekerId(body, null, client);
 		await client.views.update({
@@ -63,6 +64,16 @@ export default (app) => {
         await ack();
         console.log("hi!");
     })
+
+	app.action("goPageMember", async ({ack, body, client}) => {
+		await ack();
+		const groupId = '1';
+		await client.views.update({
+			view_id: body.view.id,
+			hash: body.view.hash,
+			view: await createMemberManageView(groupId)
+		})
+	});
 };
 
 export async function createGroupManageView(seekerId) {
@@ -77,7 +88,7 @@ export async function createGroupManageView(seekerId) {
 		...BlockButtons([
 			{text:"그룹 추가", value:"그룹 추가", actionId:"addGroup"},
 			{text:"그룹 삭제", value:"그룹 삭제", actionId:"delGroup"},
-			{text:"멤버 관리", value:"멤버 관리", actionId:"selectGroup"}
+			{text:"멤버 관리", value:"멤버 관리", actionId:"goPageMember"}
 		]),
 	]));
 }
