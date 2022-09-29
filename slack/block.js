@@ -38,14 +38,17 @@ export function BlockSelect(title, items, actionId) {
     return res;
 }
 
-export function BlockMrkdwn(text) {
-    return {
-        type: "section",
-        text: {
-            type: "mrkdwn",
-            text,
-        },
-    };
+export function BlockMrkdwn(items) {
+    if (items === null || items.length === 0) return;
+    return items.map((x) => {
+        return {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: x,
+            },
+        };
+    });
 }
 
 export function BlockLabelInput(text, actionId) {
@@ -110,7 +113,7 @@ export function BlockButtons(items) {
                 text: x.text,
                 emoji: true,
             },
-            value: "그룹관리",
+            value: x.value,
             action_id: x.actionId,
         })),
     };
@@ -122,23 +125,16 @@ export function BlockDivider() {
     };
 }
 
-export function BlockManual() {
+export function BlockContext(text) {
     return {
-        type: "section",
-        text: {
-            type: "mrkdwn",
-            text: "사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚",
-        },
-        accessory: {
-            type: "button",
-            text: {
+        type: "context",
+        elements: [
+            {
                 type: "plain_text",
-                text: "Help",
+                text,
                 emoji: true,
             },
-            value: "manual",
-            action_id: "manual_button",
-        },
+        ],
     };
 }
 
