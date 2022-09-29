@@ -119,12 +119,6 @@ export function BlockButtons(items) {
     };
 }
 
-export function BlockDivider() {
-    return {
-        type: "divider",
-    };
-}
-
 export function BlockContext(text) {
     return {
         type: "context",

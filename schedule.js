@@ -35,5 +35,5 @@ export const schedule = {
 				console.error(e);
 			}
         });
-    }
+    },
 };
