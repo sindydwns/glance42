@@ -1,82 +1,34 @@
-import { getGls } from "../DataBase/utils.js";
-import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockContext, BlockButtons, BlockDivider, ModalTemplate } from "./block.js";
-import { getSeekerId } from "./utils.js";
+import { getGls, getGroupId, getGroupUser } from "../DataBase/utils.js";
+import { getSeekerId, createView } from "./utils.js";
+import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockButtons, BlockDivider, BlockList } from "./block.js";
+import { createHomeView } from "./pageHome.js";
 
 export default (app) => {
-    app.action("addGroup", async ({ ack, body, client, logger }) => {
-        await ack();
-        const seekerId = await getSeekerId(body, null, client);
-        try {
-            const result = await client.views.open({
-                trigger_id: body.trigger_id,
-                view: ModalTemplate(
-                    "그룹 추가",
-                    "추가할 그룹을 입력해주세요",
-                    null
-                ),
-            });
-            // logger.info(result);
-        } catch (error) {
-            logger.error(error);
-        }
-    });
+	app.action("goBackHome", async ({ack, body, client, logger }) => {
+		await ack();
+		const seekerId = await getSeekerId(body, null, client);
+		await client.views.update({
+			view_id: body.view.id,
+			hash: body.view.hash,
+			view: createHomeView(seekerId)
+			})
+		}
+	);
+}
 
-    app.action("delGroup", async ({ ack, body, client, logger }) => {
-        await ack();
-        const seekerId = await getSeekerId(body, null, client);
-        const gls = await getGls(seekerId);
-        try {
-            const result = await client.views.open({
-                trigger_id: body.trigger_id,
-                view: ModalTemplate(
-                    "그룹 삭제",
-                    "삭제할 그룹을 선택해주세요..",
-                    gls.map((v) => ({ title: v.group_name, value: v.group_id, selected: v.selected }))
-                ),
-            });
-            // logger.info(result);
-        } catch (error) {
-            logger.error(error);
-        }
-    })
-};
-
-
-export async function createGroupView(seekerId) {
-    const gls = await getGls(seekerId);
-    return {
-        type: "home",
-        blocks: [
-            ...BlockHeader("👥 그룹 관리"),
-            ...BlockContext("홈/그룹관리"),
-            ...BlockButtons([
-                {
-                    text: "< Back",
-                    actionId: "Backbutton",
-                    value: "Backbutton",
-                },
-            ]),
-            ...BlockDivider(),
-            ...BlockHeader("📃 등록된 그룹리스트"),
-            ...BlockMrkdwn(gls.map(v => v.group_name)),
-            ...BlockDivider(),
-            ...BlockButtons([
-                {
-                    text: "그룹 추가",
-                    actionId: "addGroup",
-                    value: "addGroup",
-                },
-                {
-                    text: "그룹 삭제",
-                    actionId: "delGroup",
-                    value: "delGroup",
-                },
-                {
-                    text: "멤버 관리",
-                    actionId: "manageMember",
-                    value: "manageMember",
-                },
-            ]),
-        ],
-    };
+export async function createGroupManageView(seekerId) {
+	let gls_ = await getGls(seekerId);
+	let gls = gls_.map(x=>x.group_name);
+	return createView([
+        ...BlockHeader("그룹 관리"),
+        ...BlockButtons([{text:"< back", value:"뒤로가기", actionId:"goBackHome"}]),
+        ...BlockDivider(),
+        ...BlockHeader("📃 등록된 그룹 리스트"),
+        ...BlockList(gls),
+        ...BlockButtons([
+            {text:"그룹 추가", value:"addGroup", actionId:"addGroup"},
+            {text:"그룹 삭제", value:"delGroup", actionId:"delGroup"},
+            {text:"멤버 관리", value:"manageMember", actionId:"manageMember"}
+        ]),
+    ]);
 }

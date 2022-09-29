@@ -19,7 +19,14 @@ export async function getSeekerId(body, event, client) {
     const userName = await client.users.info({
         user: userId,
     });
-    return userName.user.profile.display_name;
+	const displayName = userName.user.profile.display_name;
+	const realName = userName.user.profile.real_name;
+	let seekerId = null;
+	if (displayName != "")
+		seekerId = displayName;
+	else
+		seekerId = realName;
+    return (seekerId);
 }
 
 export function createView(blocks) {
