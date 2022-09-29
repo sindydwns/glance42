@@ -18,9 +18,9 @@ export default (app) => {
         }
     });
 
-	app.action("manageGroup", async ({ ack, body, client, logger }) => {
+    app.action("manageGroup", async ({ ack, body, client, logger }) => {
         try {
-            await ack();
+            await ack({ response_action: "update" });
             const seekerId = await getSeekerId(body, null, client);
             await client.views.update({
                 view_id: body.view.id,
@@ -32,15 +32,15 @@ export default (app) => {
         }
     });
 
-	app.action("manageAlarm", async ({ack, body, client}) => {
-		await ack();
-		// console.log(body.view.hash);
-		const result = await client.views.update({
-			view_id: body.view.id,
-			hash: body.view.hash,
-			view : await createAlarmView(data)
-		});
-	})
+    app.action("manageAlarm", async ({ ack, body, client }) => {
+        await ack();
+        // console.log(body.view.hash);
+        const result = await client.views.update({
+            view_id: body.view.id,
+            hash: body.view.hash,
+            view: await createAlarmView(data),
+        });
+    });
 
     app.action("test-select-id", async ({ ack, body, client, logger }) => {
         await ack();
@@ -52,7 +52,7 @@ export default (app) => {
         const selectedGroupId = +selected.value;
         const seekerId = await getSeekerId(body, null, client);
 
-        await unSelectGroup(seekerId, prevGroup ? prevGroup : prev.text.text);
+        await unSelectGroup(seekerId, prevGroup ? prevGroup : prev ? prev.text.text : selectedGroup);
         await SelectGroup(seekerId, selectedGroup);
 
         prevGroup = selectedGroup;
@@ -66,35 +66,35 @@ export default (app) => {
 };
 
 export async function createHomeView(seekerId) {
-	const gls = await getGls(seekerId);
-	const groupId = await getGroupId(seekerId);
-	const locationInfo = await getGroupLocationInfo(seekerId, groupId);
-	const formatedStrArr = formatLocationStr(locationInfo);
-	return {
-		type: "home",
-		blocks: [
-			...BlockHeader("👀 염탐하기"),
-			...BlockSelect(
-				"염탐할 그룹을 선택해주세요",
-				gls.map((v) => ({ title: v.group_name, value: v.group_id, selected: v.selected })),
-				"test-select-id"
-			),
-			...BlockMrkdwn([formatedStrArr]),
-			...BlockHeader("⚙️ 설정"),
-			...BlockButtons([
-				{
-					text: "그룹관리",
-					actionId: "manageGroup",
-					value: "manageGroup",
-				},
-				{
-					text: "알람 설정",
-					actionId: "alarmConfigure",
-					value: "alarmConfigure",
-				},
-			]),
-			...BlockDivider(),
-			...BlockLabelButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", "Help", "button-action"),
-		],
-	};
+    const gls = await getGls(seekerId);
+    const groupId = await getGroupId(seekerId);
+    const locationInfo = await getGroupLocationInfo(seekerId, groupId);
+    const formatedStrArr = formatLocationStr(locationInfo);
+    return {
+        type: "home",
+        blocks: [
+            ...BlockHeader("👀 염탐하기"),
+            ...BlockSelect(
+                "염탐할 그룹을 선택해주세요",
+                gls.map((v) => ({ title: v.group_name, value: v.group_id, selected: v.selected })),
+                "test-select-id"
+            ),
+            ...BlockMrkdwn([formatedStrArr]),
+            ...BlockHeader("⚙️ 설정"),
+            ...BlockButtons([
+                {
+                    text: "그룹관리",
+                    actionId: "manageGroup",
+                    value: "manageGroup",
+                },
+                {
+                    text: "알람 설정",
+                    actionId: "alarmConfigure",
+                    value: "alarmConfigure",
+                },
+            ]),
+            ...BlockDivider(),
+            ...BlockLabelButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", "Help", "button-action"),
+        ],
+    };
 }
