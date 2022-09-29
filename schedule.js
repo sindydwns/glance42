@@ -2,10 +2,11 @@ import _schedule from "node-schedule";
 import api42 from "./api42.js";
 import { setAllLocationTable } from "./DataBase/utils.js";
 
-
 export const schedule = {
-    loadLocations: (delay = 30 ) => {
-        _schedule.scheduleJob(`*/${delay} * * * * *`, async () => {
+    loadLocations: (delay) => {
+		if (delay == null)
+			return ;
+        _schedule.scheduleJob(`*/${+delay} * * * * *`, async () => {
 			const campusId = 29;
 			const path = `/v2/campus/${campusId}/locations`;
 			try {

@@ -10,9 +10,8 @@ import errorMiddleware from "./error.js";
 import router from "./Routers/home.js";
 import { schedule } from "./schedule.js";
 
-schedule.loadLocations();
-
 dotenv.config();
+schedule.loadLocations(process.env.LOAD_LOCATION_PERIOD);
 const app = express();
 app.use(bodyParser.json());
 app.use(logMiddleware);
