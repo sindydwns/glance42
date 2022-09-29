@@ -25,6 +25,22 @@ export async function setAllLocationTable(table) {
     return null;
 }
 
+export async function getAllReservedAlarm() {
+    const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, slack_id from alarm");
+    return alarms;
+}
+
+/**
+ * @param {Array<number>} ids 
+ */
+export async function deleteReservedAlarm(ids) {
+    if (ids.length == 0)
+        return ;
+    await connection.query("delete from alarm where alarm_id in (?)", [
+        ids
+    ]);
+}
+
 export async function getGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
         "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.selected = true;",
