@@ -191,9 +191,10 @@ export function BlockDivider() {
  * @param {Array<title:String, value:String, selected:Boolean>} gls
  * @returns
  */
-export function ModalTemplate(titleText, inputText, gls) {
+export function ModalTemplate(titleText, inputText, gls, callbackText) {
     return {
         type: "modal",
+        callback_id : callbackText, 
         title: {
             type: "plain_text",
             text: titleText,
