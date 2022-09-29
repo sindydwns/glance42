@@ -4,24 +4,24 @@ function createGroupView(seekerId) {
     return {
         type: "home",
         blocks: [
-            BlockHeader("👥 그룹 관리"),
-            BlockContext("홈/그룹관리"),
-            BlockButtons([
+            ...BlockHeader("👥 그룹 관리"),
+            ...BlockContext("홈/그룹관리"),
+            ...BlockButtons([
                 {
                     text: "< Back",
                     actionId: "Backbutton",
                     value: "Backbutton",
                 },
             ]),
-            BlockDivider(),
-            BlockHeader("📃 등록된 그룹리스트"),
+            ...BlockDivider(),
+            ...BlockHeader("📃 등록된 그룹리스트"),
             ...BlockMrkdwn([
                 "• glance42",
                 "• slience42",
                 "• idiot",
             ]),
-            BlockDivider(),
-            BlockButtons([
+            ...BlockDivider(),
+            ...BlockButtons([
                 {
                     text: "그룹 추가",
                     action_id: "addGroup",

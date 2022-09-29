@@ -6,7 +6,9 @@
  * @returns
  */
 export function BlockSelect(title, items, actionId) {
-    if (items == null || items.length === 0) return;
+    items = items?.filter(x => x.title && x.value);
+    if (title == null || title == "" || items == null || items.length === 0)
+        return [];
     const options = items.map((x) => ({
         text: {
             type: "plain_text",
@@ -35,11 +37,13 @@ export function BlockSelect(title, items, actionId) {
     const selectedItem = items.filter((x) => x.selected)[0];
     const selectedOption = selectedItem ? options.filter((x) => x.value == selectedItem.value) : null;
     if (selectedOption) res.accessory.initial_option = selectedOption[0];
-    return res;
+    return [res];
 }
 
 export function BlockMrkdwn(items) {
-    if (items === null || items.length === 0) return;
+    items = items?.filter(x => x);
+    if (items == null || items.length === 0)
+        return [];
     return items.map((x) => {
         return {
             type: "section",
@@ -52,7 +56,9 @@ export function BlockMrkdwn(items) {
 }
 
 export function BlockLabelInput(text, actionId) {
-    return {
+    if (text == null || text == "" || actionId == null || actionId == "")
+        return [];
+    return [{
         dispatch_action: true,
         type: "input",
         element: {
@@ -64,11 +70,17 @@ export function BlockLabelInput(text, actionId) {
             text,
             emoji: true,
         },
-    };
+    }];
 }
 
 export function BlockLabelButton(label, text, actionId) {
-    return {
+    if (label == null || label == "")
+        return [];
+    if (text == null || text == "")
+        return [];
+    if (actionId == null || actionId == "")
+        return [];
+    return [{
         type: "section",
         text: {
             type: "mrkdwn",
@@ -84,27 +96,34 @@ export function BlockLabelButton(label, text, actionId) {
             value: "click_me_123",
             action_id: actionId,
         },
-    };
+    }];
 }
 
 export function BlockHeader(text) {
-    return {
+    if (text == null || text == "")
+        return [];
+    return [{
         type: "header",
         text: {
             type: "plain_text",
             text,
             emoji: true,
         },
-    };
+    }];
 }
 
 /**
  *
- * @param {Array<text:String, actionId:String>} items
+ * @param {Array<text:String, value:String, actionId:String>} items
  * @returns
  */
 export function BlockButtons(items) {
-    return {
+    items = items?.filter(x => x.text != null && x.text != "")
+        .filter(x => x.actionId != null && x.actionId != "")
+        .filter(x => x.value != null && x.value != "");
+    if (items == null || items.length === 0)
+        return [];
+    return [{
         type: "actions",
         elements: items.map((x) => ({
             type: "button",
@@ -116,11 +135,13 @@ export function BlockButtons(items) {
             value: x.value,
             action_id: x.actionId,
         })),
-    };
+    }];
 }
 
 export function BlockContext(text) {
-    return {
+    if (text == null || text == "")
+        return [];
+    return [{
         type: "context",
         elements: [
             {
@@ -129,29 +150,35 @@ export function BlockContext(text) {
                 emoji: true,
             },
         ],
-    };
+    }];
 }
 
+/**
+ * 
+ * @param {Array<String>} items 
+ * @returns {Array}
+ */
 export function BlockList(items)
 {
+    items = items?.filter(x => x)
 	if (items == null || items.length === 0)
-		return ;
+		return [];
 	let text = "";
 	for (let i in items) {
 		text = text + `•  ${items[i]} \n`;
 	}
-	return {
+	return [{
 		type: "section",
 		text: {
-				type: "mrkdwn",
-				text: text
+            type: "mrkdwn",
+            text: text
 		},
-	}
+	}];
 }
 
 export function BlockDivider()
 {
-	return ({
+	return [{
 		type: "divider",
-	})
+	}]
 }

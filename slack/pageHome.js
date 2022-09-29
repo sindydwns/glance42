@@ -61,15 +61,15 @@ export default (app) => {
         return {
             type: "home",
             blocks: [
-                BlockHeader("👀 염탐하기"),
-                BlockSelect(
+                ...BlockHeader("👀 염탐하기"),
+                ...BlockSelect(
                     "염탐할 그룹을 선택해주세요",
                     gls.map((v) => ({ title: v.group_name, value: v.group_id, selected: v.selected })),
                     "test-select-id"
                 ),
                 ...BlockMrkdwn([formatedStrArr]),
-                BlockHeader("⚙️ 설정"),
-                BlockButtons([
+                ...BlockHeader("⚙️ 설정"),
+                ...BlockButtons([
                     {
                         text: "그룹관리",
                         actionId: "manageGroup",
@@ -81,8 +81,8 @@ export default (app) => {
                         value: "alarmConfigure",
                     },
                 ]),
-                BlockDivider(),
-                BlockLabelButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", "Help", "button-action"),
+                ...BlockDivider(),
+                ...BlockLabelButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", "Help", "button-action"),
             ],
     };
     }
