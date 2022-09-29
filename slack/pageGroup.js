@@ -10,25 +10,25 @@ export default (app) => {
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
-			view: createHomeView(seekerId)
+			view: await createHomeView(seekerId)
 			})
 		}
 	);
 }
 
 export async function createGroupManageView(seekerId) {
-	let gls_ = await getGls(seekerId);
-	let gls = gls_.map(x=>x.group_name);
-	return createView([
-        ...BlockHeader("그룹 관리"),
-        ...BlockButtons([{text:"< back", value:"뒤로가기", actionId:"goBackHome"}]),
-        ...BlockDivider(),
-        ...BlockHeader("📃 등록된 그룹 리스트"),
-        ...BlockList(gls),
-        ...BlockButtons([
-            {text:"그룹 추가", value:"addGroup", actionId:"addGroup"},
-            {text:"그룹 삭제", value:"delGroup", actionId:"delGroup"},
-            {text:"멤버 관리", value:"manageMember", actionId:"manageMember"}
-        ]),
-    ]);
+	const gls_ = await getGls(seekerId);
+	const gls = gls_.map(x=>x.group_name);
+	return (createView([
+		...BlockHeader("그룹 관리"),
+		...BlockButtons([{text:"< back", value:"뒤로가기", actionId:"goBackHome"}]),
+		...BlockDivider(),
+		...BlockHeader("등록된 그룹 리스트"),
+		...BlockList(gls),
+		...BlockButtons([
+			{text:"그룹 추가", value:"그룹 추가", actionId:"addGroup"},
+			{text:"그룹 삭제", value:"그룹 삭제", actionId:"delGroup"},
+			{text:"멤버 관리", value:"멤버 관리", actionId:"selectGroup"}
+		]),
+	]));
 }
