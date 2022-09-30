@@ -23,19 +23,21 @@ pageGroup(app);
 pageMember(app);
 pageAlarm(app);
 
+app.message("me", async ({ message, say }) => {
+    say(`${message.user}`);
+});
+
 /**
  * post direct message to user
  * @param {string} users example XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX...
  * @param {string} text 
  */
 export async function postDM2User(users, text) {
-	return await errorHandler(async () => {
-		const conversation = await web.conversations.open({users})
-		if (!conversation.ok)
-			throw new SlackError("conversation open failed");
-		const channel = conversation.channel.id;
-		return await web.chat.postMessage({channel, text});
-	});
+    const conversation = await web.conversations.open({users})
+    if (!conversation.ok)
+        throw new SlackError("conversation open failed");
+    const channel = conversation.channel.id;
+    return await web.chat.postMessage({channel, text});
 }
 
 (async () => {

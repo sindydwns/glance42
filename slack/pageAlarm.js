@@ -14,19 +14,6 @@ export default (app) => {
 			})
 		}
 	);
-
-	// app.action("manageMember", async ({ ack, body, client, logger }) => {
-    //     try {
-    //         await ack();
-    //         await client.views.update({
-    //             view_id: body.view.id,
-    //             hash: body.view.hash,
-    //             view: await createMemberManageView(seekerId),
-    //         });
-    //     } catch (error) {
-    //         logger.error(error);
-    //     }
-    // });
 }
 
 export async function createAlarmManageView(seekerId) {
