@@ -194,6 +194,7 @@ export function BlockDivider() {
 export function ModalTemplate(titleText, inputText, gls, callbackText) {
     return {
         type: "modal",
+		notify_on_close: true,
         callback_id : callbackText, 
         title: {
             type: "plain_text",
@@ -210,6 +211,6 @@ export function ModalTemplate(titleText, inputText, gls, callbackText) {
             text: "Cancel",
             emoji: true,
         },
-        blocks: gls ? BlockSelect(inputText, gls, "modalDelGroup") : BlockLabelInput("추가할 그룹을 입력해주세요.", "modalAddGroup"),
+        blocks: gls ? BlockSelect(inputText, gls, "modalDelGroup") : BlockLabelInput(inputText, "modalAddGroup"),
     };
 }

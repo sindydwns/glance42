@@ -30,6 +30,7 @@ export default (app) => {
         } catch (error) {
             logger.error(error);
         }
+		client.previous_view_id = body.view.id;
     });
 
 	app.action("manageAlarm", async ({ack, body, client, logger}) => {
@@ -40,6 +41,7 @@ export default (app) => {
 			hash: body.view.hash,
 			view : await createAlarmManageView(seekerId),
 		});
+		client.previous_view_id = body.view.id;
 	})
 
     app.action("test-select-id", async ({ ack, body, client, logger }) => {

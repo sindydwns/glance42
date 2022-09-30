@@ -19,12 +19,13 @@ export default (app) => {
     app.action("OpenModalAddGroup", async ({ ack, body, client, logger }) => {
         await ack();
         const seekerId = await getSeekerId(body, null, client);
+
         try {
             const result = await client.views.open({
                 trigger_id: body.trigger_id,
-                view: ModalTemplate(
+                view: await ModalTemplate(
                     "그룹 추가",
-                    "추가할 그룹을 입력해주세요",
+                    "추가할 그룹명을 입력해주세요",
                     null,
                     "callbackAddGroup"
                 ),
@@ -38,11 +39,11 @@ export default (app) => {
         await ack();
         const seekerId = await getSeekerId(body, null, client);
         const gls = await getGls(seekerId);
-
+		
         try {
             const result = await client.views.open({
                 trigger_id: body.trigger_id,
-                view: ModalTemplate(
+                view: await ModalTemplate(
                     "그룹 삭제",
                     "삭제할 그룹을 선택해주세요.",
                     gls.map((v) => ({ title: v.group_name, value: v.group_id, selected: v.selected })),
@@ -52,25 +53,52 @@ export default (app) => {
         } catch (error) {
             logger.error(error);
         }
-    })
+    });
 
-	app.view('callbackAddGroup', async ({ack, body, view, client, logger}) => {
+	app.view({ callback_id: 'callbackAddGroup', type: 'view_submission' }, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["modalAddGroup"]['value'];
         const seekerId = await getSeekerId(body, null, client);
 		
 		let msg = '';
 		const result = await addGroup(seekerId, inputVal);
-		if (result)
-			msg = "그룹이 정상적으로 추가되었습니다";
-		else 
-			msg = "그룹 추가 중 오류가 발생했습니다";
+		// if (result)
+		// 	msg = "그룹이 정상적으로 추가되었습니다";
+		// else 
+		// 	msg = "그룹 추가 중 오류가 발생했습니다";
+		// await client.chat.postMessage({
+		//   channel: body['user']['id'],
+		//   text: msg
+		// });
 
-		await client.chat.postMessage({
-		  channel: body['user']['id'],
-		  text: msg
-		});
-	})
+		try {
+            const seekerId = await getSeekerId(body, null, client);
+            const result = await client.views.update({
+				view_id: client.previous_view_id,
+				// hash: body.view.hash,
+				view: await createGroupManageView(seekerId),
+			});
+        } catch (e) {
+            logger.error(e);
+        }
+	});
+
+	// app.view({ callback_id: 'callbackAddGroup', type: 'view_closed' }, async ({ ack, body, view, client, logger }) => {
+    //     console.log("창 닫힘 동작완료");
+	// 	await ack();
+
+	// 	try {
+    //         const seekerId = await getSeekerId(body, null, client);
+    //         await client.views.update({
+    //             view_id: body.view.id,
+    //             hash: body.view.hash,
+    //             view: await createGroupManageView(seekerId),
+    //         });
+    //     } catch (error) {
+    //         logger.error(error);
+    //     }
+	// });
+
 
 	app.view('callbackDelGroup', async ({ack, body, view, client, logger}) => {
 		await ack();
@@ -79,16 +107,24 @@ export default (app) => {
 
 		let msg = '';
 		const result = await delGroup(seekerId, inputVal);
-		if (result)
-			msg = "그룹이 정상적으로 삭제되었습니다";
-		else 
-			msg = "그룹 삭제 중 오류가 발생했습니다";
-
-		await client.chat.postMessage({
-		  channel: body['user']['id'],
-		  text: msg
-		});
-	})
+		// if (result)
+		// 	msg = "그룹이 정상적으로 삭제되었습니다";
+		// else 
+		// 	msg = "그룹 삭제 중 오류가 발생했습니다";
+		// await client.chat.postMessage({
+		//   channel: body['user']['id'],
+		//   text: msg
+		// });
+		try {
+            const seekerId = await getSeekerId(body, null, client);
+            const result = await client.views.update({
+				view_id: client.previous_view_id,
+				view: await createGroupManageView(seekerId),
+			});
+        } catch (e) {
+            logger.error(e);
+        }
+	});
 
 	app.action("goPageMember", async ({ack, body, client}) => {
 		await ack();
