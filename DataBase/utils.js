@@ -88,3 +88,23 @@ export async function getAlarmList(seekerId) {
 	const [alarmList, ...other] = await connection.query("select target_id from alarm where seeker_id=?", [seekerId]);
 	return alarmList;
 }
+
+export async function addGroup(seekerId, groupName) {
+	try {
+		await connection.query("insert into group_list(group_id, seeker_id, group_name, selected) values (null, ?, ?, 0);", [seekerId, groupName]);
+		return ('success');
+	}
+	catch (e) {
+		console.error(e);
+	}
+}
+
+export async function delGroup(seekerId, groupName) {
+    try {
+		await connection.query("delete from group_list where seeker_id=? and group_name=?;", [seekerId, groupName]);
+		return ('success');
+	}
+	catch (e) {
+		console.error(e);
+	}	
+}
