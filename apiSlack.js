@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import pkg from "@slack/bolt";
-import pageHome from "./slack/pageHome.js";
+import pageMain from "./slack/pageMain.js";
 import { WebClient } from "@slack/web-api";
 import pageGroup from "./slack/pageGroup.js";
 import pageMember from "./slack/pageMember.js";
@@ -18,7 +18,7 @@ const app = new App({
     logLevel: process.env.SLACK_DEBUG_LEVEL || LogLevel.LOG,
 });
 
-pageHome(app);
+pageMain(app);
 pageGroup(app);
 pageMember(app);
 pageAlarm(app);
