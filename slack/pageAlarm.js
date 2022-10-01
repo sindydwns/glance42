@@ -33,7 +33,7 @@ export default (app) => {
         }
     });
 
-	app.action("userSelectAction", async ({ ack, body, client, logger}) => {
+	app.action("validCheck-SelectUser", async ({ ack, body, client, logger}) => {
 		await ack();
 		console.log("Maybe this is for error check of selected value?");
 		// 선택한 워크스페이스 유저에 대한 valid check하기 (user_list에 속한 id인지 확인)
@@ -41,7 +41,7 @@ export default (app) => {
 
 	app.view({ callback_id: 'callbackAddAlarm', type: 'view_submission' }, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const inputVal = view['state']['values'][view.blocks[0].block_id]['userSelectAction']['selected_user'];
+		const inputVal = view['state']['values'][view.blocks[0].block_id]['validCheck-SelectUser']['selected_user'];
         const seekerId = await getSeekerId(body, null, client);
 		
 		const targetId = await getUserNamebySlackId(client, inputVal);

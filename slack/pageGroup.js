@@ -55,6 +55,12 @@ export default (app) => {
         }
     });
 
+	app.action("modalAddGroup", async ({ ack, body, client, logger}) => {
+		await ack();
+		console.log("Maybe this is for error check of selected value?");
+		// 선택한 워크스페이스 유저에 대한 valid check하기 (user_list에 속한 id인지 확인)
+	});
+
 	app.view({ callback_id: 'callbackAddGroup', type: 'view_submission' }, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["modalAddGroup"]['value'];
@@ -137,6 +143,7 @@ export default (app) => {
 
 export async function createGroupManageView(seekerId) {
 	const gls_ = await getGls(seekerId);
+	console.log(gls_);
 	const gls = gls_.map(x=>x.group_name);
 	return (createView([
 		...BlockHeader("그룹 관리"),

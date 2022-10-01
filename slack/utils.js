@@ -3,7 +3,7 @@
  * @param {Object<{target_id:String, host:String}} locationInfo
  * @returns
  */
-export function formatLocationStr(locationInfo) {
+export function formatCurrentLocationStr(locationInfo) {
     let rv = "";
     locationInfo.forEach((elem) => {
         const targetId = elem.target_id;

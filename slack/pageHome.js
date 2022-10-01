@@ -1,6 +1,6 @@
 import { getGls, getSelectedGroupId, getGroupId, getGroupLocationInfo, getGroupUser, SelectGroup, unSelectGroup } from "../DataBase/utils.js";
 import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockButtons, BlockDivider, BlockList, BlockLabelButton } from "./block.js";
-import { formatLocationStr, getSeekerId } from "./utils.js";
+import { formatCurrentLocationStr, getSeekerId } from "./utils.js";
 import { createGroupManageView } from "./pageGroup.js";
 import { createAlarmManageView } from "./pageAlarm.js";
 
@@ -71,7 +71,7 @@ export async function createHomeView(seekerId) {
 	const gls = await getGls(seekerId);
 	const groupId = await getSelectedGroupId(seekerId);
 	const locationInfo = await getGroupLocationInfo(seekerId, groupId);
-	const formatedStrArr = formatLocationStr(locationInfo);
+	const currentLocationStr = formatCurrentLocationStr(locationInfo);
 	return {
 		type: "home",
 		blocks: [
@@ -81,7 +81,7 @@ export async function createHomeView(seekerId) {
 				gls.map((v) => ({ title: v.group_name, value: v.group_id, selected: v.selected })),
 				"test-select-id"
 			),
-			...BlockMrkdwn([formatedStrArr]),
+			...BlockMrkdwn([currentLocationStr]),
 			...BlockHeader("⚙️ 설정"),
 			...BlockButtons([
 				{

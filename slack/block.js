@@ -248,7 +248,7 @@ export function ModalSelectUser(titleText, inputText, callbackId) {
 						"text": "Select a user",
 						"emoji": true
 					},
-					"action_id": "userSelectAction"
+					"action_id": "validCheck-SelectUser"
 				}
 			}
 		]
@@ -289,7 +289,7 @@ export function ModalMultiSelectList(titleText, inputText, selectList, callbackI
 						"emoji": true
 					},
 					"options": BlockSelect2(selectList),
-					"action_id": "MultiSelectAction"
+					"action_id": "validCheck-MultiSelect"
 				}
 			}
 		]
