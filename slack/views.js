@@ -1,5 +1,5 @@
 import { getGls, getSelectedGroupId, getGroupLocationInfo, SelectGroup, unSelectGroup, getAlarmList } from "../DataBase/utils.js";
-import { BlockDivider, BlockHeader, BlockMrkdwn, BlockLabelInput, BlockLabelButton, BlockButtons, BlockContext, 
+import { BlockDivider, BlockHeader, BlockMrkdwn, BlockSectionButton, BlockActionButtons, BlockContextText, 
 	BlockSectionSelect, BlockSingleStaicSelect, BlockMultiStaicSelect, BlockMultiUsersSelect, BlockTextInput} from "./utils/blocks.js"
 
 function formatStrCurrentLocation(locationInfo) {
@@ -66,12 +66,12 @@ export async function mainHomeView(seekerId) {
 			...BlockMrkdwn([formatStrCurrentLocation(locationInfo)]),
 			...BlockDivider(),
 			...BlockHeader("⚙️ 설정"),
-			...BlockButtons([
+			...BlockActionButtons([
 				{text: "그룹 관리", actionId: "goGroupManageView", value: "goGroupManageView",},
 				{text: "알람 설정", actionId: "goAlarmManageView", value: "goAlarmManageView",},
 			]),
 			...BlockDivider(),
-			...BlockLabelButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", "Help", "button-action"),
+			...BlockSectionButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", "Help", "button-action"),
 		])
 	);
 }
@@ -81,13 +81,13 @@ export async function groupManageHomeView(seekerId, msg) {
 	const gls = gls_.map(x=>x.group_name);
 	return (HomeViewTemplete([
 		...BlockHeader("👥 그룹 관리"),
-		...BlockContext("홈/그룹 관리"),
-		...BlockButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
+		...BlockContextText("홈/그룹 관리"),
+		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
 		...BlockDivider(),
 		...BlockHeader("📃 등록된 그룹 리스트"),
 		...BlockMrkdwn([formatStrUnorderedList(gls)]),
 		...BlockMrkdwn([msg]),
-		...BlockButtons([
+		...BlockActionButtons([
 			{text:"그룹 추가", value:"그룹 추가", actionId:"OpenModalAddGroup"},
 			{text:"그룹 삭제", value:"그룹 삭제", actionId:"OpenModalDelGroup"},
 			{text:"멤버 관리", value:"멤버 관리", actionId:"goPageMember"}
@@ -137,13 +137,13 @@ export async function alarmManageHomeView(seekerId, msg) {
 	const alarmList = alarmList_.map(x=>x.target_id);
 	return HomeViewTemplete([
 		...BlockHeader("⏰ 알람 설정"),
-		...BlockContext("홈/알람 설정"),
-		...BlockButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
+		...BlockContextText("홈/알람 설정"),
+		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
 		...BlockDivider(),
 		...BlockHeader("📃 등록된 알람 리스트"),
 		...BlockMrkdwn([formatStrUnorderedList(alarmList)]),
 		...BlockMrkdwn([msg]),
-		...BlockButtons([
+		...BlockActionButtons([
 			{text:"알람 추가", value:"알람 추가", actionId:"OpenModalAddAlarm"},
 			{text:"알람 삭제", value:"알람 삭제", actionId:"OpenModalDelAlarm"},
 		]),
@@ -156,13 +156,13 @@ export async function memberManageHomeView(groupId, msg) {
 	console.log(JSON.stringify(memberList));
 	return HomeViewTemplete([
 		...BlockHeader("👤 멤버 관리"),
-		...BlockContext("홈/그룹 관리/멤버 관리"),
-		...BlockButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
+		...BlockContextText("홈/그룹 관리/멤버 관리"),
+		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 		...BlockDivider(),
 		...BlockHeader("📃 등록된 멤버 리스트"),
 		...BlockMrkdwn([formatStrUnorderedList(memberList)]),
 		...BlockMrkdwn([msg]),
-		...BlockButtons([
+		...BlockActionButtons([
 			{text:"멤버 추가", value:"멤버 추가", actionId:"addMember"},
 			{text:"멤버 삭제", value:"멤버 삭제", actionId:"delMember"},
 		]),

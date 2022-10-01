@@ -11,6 +11,8 @@ function SelectOptions(items) {
 	)
 }
 
+/* -------------------------- ONLY TEXT BLOCKS ------------------------------- */
+
 export function BlockDivider() {
     return [
         {
@@ -46,51 +48,25 @@ export function BlockMrkdwn(items) {
     });
 }
 
-export function BlockLabelInput(text, actionId) {
-    if (text == null || text == "" || actionId == null || actionId == "") return [];
-    return [
-        {
-            dispatch_action: true,
-            type: "input",
-            element: {
-                type: "plain_text_input",
-                action_id: actionId,
-            },
-            label: {
-                type: "plain_text",
-                text,
-                emoji: true,
-            },
-        },
-    ];
-}
-
-export function BlockLabelButton(label, text, actionId) {
-    if (label == null || label == "") return [];
+export function BlockContextText(text) {
     if (text == null || text == "") return [];
-    if (actionId == null || actionId == "") return [];
     return [
         {
-            type: "section",
-            text: {
-                type: "mrkdwn",
-                text: label,
-            },
-            accessory: {
-                type: "button",
-                text: {
+            type: "context",
+            elements: [
+                {
                     type: "plain_text",
                     text,
                     emoji: true,
                 },
-                value: "click_me_123",
-                action_id: actionId,
-            },
+            ],
         },
     ];
 }
 
-export function BlockButtons(items) {
+/* -------------------------- BUTTON BLOCKS --------------------------------- */
+
+export function BlockActionButtons(items) {
     items = items
         ?.filter((x) => x.text != null && x.text != "")
         .filter((x) => x.actionId != null && x.actionId != "")
@@ -113,21 +89,54 @@ export function BlockButtons(items) {
     ];
 }
 
-export function BlockContext(text) {
+export function BlockSectionButton(desText, text, actionId) {
+    if (desText == null || desText == "") return [];
     if (text == null || text == "") return [];
+    if (actionId == null || actionId == "") return [];
     return [
         {
-            type: "context",
-            elements: [
-                {
+            type: "section",
+            text: {
+                type: "mrkdwn",
+                text: desText,
+            },
+            accessory: {
+                type: "button",
+                text: {
                     type: "plain_text",
                     text,
                     emoji: true,
                 },
-            ],
+                value: "click_me_123",
+                action_id: actionId,
+            },
         },
     ];
 }
+
+/* ---------------------------- INPUT BLOCKS --------------------------------- */
+
+export function BlockTextInput(labelText, actionId) {
+    if (labelText == null || labelText == "" || actionId == null || actionId == "") return [];
+	return {
+		"dispatch_action": true,
+		"type": "input",
+		"element": {
+			"type": "plain_text_input",
+			"dispatch_action_config": {
+				"trigger_actions_on": ["on_character_entered"]
+			},
+			"action_id": actionId,
+		},
+		"label": {
+			"type": "plain_text",
+			"text": labelText,
+			"emoji": true
+		}
+	}
+}
+
+/* -------------------------- SELECT BLOCKS --------------------------------- */
 
 export function BlockSectionSelect(desText, actionId, items) {
 	let res = {
@@ -206,25 +215,6 @@ export function BlockMultiUsersSelect(labelText, actionId) {
 				"emoji": true
 			},
 			"action_id": actionId
-		},
-		"label": {
-			"type": "plain_text",
-			"text": labelText,
-			"emoji": true
-		}
-	}
-}
-
-export function BlockTextInput(labelText, actionId) {
-	return {
-		"dispatch_action": true,
-		"type": "input",
-		"element": {
-			"type": "plain_text_input",
-			"dispatch_action_config": {
-				"trigger_actions_on": ["on_character_entered"]
-			},
-			"action_id": actionId,
 		},
 		"label": {
 			"type": "plain_text",
