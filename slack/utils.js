@@ -35,3 +35,15 @@ export function createView(blocks) {
 		blocks: blocks
 	};
 };
+
+export async function getUserNamebySlackId(client, userId) {
+	const userName = await client.users.info({
+        user: userId,
+    });
+	const displayName = userName.user.profile.display_name;
+	const realName = userName.user.profile.real_name;
+	if (displayName != "")
+		return (displayName);
+	else
+		return (realName);
+}

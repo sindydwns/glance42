@@ -36,15 +36,23 @@ export async function getAllReservedAlarm() {
 export async function deleteReservedAlarm(ids) {
     if (ids.length == 0)
         return ;
-    await connection.query("delete from alarm where alarm_id in (?)", [
-        ids
-    ]);
+    await connection.query("delete from alarm where alarm_id in (?)", [ids]);
 }
 
-export async function getGroupId(seekerId) {
+export async function getSelectedGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
         "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.selected = true;",
         [seekerId]
+    );
+    if (groupId.length === 0) return null;
+    const returnVal = groupId[0].group_id;
+    return returnVal;
+}
+
+export async function getGroupId(seekerId, groupName) {
+    const [groupId, ...other] = await connection.query(
+        "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.group_name = ?",
+        [seekerId, groupName]
     );
     if (groupId.length === 0) return null;
     const returnVal = groupId[0].group_id;
@@ -107,4 +115,46 @@ export async function delGroup(seekerId, groupName) {
 	catch (e) {
 		console.error(e);
 	}	
+}
+
+export async function addMember(seekerId, groupName, targetId) {
+	try {
+		const groupId = await getGroupId(seekerId, groupName);
+		await connection.query("insert into group_member(group_id, target_id) values(? , ?);", [groupId, targetId]);
+		return ('success');
+	}
+	catch (e) {
+		console.error(e);
+	}
+}
+
+export async function delMember(seekerId, groupName, targetId) {
+	try {
+		const groupId = await getGroupId(seekerId, groupName);
+		await connection.query("delete from group_member where group_id=? and target_id= ?;", [groupId, targetId]);
+		return ('success');
+	}
+	catch (e) {
+		console.error(e);
+	}
+}
+
+export async function addAlarm(seekerId, targetId) {
+	try {
+		await connection.query("insert into alarm(seeker_id, target_id) values(? , ?);", [seekerId, targetId]);
+		return ('success');
+	}
+	catch (e) {
+		console.error(e);
+	}
+}
+
+export async function delAlarm(seekerId, targetId) {
+	try {
+		await connection.query("delete from alarm where seeker_id=? and target_id=?;", [seekerId, targetId]);
+		return ('success');
+	}
+	catch (e) {
+		console.error(e);
+	}
 }

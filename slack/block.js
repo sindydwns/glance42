@@ -5,13 +5,13 @@
  * @param {string} actionId
  * @returns
  */
-export function BlockSelect(title, items, actionId) {
-    items = items?.filter((x) => x.title && x.value);
-    if (title == null || title == "" || items == null || items.length === 0) return [];
+export function BlockSelect(text, items, actionId) {
+    items = items?.filter((x) => x.text && x.value);
+    if (text == null || text == "" || items == null || items.length === 0) return [];
     const options = items.map((x) => ({
         text: {
             type: "plain_text",
-            text: x.title,
+            text: x.text,
             emoji: true,
         },
         value: String(x.value),
@@ -20,7 +20,7 @@ export function BlockSelect(title, items, actionId) {
         type: "section",
         text: {
             type: "mrkdwn",
-            text: title,
+            text: text,
         },
         accessory: {
             type: "static_select",
@@ -191,11 +191,11 @@ export function BlockDivider() {
  * @param {Array<title:String, value:String, selected:Boolean>} gls
  * @returns
  */
-export function ModalTemplate(titleText, inputText, gls, callbackText) {
+export function ModalTemplate(titleText, inputText, selectList, callbackId) {
     return {
         type: "modal",
 		notify_on_close: true,
-        callback_id : callbackText, 
+        callback_id : callbackId, 
         title: {
             type: "plain_text",
             text: titleText,
@@ -211,6 +211,100 @@ export function ModalTemplate(titleText, inputText, gls, callbackText) {
             text: "Cancel",
             emoji: true,
         },
-        blocks: gls ? BlockSelect(inputText, gls, "modalDelGroup") : BlockLabelInput(inputText, "modalAddGroup"),
+        blocks: selectList ? BlockSelect(inputText, selectList, "modalDelGroup") : BlockLabelInput(inputText, "modalAddGroup"),
     };
 }
+
+export function ModalSelectUser(titleText, inputText, callbackId) {
+    return {
+		callback_id : callbackId, 
+		title: {
+			"type": "plain_text",
+			"text": titleText,
+			"emoji": true
+		},
+		submit: {
+			"type": "plain_text",
+			"text": "Submit",
+			"emoji": true
+		},
+		type: "modal",
+		close: {
+			"type": "plain_text",
+			"text": "Cancel",
+			"emoji": true
+		},
+		blocks: [
+			{
+				"type": "section",
+				"text": {
+					"type": "mrkdwn",
+					"text": inputText
+				},
+				accessory: {
+					"type": "users_select",
+					"placeholder": {
+						"type": "plain_text",
+						"text": "Select a user",
+						"emoji": true
+					},
+					"action_id": "userSelectAction"
+				}
+			}
+		]
+	};
+}
+
+export function ModalMultiSelectList(titleText, inputText, selectList, callbackId) {
+	return {
+		callback_id : callbackId, 
+		type: "modal",
+		title: {
+			"type": "plain_text",
+			"text": titleText,
+			"emoji": true
+		},
+		submit: {
+			"type": "plain_text",
+			"text": "Submit",
+			"emoji": true
+		},
+		close: {
+			"type": "plain_text",
+			"text": "Cancel",
+			"emoji": true
+		},
+		blocks: [
+			{
+				"type": "section",
+				"text": {
+					"type": "mrkdwn",
+					"text": inputText
+				},
+				"accessory": {
+					"type": "multi_static_select",
+					"placeholder": {
+						"type": "plain_text",
+						"text": "Select options",
+						"emoji": true
+					},
+					"options": BlockSelect2(selectList),
+					"action_id": "MultiSelectAction"
+				}
+			}
+		]
+	}
+}
+
+export function BlockSelect2(items) {
+	return (items.map((x) => ({
+        text: {
+            type: "plain_text",
+            text: x.text,
+            emoji: true,
+        },
+        value: x.value
+    }))
+	)
+}
+

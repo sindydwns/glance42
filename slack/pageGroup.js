@@ -1,4 +1,4 @@
-import { getGls, getGroupId, getGroupUser, addGroup, delGroup } from "../DataBase/utils.js";
+import { getGls, addGroup, delGroup } from "../DataBase/utils.js";
 import { getSeekerId, createView } from "./utils.js";
 import { BlockSelect, BlockMrkdwn, BlockLabelInput, BlockHeader, BlockButtons, BlockDivider, BlockList, ModalTemplate } from "./block.js";
 import { createHomeView } from "./pageHome.js";
@@ -46,7 +46,7 @@ export default (app) => {
                 view: await ModalTemplate(
                     "그룹 삭제",
                     "삭제할 그룹을 선택해주세요.",
-                    gls.map((v) => ({ title: v.group_name, value: v.group_id, selected: v.selected })),
+                    gls.map((v) => ({ text: v.group_name, value: v.group_id, selected: v.selected })),
                     "callbackDelGroup"
                 ),
             });
@@ -72,10 +72,8 @@ export default (app) => {
 		// });
 
 		try {
-            const seekerId = await getSeekerId(body, null, client);
             const result = await client.views.update({
 				view_id: client.previous_view_id,
-				// hash: body.view.hash,
 				view: await createGroupManageView(seekerId),
 			});
         } catch (e) {
