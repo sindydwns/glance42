@@ -62,9 +62,10 @@ export async function mainHomeView(seekerId) {
 
 	const groupId = await getSelectedGroupId(seekerId);
 	const locationInfo = await getGroupLocationInfo(seekerId, groupId);
+	const initialSelect = gls.filter((item) => item.selected)[0];
 	return (HomeViewTemplete([
 			...BlockHeader("👀 염탐하기"),
-			BlockSectionSelect("염탐할 대상을 선택해주세요", "selectTarget", gls),
+			BlockSectionSelect("염탐할 대상을 선택해주세요", "selectTarget", gls, initialSelect),
 			...BlockMrkdwn([formatStrCurrentLocation(locationInfo)]),
 			...BlockDivider(),
 			...BlockHeader("⚙️ 설정"),
@@ -73,7 +74,7 @@ export async function mainHomeView(seekerId) {
 				{text: "알람 설정", actionId: "goAlarmManageView", value: "goAlarmManageView",},
 			]),
 			...BlockDivider(),
-			...BlockSectionButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", "Help", "button-action"),
+			...BlockSectionButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", {text:"Help", value:"help"}, "button-action"),
 		])
 	);
 }
@@ -115,20 +116,22 @@ export async function alarmManageHomeView(seekerId, msg) {
 	]);
 }
 
-export async function memberManageHomeView(seekerId, groupId, msg) {
+export async function memberManageHomeView(seekerId, selectGroup, msg) {
 	const gls_ = await getGls(seekerId);
 	const gls = gls_.map(item => {
 		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
 	});
-	if (groupId) {
-		const memberList_ = await getGroupUser(groupId);
+	if (selectGroup) {
+		const memberList_ = await getGroupUser(selectGroup.value);
 		const memberList = memberList_.map(x=>x.target_id);
+		if (memberList.length == 0 && msg == null)
+			msg = "선택한 그룹에 등록된 멤버가 없습니다!";
 		return HomeViewTemplete([
 			...BlockHeader("👤 멤버 관리"),
 			...BlockContextText("홈/그룹 관리/멤버 관리"),
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
-			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectDoneforMemberManage", gls),
+			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectDoneforMemberManage", gls, selectGroup),
 			...BlockHeader("📃 등록된 멤버 리스트"),
 			...BlockMrkdwn([formatStrUnorderedList(memberList)]),
 			...BlockMrkdwn([msg]),
@@ -144,7 +147,7 @@ export async function memberManageHomeView(seekerId, groupId, msg) {
 			...BlockContextText("홈/그룹 관리/멤버 관리"),
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
-			BlockSectionSelect("그룹을 선택해주세요", "selectDoneforMemberManage", gls),
+			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectDoneforMemberManage", gls, false),
 		]);
 }
 

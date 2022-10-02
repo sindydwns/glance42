@@ -89,9 +89,10 @@ export function BlockActionButtons(items) {
     ];
 }
 
-export function BlockSectionButton(desText, text, actionId) {
+export function BlockSectionButton(desText, item, actionId) {
     if (desText == null || desText == "") return [];
-    if (text == null || text == "") return [];
+    if (item.text == null || item.text == "") return [];
+    if (item.value == null || item.value == "") return [];
     if (actionId == null || actionId == "") return [];
     return [
         {
@@ -104,10 +105,10 @@ export function BlockSectionButton(desText, text, actionId) {
                 type: "button",
                 text: {
                     type: "plain_text",
-                    text,
+                    text: item.text,
                     emoji: true,
                 },
-                value: "click_me_123",
+                value: item.value,
                 action_id: actionId,
             },
         },
@@ -138,7 +139,7 @@ export function BlockTextInput(labelText, actionId) {
 
 /* -------------------------- SELECT BLOCKS --------------------------------- */
 
-export function BlockSectionSelect(desText, actionId, items) {
+export function BlockSectionSelect(desText, actionId, items, initialSelect) {
 	let res = {
 		"type": "section",
 		"text": {
@@ -156,9 +157,8 @@ export function BlockSectionSelect(desText, actionId, items) {
 			"action_id": actionId
 		}
 	}
-	const selectedItem = items.filter((item) => item.selected)[0];
-    if (selectedItem)
-		res.accessory.initial_option = SelectOptions([selectedItem])[0];
+	if (initialSelect)
+			res.accessory.initial_option = SelectOptions([initialSelect])[0];
     return (res);
 }
 
