@@ -3,6 +3,8 @@ import { BlockDivider, BlockHeader, BlockMrkdwn, BlockSectionButton, BlockAction
 	BlockSectionSelect, BlockSingleStaicSelect, BlockMultiStaicSelect, BlockMultiUsersSelect, BlockTextInput} from "./utils/blocks.js"
 
 function formatStrCurrentLocation(locationInfo) {
+	if (locationInfo.length == 0)
+		return ("\n");
     let rv = "";
     locationInfo.forEach((elem) => {
         const targetId = elem.target_id;
@@ -65,7 +67,7 @@ export async function mainHomeView(seekerId) {
 	return (HomeViewTemplete([
 			...BlockHeader("👀 염탐하기"),
 			BlockSectionSelect("염탐할 대상을 선택해주세요", "selectTarget", gls, initialSelect),
-			...BlockMrkdwn([formatStrCurrentLocation(locationInfo)]),
+			...BlockMrkdwn(["\n", formatStrCurrentLocation(locationInfo), "\n"]),
 			...BlockDivider(),
 			...BlockHeader("⚙️ 설정"),
 			...BlockActionButtons([
@@ -73,7 +75,7 @@ export async function mainHomeView(seekerId) {
 				{text: "알람 설정", actionId: "goAlarmManageView", value: "goAlarmManageView",},
 			]),
 			...BlockDivider(),
-			...BlockSectionButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", {text:"Help", value:"help"}, "button-action"),
+			...BlockSectionButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", {text:"Help", value:"help"}, "goManualView"),
 		])
 	);
 }
@@ -148,6 +150,17 @@ export async function memberManageHomeView(seekerId, selectGroup, msg) {
 			...BlockDivider(),
 			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls, false),
 		]);
+}
+
+export async function manualHomeView() {
+	return (HomeViewTemplete([
+		...BlockHeader("도움말"),
+		...BlockContextText("홈/도움말"),
+		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
+		...BlockDivider(),
+		...BlockHeader("사용 방법"),
+		...BlockMrkdwn(["\n", "어쩌구 저쩌구...", "그리고 또 어쩌구 저쩌구..."]),
+	]));
 }
 
 /* ----------------------------- MODAL VIEWS ---------------------------------- */

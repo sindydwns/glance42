@@ -1,6 +1,6 @@
 import { SelectGroup, unSelectGroup } from "../DataBase/utils.js";
 import { getSeekerId } from "./utils/data.js";
-import { mainHomeView, groupManageHomeView, alarmManageHomeView } from "./views.js";
+import { mainHomeView, groupManageHomeView, alarmManageHomeView, manualHomeView } from "./views.js";
 
 export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {
@@ -54,6 +54,20 @@ export default (app) => {
 		});
 		client.previous_view_id = body.view.id;
 	})
+
+    app.action("goManualView", async ({ ack, body, client, logger }) => {
+        try {
+            await ack();
+			
+            await client.views.update({
+                view_id: body.view.id,
+                hash: body.view.hash,
+                view: await manualHomeView(),
+            });
+        } catch (error) {
+            logger.error(error);
+        }
+    });
 
     app.action("selectTarget", async ({ ack, body, client, logger }) => {
         await ack();
