@@ -24,6 +24,8 @@ export default (app) => {
 	
 	app.action("OpenModalAddMember", async ({ ack, body, client, logger }) => {
         await ack();
+		const selectedGroup = client.selected_group;
+		const seekerId = await getSeekerId(body, null, client);
 
         try {
             const result = await client.views.open({
@@ -32,6 +34,14 @@ export default (app) => {
             });
         } catch (error) {
             logger.error(error);
+        }
+		try {
+            const result = await client.views.update({
+                view_id: client.previous_view_id,
+				view: await memberManageHomeView(seekerId, selectedGroup),
+			});
+        } catch (e) {
+            logger.error(e);
         }
     });
 
@@ -58,22 +68,10 @@ export default (app) => {
         }
 	});
 
-	app.view({callback_id:'callbackAddMember', type:'view_closed' }, async ({ ack, body, view, client, logger }) => {
-		await ack();
-		try {
-            const seekerId = await getSeekerId(body, null, client);
-            await client.views.update({
-                view_id: client.previous_view_id,
-				view: await memberManageHomeView(seekerId, client.selected_group),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
-	});
-
 	app.action("OpenModalDelMember", async ({ ack, body, client, logger }) => {
         await ack();
 		const selectedGroup = client.selected_group;
+		const seekerId = await getSeekerId(body, null, client);
 
         try {
             const result = await client.views.open({
@@ -82,6 +80,14 @@ export default (app) => {
             });
         } catch (error) {
             logger.error(error);
+        }
+		try {
+            const result = await client.views.update({
+                view_id: client.previous_view_id,
+				view: await memberManageHomeView(seekerId, selectedGroup),
+			});
+        } catch (e) {
+            logger.error(e);
         }
     });
 
@@ -108,17 +114,5 @@ export default (app) => {
         }
 	});
 
-	app.view({callback_id:'callbackDelMember', type:'view_closed'}, async ({ ack, body, view, client, logger }) => {
-		await ack();
-		try {
-            const seekerId = await getSeekerId(body, null, client);
-            await client.views.update({
-                view_id: client.previous_view_id,
-				view: await memberManageHomeView(seekerId, client.selected_group),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
-	});
 }
 

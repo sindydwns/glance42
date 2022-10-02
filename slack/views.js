@@ -31,7 +31,6 @@ function HomeViewTemplete(blocks) {
 function ModalViewTemplete(titleText, callbackId, blocks) {
 	return {
 		callback_id : callbackId, 
-		notify_on_close: true,
 		type: "modal",
 		title: {
 			"type": "plain_text",

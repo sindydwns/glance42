@@ -6,11 +6,41 @@ export default (app) => {
 	
 	app.action("OpenModalAddAlarm", async ({ ack, body, client, logger }) => {
         await ack();
+        const seekerId = await getSeekerId(body, null, client);
 
         try {
             const result = await client.views.open({
                 trigger_id: body.trigger_id,
                 view: await addAlarmModalView()
+            });
+        } catch (error) {
+            logger.error(error);
+        }
+		try {
+            await client.views.update({
+                view_id: client.previous_view_id,
+                view: await alarmManageHomeView(seekerId),
+            });
+        } catch (error) {
+            logger.error(error);
+        }
+    });
+
+    app.action("OpenModalDelAlarm", async ({ ack, body, client, logger }) => {
+        await ack();
+        const seekerId = await getSeekerId(body, null, client);
+        try {
+            const result = await client.views.open({
+                trigger_id: body.trigger_id,
+                view: await delAlarmModalView(seekerId),
+            });
+        } catch (error) {
+            logger.error(error);
+        }
+		try {
+            await client.views.update({
+                view_id: client.previous_view_id,
+                view: await alarmManageHomeView(seekerId),
             });
         } catch (error) {
             logger.error(error);
@@ -45,33 +75,6 @@ export default (app) => {
         }
 	});
 
-	app.view({callback_id:'callbackAddAlarm', type:'view_closed'}, async ({ ack, body, view, client, logger }) => {
-		await ack();
-		try {
-            const seekerId = await getSeekerId(body, null, client);
-            await client.views.update({
-                view_id: client.previous_view_id,
-                view: await alarmManageHomeView(seekerId),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
-	});
-
-    app.action("OpenModalDelAlarm", async ({ ack, body, client, logger }) => {
-        await ack();
-        const seekerId = await getSeekerId(body, null, client);
-        const als = await getAlarmList(seekerId);
-        try {
-            const result = await client.views.open({
-                trigger_id: body.trigger_id,
-                view: await delAlarmModalView(seekerId),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
-    });
-
 	app.view({callback_id: 'callbackDelAlarm', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]['submitDelAlarm']['selected_options']
@@ -94,17 +97,5 @@ export default (app) => {
         }
 	});
 
-	app.view({callback_id:'callbackDelAlarm', type:'view_closed' }, async ({ ack, body, view, client, logger }) => {
-		await ack();
-		try {
-            const seekerId = await getSeekerId(body, null, client);
-            await client.views.update({
-                view_id: client.previous_view_id,
-                view: await alarmManageHomeView(seekerId),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
-	});
 }
 
