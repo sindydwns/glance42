@@ -1,5 +1,20 @@
 import pool from "../apiDataBase.js";
 
+function valueArrayToStr (valueArr) {
+	let str = "values";
+	for (i in valueArr) {
+		str += "(";
+		valueArr[i].map(value => {
+			str += `'${value}',`;
+		});
+		str = str.slice(0, -1);
+		str += "),";
+	}
+	str = str.slice(0, -1);
+	str += ";";
+	return (str);
+}
+
 const connection = await pool.getConnection(async (conn) => conn);
 export async function getAllLocationTable() {
     const [locations, ...other] = await connection.query("select target_id, host from location_status");
@@ -98,6 +113,11 @@ export async function getAlarmList(seekerId) {
 }
 
 export async function addGroup(seekerId, groupName) {
+	// const valueArr = [];
+	// targetIds.map(targetId => {
+	// 	valueArr.push([seekerId, tgroupNames]);
+	// });
+	// const valueArrStr = valueArrayToStr(valueArr);
 	try {
 		await connection.query("insert into group_list(group_id, seeker_id, group_name, selected) values (null, ?, ?, 0);", [seekerId, groupName]);
 		return ('success');
@@ -107,9 +127,9 @@ export async function addGroup(seekerId, groupName) {
 	}
 }
 
-export async function delGroup(seekerId, groupName) {
+export async function delGroup(seekerId, groupId) {
     try {
-		await connection.query("delete from group_list where seeker_id=? and group_name=?;", [seekerId, groupName]);
+		await connection.query("delete from group_list where seeker_id=? and group_id=?;", [seekerId, groupId]);
 		return ('success');
 	}
 	catch (e) {
@@ -117,9 +137,13 @@ export async function delGroup(seekerId, groupName) {
 	}	
 }
 
-export async function addMember(seekerId, groupName, targetId) {
+export async function addMember(groupId, targetId) {
+	// const valueArr = [];
+	// targetIds.map(targetId => {
+	// 	valueArr.push([groupId, targetIds]);
+	// });
+	// const valueArrStr = valueArrayToStr(valueArr);
 	try {
-		const groupId = await getGroupId(seekerId, groupName);
 		await connection.query("insert into group_member(group_id, target_id) values(? , ?);", [groupId, targetId]);
 		return ('success');
 	}
@@ -128,10 +152,9 @@ export async function addMember(seekerId, groupName, targetId) {
 	}
 }
 
-export async function delMember(seekerId, groupName, targetId) {
+export async function delMember(groupId, targetIds) {
 	try {
-		const groupId = await getGroupId(seekerId, groupName);
-		await connection.query("delete from group_member where group_id=? and target_id= ?;", [groupId, targetId]);
+		await connection.query("delete from group_member where group_id=? and target_id=?;", [groupId, targetId]);
 		return ('success');
 	}
 	catch (e) {
@@ -140,6 +163,11 @@ export async function delMember(seekerId, groupName, targetId) {
 }
 
 export async function addAlarm(seekerId, targetId) {
+	// const valueArr = [];
+	// targetIds.map(targetId => {
+	// 	valueArr.push([seekerId, targetIds]);
+	// });
+	// const valueArrStr = valueArrayToStr(valueArr);
 	try {
 		await connection.query("insert into alarm(seeker_id, target_id) values(? , ?);", [seekerId, targetId]);
 		return ('success');
