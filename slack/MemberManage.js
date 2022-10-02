@@ -4,7 +4,7 @@ import { memberManageHomeView, addMemberModalView, delMemberModalView } from "./
 
 export default (app) => {
 
-	app.action("selectGroupDoneforMemberManage", async ({ack, body, client, logger}) => {
+	app.action("selectGroupforMemberManage", async ({ack, body, client, logger}) => {
         try {
             await ack();
        	 	const selected = body.actions[0].selected_option;

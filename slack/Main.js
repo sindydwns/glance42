@@ -1,6 +1,6 @@
 import { SelectGroup, unSelectGroup } from "../DataBase/utils.js";
 import { getSeekerId } from "./utils/data.js";
-import { mainHomeView, groupManageHomeView, alarmManageHomeView, manualHomeView } from "./views.js";
+import { mainHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView } from "./views.js";
 
 export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {
@@ -26,7 +26,7 @@ export default (app) => {
 			})
 		}
 	);
-	
+
     app.action("goGroupManageView", async ({ ack, body, client, logger }) => {
         try {
             await ack();
@@ -54,6 +54,16 @@ export default (app) => {
 		});
 		client.previous_view_id = body.view.id;
 	})
+	
+	app.action("goMemberManageView", async ({ack, body, client}) => {
+		await ack();
+		const seekerId = await getSeekerId(body, null, client);
+		await client.views.update({
+			view_id: body.view.id,
+			hash: body.view.hash,
+			view: await memberManageHomeView(seekerId)
+		})
+	});
 
     app.action("goManualView", async ({ ack, body, client, logger }) => {
         try {
@@ -69,7 +79,7 @@ export default (app) => {
         }
     });
 
-    app.action("selectTarget", async ({ ack, body, client, logger }) => {
+    app.action("selectGlanceTarget", async ({ ack, body, client, logger }) => {
         await ack();
         const selected = body.actions[0].selected_option;
         const prev = body.actions[0].initial_option;

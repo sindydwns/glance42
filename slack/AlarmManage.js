@@ -1,6 +1,6 @@
 import { getAlarmList, addAlarm,  delAlarm } from "../DataBase/utils.js";
 import { getSeekerId, getUserNamebySlackId} from "./utils/data.js";
-import { mainHomeView, alarmManageHomeView, addAlarmModalView, delAlarmModalView } from "./views.js";
+import { alarmManageHomeView, addAlarmModalView, delAlarmModalView } from "./views.js";
 
 export default (app) => {
 	

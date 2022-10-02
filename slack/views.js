@@ -66,7 +66,7 @@ export async function mainHomeView(seekerId) {
 	const initialSelect = gls.filter((item) => item.selected)[0];
 	return (HomeViewTemplete([
 			...BlockHeader("👀 염탐하기"),
-			...BlockSectionSelect("염탐할 대상을 선택해주세요", "selectTarget", gls, initialSelect),
+			...BlockSectionSelect("염탐할 대상을 선택해주세요", "selectGlanceTarget", gls, initialSelect),
 			...BlockMrkdwn("\n"),
 			...BlockMrkdwn(formatStrCurrentLocation(locationInfo)),
 			...BlockMrkdwn("\n"),
@@ -90,7 +90,7 @@ export async function groupManageHomeView(seekerId, msg) {
 	const gls_ = await getGls(seekerId);
 	const gls = gls_.map(x=>x.group_name);
 	if (gls.length == 0 && msg == null)
-		msg = "생성된 그룹이 하나도 없습니다!\n'그룹 생성' 버튼을 눌러 새로운 그룹을 생성해보세요.";
+		msg = "생성된 그룹이 없습니다!\n'그룹 생성' 버튼을 눌러 새로운 그룹을 생성해보세요.";
 	return (HomeViewTemplete([
 		...BlockHeader("👥 그룹 관리"),
 		...BlockContextText("홈/그룹 관리"),
@@ -113,14 +113,14 @@ export async function alarmManageHomeView(seekerId, msg) {
 	const alarmList_ = await getAlarmList(seekerId);
 	const alarmList = alarmList_.map(x=>x.target_id);
 	if (alarmList.length == 0 && msg == null)
-		msg = "등록한 알람이 하나도 없습니다!\n'알람 추가' 버튼을 눌러 새로운 알람을 등록해보세요.";
+		msg = "등록된 알람이 없습니다!\n'알람 추가' 버튼을 눌러 새로운 알람을 등록해보세요.";
 	return HomeViewTemplete([
 		...BlockHeader("⏰ 알람 설정"),
 		...BlockContextText("홈/알람 설정"),
 		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
 		...BlockDivider(),
 		...BlockMrkdwn("\n"),
-		...BlockHeader("📋 등록한 알람 리스트"),
+		...BlockHeader("📋 나의 알람 리스트"),
 		...BlockMrkdwn(formatStrUnorderedList(alarmList)),
 		...BlockMrkdwn(msg),
 		...BlockMrkdwn("\n"),
@@ -140,16 +140,16 @@ export async function memberManageHomeView(seekerId, selectGroup, msg) {
 		const memberList_ = await getGroupUser(selectGroup.value);
 		const memberList = memberList_.map(x=>x.target_id);
 		if (memberList.length == 0 && msg == null)
-			msg = "선택한 그룹에 등록된 멤버가 없습니다!";
+			msg = "선택한 그룹에 등록된 멤버가 없습니다!\n'멤버 추가' 버튼을 눌러 새로운 멤버를 추가해보세요.";
 		return HomeViewTemplete([
 			...BlockHeader("👤 멤버 관리"),
 			...BlockContextText("홈/그룹 관리/멤버 관리"),
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
 			...BlockMrkdwn("\n"),
-			...BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls, selectGroup),
+			...BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupforMemberManage", gls, selectGroup),
 			...BlockMrkdwn("\n"),
-			...BlockHeader("📋 그룹에 등록한 멤버 리스트"),
+			...BlockHeader("📋 이 그룹의 멤버 리스트"),
 			...BlockMrkdwn(formatStrUnorderedList(memberList)),
 			...BlockMrkdwn(msg),
 			...BlockActionButtons([
@@ -165,7 +165,7 @@ export async function memberManageHomeView(seekerId, selectGroup, msg) {
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
 			...BlockMrkdwn("\n\n"),
-			...BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls, false),
+			...BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupforMemberManage", gls, false),
 		]);
 }
 
@@ -184,7 +184,7 @@ export async function manualHomeView() {
 
 export async function addGroupModalView() {
 	return (ModalViewTemplete("그룹 추가", "callbackAddGroup", ([
-			BlockTextInput("추가할 그룹명을 입력해주세요", "submitAddGroup")
+			BlockTextInput("추가할 그룹명을 입력해주세요", "writeAddGroupName")
 		])
 	));
 }

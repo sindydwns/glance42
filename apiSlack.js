@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import pkg from "@slack/bolt";
-import pageMain from "./slack/pageMain.js";
 import { WebClient } from "@slack/web-api";
-import pageGroup from "./slack/pageGroup.js";
-import pageMember from "./slack/pageMember.js";
-import pageAlarm from "./slack/pageAlarm.js";
+import pageMain from "./slack/Main.js";
+import pageGroupManage from "./slack/GroupManage.js";
+import pageAlarmManage from "./slack/AlarmManage.js";
+import pageMemberManage from "./slack/MemberManage.js";
 
 const { App, LogLevel } = pkg;
 dotenv.config();
@@ -19,9 +19,9 @@ const app = new App({
 });
 
 pageMain(app);
-pageGroup(app);
-pageMember(app);
-pageAlarm(app);
+pageGroupManage(app);
+pageMemberManage(app);
+pageAlarmManage(app);
 
 app.message("me", async ({ message, say }) => {
     say(`${message.user}`);
