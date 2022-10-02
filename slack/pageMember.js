@@ -11,12 +11,15 @@ export default (app) => {
 			const selectedGroup = {text: selected.text.text, value: selected.value};
 			const seekerId = await getSeekerId(body, null, client);
 			
-            await client.views.update({
-                view_id: body.view.id,
-                hash: body.view.hash,
-                view: await memberManageHomeView(seekerId, selectedGroup),
-            });
-			client.selected_group = selectedGroup;
+			if (selectedGroup.value != "No-option")
+			{
+				await client.views.update({
+					view_id: body.view.id,
+					hash: body.view.hash,
+					view: await memberManageHomeView(seekerId, selectedGroup),
+				});
+				client.selected_group = selectedGroup;
+			}
         } catch (error) {
             logger.error(error);
         }
@@ -91,7 +94,7 @@ export default (app) => {
         }
     });
 
-	app.view({callback_id: 'callbackDelMember', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
+	app.view({callback_id:'callbackDelMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]['submitDelMember']['selected_options']
 		.map((x) => (x.value));

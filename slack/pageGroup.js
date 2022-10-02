@@ -81,7 +81,7 @@ export default (app) => {
 		// 그룹 삭제에 대한 경고하기 (정말 지우시겠습니까?)
 	});
 	
-	app.view({callback_id: 'callbackAddGroup', type: 'view_submission' }, async ({ack, body, view, client, logger}) => {
+	app.view({callback_id: 'callbackAddGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitAddGroup"]['value'];
         const seekerId = await getSeekerId(body, null, client);
@@ -104,18 +104,21 @@ export default (app) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitDelGroup"]['selected_option'].value;
         const seekerId = await getSeekerId(body, null, client);
-
-		let msg = '';
-		const result = await delGroup(seekerId, inputVal);
-		if (result)
-			msg = "*그룹이 정상적으로 삭제되었습니다*";
-		try {
-			const result = await client.views.update({
-				view_id: client.previous_view_id,
-				view: await groupManageHomeView(seekerId, msg),
-			});
-		} catch (e) {
-			logger.error(e);
+		
+		if (inputVal != "No-option") {
+				let msg = '';
+				const result = await delGroup(seekerId, inputVal);
+				if (result)
+					msg = "*그룹이 정상적으로 삭제되었습니다*";
+				try {
+					const result = await client.views.update({
+						view_id: client.previous_view_id,
+						view: await groupManageHomeView(seekerId, msg),
+					});
+				} catch (e) {
+					logger.error(e);
+				}
+			};
 		}
-	});
+	)
 }

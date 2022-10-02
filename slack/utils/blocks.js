@@ -1,6 +1,8 @@
 
 function SelectOptions(items) {
-	return (items.map((x) => ({
+	if (items == "" || items == null)
+		items = [{text:"선택할 대상이 없습니다", value:"No-option"}];
+	return items.map((x) => ({
         text: {
             type: "plain_text",
             text: x.text,
@@ -8,7 +10,6 @@ function SelectOptions(items) {
         },
         value: x.value
     }))
-	)
 }
 
 /* -------------------------- ONLY TEXT BLOCKS ------------------------------- */
@@ -36,15 +37,16 @@ export function BlockHeader(text) {
 }
 
 export function BlockMrkdwn(text) {
-	if (text == null || text == "")
-	text = "\n";
-	return {
-		type: "section",
-		text: {
-			type: "mrkdwn",
-			text: text,
-		},
-	};
+	if (text == null || text == "") return [];
+	return [
+		{
+			type: "section",
+			text: {
+				type: "mrkdwn",
+				text: text,
+			},
+		}
+	];
 }
 
 export function BlockContextText(text) {
@@ -158,7 +160,7 @@ export function BlockSectionSelect(desText, actionId, items, initialSelect) {
 	}
 	if (initialSelect)
 			res.accessory.initial_option = SelectOptions([initialSelect])[0];
-    return (res);
+    return [res];
 }
 
 export function BlockSingleStaicSelect(labelText, actionId, items) {
