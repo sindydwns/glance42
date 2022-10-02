@@ -6,7 +6,6 @@ export default (app) => {
 	
 	app.action("OpenModalAddAlarm", async ({ ack, body, client, logger }) => {
         await ack();
-        const seekerId = await getSeekerId(body, null, client);
 
         try {
             const result = await client.views.open({
@@ -26,18 +25,17 @@ export default (app) => {
 
 	app.view({callback_id:'callbackAddAlarm', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const inputVal = view['state']['values'][view.blocks[0].block_id]['submitAddAlarm']['selected_users'];
+		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['submitAddAlarm']['selected_users'];
         const seekerId = await getSeekerId(body, null, client);
 		
 		let msg = "";
-		inputVal.map(async slackId => {
+		for (const slackId of selectedUsers) {
 			const targetId = await getUserNamebySlackId(client, slackId);
-			const result = await addAlarm(seekerId, targetId);
+			const result = await addAlarm(seekerId, targetId); 
 			if (result)
 				msg = "*알람이 정상적으로 등록되었습니다*";
-		});
+		}
 		try {
-            const seekerId = await getSeekerId(body, null, client);
             const result = await client.views.update({
 				view_id: client.previous_view_id,
 				view: await alarmManageHomeView(seekerId, msg),
@@ -47,7 +45,7 @@ export default (app) => {
         }
 	});
 
-	app.view({callback_id:'callbackAddAlarm', type:'view_closed' }, async ({ ack, body, view, client, logger }) => {
+	app.view({callback_id:'callbackAddAlarm', type:'view_closed'}, async ({ ack, body, view, client, logger }) => {
 		await ack();
 		try {
             const seekerId = await getSeekerId(body, null, client);

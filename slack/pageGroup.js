@@ -1,6 +1,6 @@
 import { getGls, addGroup, delGroup } from "../DataBase/utils.js";
 import { getSeekerId } from "./utils/data.js";
-import { mainHomeView, groupManageHomeView, addGroupModalView, delGroupModalView, memberManageHomeView, selectForMemberManageModalView, memberManageModalView } from "./views.js";
+import { mainHomeView, groupManageHomeView, addGroupModalView, delGroupModalView, memberManageHomeView } from "./views.js";
 
 export default (app) => {
 
@@ -21,23 +21,9 @@ export default (app) => {
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
-			view: await memberManageHomeView(seekerId, null)
+			view: await memberManageHomeView(seekerId)
 		})
 	});
-
-    app.action("OpenModalSelectMemberManageGroup", async ({ ack, body, client, logger }) => {
-        await ack();
-        const seekerId = await getSeekerId(body, null, client);
-
-        try {
-            const result = await client.views.open({
-                trigger_id: body.trigger_id,
-                view: await selectForMemberManageModalView(seekerId),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
-    });
 
     app.action("OpenModalAddGroup", async ({ ack, body, client, logger }) => {
         await ack();
@@ -113,7 +99,7 @@ export default (app) => {
 
 	app.view({callback_id: 'callbackDelGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitDelGroup"]['selected_option']['text']['text'];
+		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitDelGroup"]['selected_option'].value;
         const seekerId = await getSeekerId(body, null, client);
 
 		let msg = '';

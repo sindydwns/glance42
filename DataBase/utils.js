@@ -152,7 +152,7 @@ export async function addMember(groupId, targetId) {
 	}
 }
 
-export async function delMember(groupId, targetIds) {
+export async function delMember(groupId, targetId) {
 	try {
 		await connection.query("delete from group_member where group_id=? and target_id=?;", [groupId, targetId]);
 		return ('success');

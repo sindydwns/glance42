@@ -131,13 +131,13 @@ export async function memberManageHomeView(seekerId, selectGroup, msg) {
 			...BlockContextText("홈/그룹 관리/멤버 관리"),
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
-			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectDoneforMemberManage", gls, selectGroup),
+			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls, selectGroup),
 			...BlockHeader("📃 등록된 멤버 리스트"),
 			...BlockMrkdwn([formatStrUnorderedList(memberList)]),
 			...BlockMrkdwn([msg]),
 			...BlockActionButtons([
-				{text:"멤버 추가", value:"멤버 추가", actionId:"addMember"},
-				{text:"멤버 삭제", value:"멤버 삭제", actionId:"delMember"},
+				{text:"멤버 추가", value:"멤버 추가", actionId:"OpenModalAddMember"},
+				{text:"멤버 삭제", value:"멤버 삭제", actionId:"OpenModalDelMember"},
 			]),
 		]);
 	}
@@ -147,7 +147,7 @@ export async function memberManageHomeView(seekerId, selectGroup, msg) {
 			...BlockContextText("홈/그룹 관리/멤버 관리"),
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
-			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectDoneforMemberManage", gls, false),
+			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls, false),
 		]);
 }
 
@@ -173,7 +173,7 @@ export async function delGroupModalView(seekerId) {
 
 export async function addAlarmModalView() {
 	return (ModalViewTemplete("알람 추가", "callbackAddAlarm", ([
-			BlockMultiUsersSelect("워크스페이스에서 유저를 선택해주세요. \n (물론, 카뎃만 선택 가능합니다!)",
+			BlockMultiUsersSelect("알람을 받을 유저를 선택해주세요. \n (물론, 카뎃만 선택 가능합니다!)",
 			 "submitAddAlarm")
 		])
 	));
@@ -190,16 +190,25 @@ export async function delAlarmModalView(seekerId) {
 	));
 }
 
-export async function selectForMemberManageModalView(seekerId) {
-	const gls_ = await getGls(seekerId);
-	const gls = gls_.map(item => {
-		return {text:item.group_name, value:String(item.group_id)}
-	});
-	return (ModalViewTemplete("멤버 관리", "callbackSelectMemberManageGroup", ([
-			BlockSingleStaicSelect("멤버를 관리할 그룹을 선택해주세요", "selectDoneforMemberManage", gls)
+export async function addMemberModalView() {
+	return (ModalViewTemplete("멤버 추가", "callbackAddMember", ([
+			BlockMultiUsersSelect("멤버로 추가할 유저를 선택해주세요. \n (물론, 카뎃만 선택 가능합니다!)",
+			 "submitAddMember")
 		])
 	));
 }
+
+export async function delMemberModalView(groupId) {
+	const memberList_ = await getGroupUser(groupId);
+	const memberList = memberList_.map(item => {
+		return {text:item.target_id, value:String(item.target_id)}
+	});
+	return (ModalViewTemplete("멤버 삭제", "callbackDelMember", ([
+			BlockMultiStaicSelect("그룹에서 삭제할 멤버를 선택해주세요", "submitDelMember", memberList)
+		])
+	));
+}
+
 
 export async function memberManageModalView(seekerId, groupId, msg) {
 	const gls_ = await getGls(seekerId);
@@ -209,7 +218,7 @@ export async function memberManageModalView(seekerId, groupId, msg) {
 	const memberList_ = await getGroupUser(groupId);
 	const memberList = memberList_.map(x=>x.target_id);
 	return (ModalViewTemplete("멤버 관리", "callbackSelectMemberManageGroup", ([
-			BlockSingleStaicSelect("멤버를 관리할 그룹을 선택해주세요", "selectDoneforMemberManage", gls),
+			BlockSingleStaicSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls),
 			...BlockHeader("📃 등록된 멤버 리스트"),
 			...BlockMrkdwn([formatStrUnorderedList(memberList)]),
 			...BlockMrkdwn([msg]),
