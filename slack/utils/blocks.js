@@ -35,17 +35,16 @@ export function BlockHeader(text) {
     ];
 }
 
-export function BlockMrkdwn(items) {
-	if (items[0] == null || items[0] == "") return [];
-    return items.map((x) => {
-        return {
-            type: "section",
-            text: {
-                type: "mrkdwn",
-                text: x,
-            },
-        };
-    });
+export function BlockMrkdwn(text) {
+	if (text == null || text == "")
+	text = "\n";
+	return {
+		type: "section",
+		text: {
+			type: "mrkdwn",
+			text: text,
+		},
+	};
 }
 
 export function BlockContextText(text) {

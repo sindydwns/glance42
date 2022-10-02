@@ -1,5 +1,5 @@
-import { getGls, getGroupUser, getSelectedGroupId, getGroupLocationInfo, SelectGroup, unSelectGroup, getAlarmList } from "../DataBase/utils.js";
-import { BlockDivider, BlockHeader, BlockMrkdwn, BlockSectionButton, BlockActionButtons, BlockContextText, 
+import { getGls, getGroupUser, getSelectedGroupId, getGroupLocationInfo, getAlarmList } from "../DataBase/utils.js";
+import { BlockDivider, BlockHeader, BlockMrkdwn,BlockSectionButton, BlockActionButtons, BlockContextText, 
 	BlockSectionSelect, BlockSingleStaicSelect, BlockMultiStaicSelect, BlockMultiUsersSelect, BlockTextInput} from "./utils/blocks.js"
 
 function formatStrCurrentLocation(locationInfo) {
@@ -67,14 +67,18 @@ export async function mainHomeView(seekerId) {
 	return (HomeViewTemplete([
 			...BlockHeader("👀 염탐하기"),
 			BlockSectionSelect("염탐할 대상을 선택해주세요", "selectTarget", gls, initialSelect),
-			...BlockMrkdwn(["\n", formatStrCurrentLocation(locationInfo), "\n"]),
+			BlockMrkdwn("\n"),
+			BlockMrkdwn(formatStrCurrentLocation(locationInfo)),
+			BlockMrkdwn("\n"),
 			...BlockDivider(),
 			...BlockHeader("⚙️ 설정"),
 			...BlockActionButtons([
 				{text: "그룹 관리", actionId: "goGroupManageView", value: "goGroupManageView",},
 				{text: "알람 설정", actionId: "goAlarmManageView", value: "goAlarmManageView",},
 			]),
+			BlockMrkdwn("\n"),
 			...BlockDivider(),
+			BlockMrkdwn("\n"),
 			...BlockSectionButton("사용방법을 모르시겠나요? 이쪽을 참고하세요! 📚", {text:"Help", value:"help"}, "goManualView"),
 		])
 	);
@@ -88,9 +92,10 @@ export async function groupManageHomeView(seekerId, msg) {
 		...BlockContextText("홈/그룹 관리"),
 		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
 		...BlockDivider(),
+		BlockMrkdwn("\n"),
 		...BlockHeader("📃 등록된 그룹 리스트"),
-		...BlockMrkdwn([formatStrUnorderedList(gls)]),
-		...BlockMrkdwn([msg]),
+		BlockMrkdwn(formatStrUnorderedList(gls)),
+		BlockMrkdwn(msg),
 		...BlockActionButtons([
 			{text:"그룹 추가", value:"그룹 추가", actionId:"OpenModalAddGroup"},
 			{text:"그룹 삭제", value:"그룹 삭제", actionId:"OpenModalDelGroup"},
@@ -107,9 +112,10 @@ export async function alarmManageHomeView(seekerId, msg) {
 		...BlockContextText("홈/알람 설정"),
 		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
 		...BlockDivider(),
+		BlockMrkdwn("\n"),
 		...BlockHeader("📃 등록된 알람 리스트"),
-		...BlockMrkdwn([formatStrUnorderedList(alarmList)]),
-		...BlockMrkdwn([msg]),
+		BlockMrkdwn(formatStrUnorderedList(alarmList)),
+		BlockMrkdwn(msg),
 		...BlockActionButtons([
 			{text:"알람 추가", value:"알람 추가", actionId:"OpenModalAddAlarm"},
 			{text:"알람 삭제", value:"알람 삭제", actionId:"OpenModalDelAlarm"},
@@ -132,10 +138,12 @@ export async function memberManageHomeView(seekerId, selectGroup, msg) {
 			...BlockContextText("홈/그룹 관리/멤버 관리"),
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
+			BlockMrkdwn("\n"),
 			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls, selectGroup),
+			BlockMrkdwn("\n"),
 			...BlockHeader("📃 등록된 멤버 리스트"),
-			...BlockMrkdwn([formatStrUnorderedList(memberList)]),
-			...BlockMrkdwn([msg]),
+			BlockMrkdwn(formatStrUnorderedList(memberList)),
+			BlockMrkdwn(msg),
 			...BlockActionButtons([
 				{text:"멤버 추가", value:"멤버 추가", actionId:"OpenModalAddMember"},
 				{text:"멤버 삭제", value:"멤버 삭제", actionId:"OpenModalDelMember"},
@@ -148,6 +156,7 @@ export async function memberManageHomeView(seekerId, selectGroup, msg) {
 			...BlockContextText("홈/그룹 관리/멤버 관리"),
 			...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goGroupManageView"}]),
 			...BlockDivider(),
+			BlockMrkdwn("\n\n"),
 			BlockSectionSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls, false),
 		]);
 }
@@ -159,7 +168,7 @@ export async function manualHomeView() {
 		...BlockActionButtons([{text:"< back", value:"뒤로가기", actionId:"goMainView"}]),
 		...BlockDivider(),
 		...BlockHeader("사용 방법"),
-		...BlockMrkdwn(["\n", "어쩌구 저쩌구...", "그리고 또 어쩌구 저쩌구..."]),
+		BlockMrkdwn("어쩌구 저쩌구..."),
 	]));
 }
 
@@ -232,8 +241,8 @@ export async function memberManageModalView(seekerId, groupId, msg) {
 	return (ModalViewTemplete("멤버 관리", "callbackSelectMemberManageGroup", ([
 			BlockSingleStaicSelect("멤버를 관리할 그룹을 선택해주세요", "selectGroupDoneforMemberManage", gls),
 			...BlockHeader("📃 등록된 멤버 리스트"),
-			...BlockMrkdwn([formatStrUnorderedList(memberList)]),
-			...BlockMrkdwn([msg]),
+			BlockMrkdwn(formatStrUnorderedList(memberList)),
+			BlockMrkdwn(msg),
 			...BlockActionButtons([
 				{text:"멤버 추가", value:"멤버 추가", actionId:"addMember"},
 				{text:"멤버 삭제", value:"멤버 삭제", actionId:"delMember"},
