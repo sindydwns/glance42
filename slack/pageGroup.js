@@ -1,6 +1,6 @@
 import { getGls, addGroup, delGroup } from "../DataBase/utils.js";
 import { getSeekerId } from "./utils/data.js";
-import { mainHomeView, groupManageHomeView, memberManageHomeView, addGroupModalView, delGroupModalView } from "./views.js";
+import { mainHomeView, groupManageHomeView, addGroupModalView, delGroupModalView, memberManageHomeView, selectForMemberManageModalView, memberManageModalView } from "./views.js";
 
 export default (app) => {
 
@@ -15,15 +15,29 @@ export default (app) => {
 		}
 	);
 
-	app.action("goMemberView", async ({ack, body, client}) => {
+	app.action("goMemberManageView", async ({ack, body, client}) => {
 		await ack();
-		const groupId = '1';
+		const seekerId = await getSeekerId(body, null, client);
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
-			view: await memberManageHomeView(groupId)
+			view: await memberManageHomeView(seekerId, null)
 		})
 	});
+
+    app.action("OpenModalSelectMemberManageGroup", async ({ ack, body, client, logger }) => {
+        await ack();
+        const seekerId = await getSeekerId(body, null, client);
+
+        try {
+            const result = await client.views.open({
+                trigger_id: body.trigger_id,
+                view: await selectForMemberManageModalView(seekerId),
+            });
+        } catch (error) {
+            logger.error(error);
+        }
+    });
 
     app.action("OpenModalAddGroup", async ({ ack, body, client, logger }) => {
         await ack();
@@ -38,7 +52,7 @@ export default (app) => {
         }
     });
 
-	app.action("callbackAddGroup", async ({ ack, body, client, logger}) => {
+	app.action("submitAddGroup", async ({ ack, body, client, logger}) => {
 		await ack();
 		console.log("Maybe this is for error check of selected value?");
 		console.log("이미 추가한 그룹명과 겹치는지 확인");

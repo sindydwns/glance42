@@ -35,7 +35,7 @@ export default (app) => {
             await client.views.update({
                 view_id: body.view.id,
                 hash: body.view.hash,
-                view: await groupManageHomeView(seekerId, ""),
+                view: await groupManageHomeView(seekerId),
             });
         } catch (error) {
             logger.error(error);
