@@ -36,7 +36,7 @@ export function BlockHeader(text) {
     ];
 }
 
-export function BlockMrkdwn(text) {
+export function BlockSectionMrkdwn(text) {
 	if (text == null || text == "") return [];
 	return [
 		{
@@ -49,16 +49,15 @@ export function BlockMrkdwn(text) {
 	];
 }
 
-export function BlockContextText(text) {
+export function BlockContextMrkdwn(text) {
     if (text == null || text == "") return [];
     return [
         {
             type: "context",
             elements: [
                 {
-                    type: "plain_text",
+                    type: "mrkdwn",
                     text,
-                    emoji: true,
                 },
             ],
         },

@@ -1,4 +1,4 @@
-import { getGls, addGroup, delGroup } from "../DataBase/utils.js";
+import { getGroupList, addGroup, delGroup } from "../DataBase/utils.js";
 import { getSeekerId } from "./utils/data.js";
 import { groupManageHomeView, addGroupModalView, delGroupModalView } from "./views.js";
 
@@ -31,9 +31,8 @@ export default (app) => {
         const seekerId = await getSeekerId(body, null, client);
 		
 		let msg = "";
-		if (await getGls(seekerId) != "")
+		if (await getGroupList(seekerId) != "")
 		{
-			console.log(await getGls(seekerId));
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
@@ -43,7 +42,8 @@ export default (app) => {
 				logger.error(error);
 			}
 		}
-		else msg = "*생성되어있는 그룹이 없습니다.*";
+		else msg = ">생성된 그룹이 없습니다!\n>'그룹 생성' 버튼을 눌러 새로운 그룹을 생성해보세요."
+		+ "\n\n*삭제할 수 있는 그룹이 없습니다.*";
 		try {
             const result = await client.views.update({
 				view_id: client.previous_view_id,
@@ -74,7 +74,7 @@ export default (app) => {
 		let msg = "";
 		const result = await addGroup(seekerId, inputVal);
 		if (result)
-			msg = "*그룹이 정상적으로 추가되었습니다*";
+			msg = "*성공적으로 생성되었습니다*";
 		try {
 			const result = await client.views.update({
 				view_id: client.previous_view_id,
@@ -93,7 +93,7 @@ export default (app) => {
 		let msg = '';
 		const result = await delGroup(seekerId, inputVal);
 		if (result)
-			msg = "*그룹이 정상적으로 삭제되었습니다*";
+			msg = "*성공적으로 삭제되었습니다*";
 		try {
 			const result = await client.views.update({
 				view_id: client.previous_view_id,

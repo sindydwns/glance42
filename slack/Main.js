@@ -1,8 +1,9 @@
-import { SelectGroup, unSelectGroup } from "../DataBase/utils.js";
+import { reflectWhetherSelected } from "../DataBase/utils.js";
 import { getSeekerId } from "./utils/data.js";
 import { mainHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView } from "./views.js";
 
 export default (app) => {
+
     app.event("app_home_opened", async ({ event, client, logger }) => {
         try {
             const seekerId = await getSeekerId(null, event, client);
@@ -82,17 +83,9 @@ export default (app) => {
     app.action("selectGlanceTarget", async ({ ack, body, client, logger }) => {
         await ack();
         const selected = body.actions[0].selected_option;
-        const prev = body.actions[0].initial_option;
-        let prevGroup = null;
-
-        const selectedGroup = selected.text.text;
-        const selectedGroupId = +selected.value;
         const seekerId = await getSeekerId(body, null, client);
 
-        await unSelectGroup(seekerId, prevGroup ? prevGroup : prev ? prev.text.text : selectedGroup);
-        await SelectGroup(seekerId, selectedGroup);
-
-        prevGroup = selectedGroup;
+		await reflectWhetherSelected(seekerId, selected.value);
 
         await client.views.update({
             view_id: body.view.id,

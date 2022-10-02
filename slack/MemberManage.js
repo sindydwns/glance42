@@ -1,4 +1,4 @@
-import { addMember, delMember } from "../DataBase/utils.js";
+import { getMemberList, addMember, delMember } from "../DataBase/utils.js";
 import { getSeekerId, getUserNamebySlackId } from "./utils/data.js";
 import { memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 
@@ -48,6 +48,34 @@ export default (app) => {
         }
     });
 
+	app.action("OpenModalDelMember", async ({ ack, body, client, logger }) => {
+        await ack();
+		const selectedGroup = client.selected_group;
+		const seekerId = await getSeekerId(body, null, client);
+
+		let msg = "";
+		if (await getMemberList(selectedGroup.value) != "")
+		{
+			try {
+				const result = await client.views.open({
+					trigger_id: body.trigger_id,
+					view: await delMemberModalView(selectedGroup.value),
+				});
+			} catch (error) {
+				logger.error(error);
+			}
+		}
+		else msg = ">선택한 그룹에 등록된 멤버가 없습니다!\n>'멤버 추가' 버튼을 눌러 새로운 멤버를 추가해보세요."
+		+ "\n\n*삭제할 수 있는 멤버가 없습니다.*";
+		try {
+            const result = await client.views.update({
+                view_id: client.previous_view_id,
+				view: await memberManageHomeView(seekerId, selectedGroup, msg),
+			});
+        } catch (e) {
+            logger.error(e);
+        }
+    });
 	app.view({callback_id:'callbackAddMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['submitAddMember']['selected_users'];
@@ -58,7 +86,7 @@ export default (app) => {
 			const targetId = await getUserNamebySlackId(client, slackId);
 			const result = await addMember(selectedGroup.value, targetId); 
 			if (result)
-				msg = "*멤버가 정상적으로 추가되었습니다*";
+				msg = "*성공적으로 추가되었습니다*";
 		}
 		try {
             const seekerId = await getSeekerId(body, null, client);
@@ -71,29 +99,6 @@ export default (app) => {
         }
 	});
 
-	app.action("OpenModalDelMember", async ({ ack, body, client, logger }) => {
-        await ack();
-		const selectedGroup = client.selected_group;
-		const seekerId = await getSeekerId(body, null, client);
-
-        try {
-            const result = await client.views.open({
-                trigger_id: body.trigger_id,
-                view: await delMemberModalView(selectedGroup.value),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
-		try {
-            const result = await client.views.update({
-                view_id: client.previous_view_id,
-				view: await memberManageHomeView(seekerId, selectedGroup),
-			});
-        } catch (e) {
-            logger.error(e);
-        }
-    });
-
 	app.view({callback_id:'callbackDelMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]['submitDelMember']['selected_options']
@@ -105,7 +110,7 @@ export default (app) => {
 		for (const targetId of inputVal) {
 			let result = await delMember(selectedGroup.value, targetId);
 			if (result)
-				msg = "*멤버가 정상적으로 삭제되었습니다*";
+				msg = "*성공적으로 삭제되었습니다*";
 		}
 		try {
             const result = await client.views.update({

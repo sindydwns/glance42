@@ -29,18 +29,25 @@ export default (app) => {
     app.action("OpenModalDelAlarm", async ({ ack, body, client, logger }) => {
         await ack();
         const seekerId = await getSeekerId(body, null, client);
-        try {
-            const result = await client.views.open({
-                trigger_id: body.trigger_id,
-                view: await delAlarmModalView(seekerId),
-            });
-        } catch (error) {
-            logger.error(error);
-        }
+
+		let msg = "";
+		if (await getAlarmList(seekerId) != "")
+		{
+			try {
+				const result = await client.views.open({
+					trigger_id: body.trigger_id,
+					view: await delAlarmModalView(seekerId),
+				});
+			} catch (error) {
+				logger.error(error);
+			}
+		}
+		else msg = ">등록된 알람이 없습니다!\n>'알람 추가' 버튼을 눌러 새로운 알람을 등록해보세요."
+		+ "\n\n*삭제할 수 있는 알람이 없습니다.*";
 		try {
             await client.views.update({
                 view_id: client.previous_view_id,
-                view: await alarmManageHomeView(seekerId),
+                view: await alarmManageHomeView(seekerId, msg),
             });
         } catch (error) {
             logger.error(error);
@@ -63,7 +70,7 @@ export default (app) => {
 			const targetId = await getUserNamebySlackId(client, slackId);
 			const result = await addAlarm(seekerId, targetId); 
 			if (result)
-				msg = "*알람이 정상적으로 등록되었습니다*";
+				msg = "*성공적으로 추가되었습니다*";
 		}
 		try {
             const result = await client.views.update({
@@ -85,7 +92,7 @@ export default (app) => {
 		for (const targetId of inputVal) {
 			let result = await delAlarm(seekerId, targetId);
 			if (result)
-				msg = "*알람이 정상적으로 삭제되었습니다*";
+				msg = "*성공적으로 삭제되었습니다*";
 		}
 		try {
             const result = await client.views.update({

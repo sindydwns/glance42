@@ -74,7 +74,7 @@ export async function getGroupId(seekerId, groupName) {
     return returnVal;
 }
 
-export async function getGls(seekerId) {
+export async function getGroupList(seekerId) {
     const [groupName, ...other] = await connection.query(
         "select gl.group_id, gl.group_name, gl.selected from group_list gl where 1=1 and gl.seeker_id = ?",
         seekerId
@@ -82,12 +82,17 @@ export async function getGls(seekerId) {
     return groupName;
 }
 
-export async function getGroupUser(groupId) {
+export async function getMemberList(groupId) {
     const [groupUser, ...other] = await connection.query(
         "select gm.target_id from group_list gl inner join group_member gm on gl.group_id = gm.group_id where 1=1 and gl.group_id = ?",
         [groupId]
     );
     return groupUser;
+}
+
+export async function getAlarmList(seekerId) {
+	const [alarmList, ...other] = await connection.query("select target_id from alarm where seeker_id=?", [seekerId]);
+	return alarmList;
 }
 
 export async function getGroupLocationInfo(seekerId, groupId) {
@@ -98,18 +103,10 @@ export async function getGroupLocationInfo(seekerId, groupId) {
     return locationInfo;
 }
 
+export async function reflectWhetherSelected(seekerId, selectedGroupId) {
+    await connection.query("update group_list set selected=false where seeker_id=?", [seekerId]);
+    await connection.query("update group_list set selected=true where group_id=?", [selectedGroupId]);
 
-export async function unSelectGroup(seekerId, groupName) {
-    await connection.query("update group_list set selected=false where seeker_id=? and group_name=?", [seekerId, groupName]);
-}
-
-export async function SelectGroup(seekerId, groupName) {
-    await connection.query("update group_list set selected=true where seeker_id=? and group_name=?", [seekerId, groupName]);
-}
-
-export async function getAlarmList(seekerId) {
-	const [alarmList, ...other] = await connection.query("select target_id from alarm where seeker_id=?", [seekerId]);
-	return alarmList;
 }
 
 export async function addGroup(seekerId, groupName) {
