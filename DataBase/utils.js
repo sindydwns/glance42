@@ -95,6 +95,16 @@ export async function getAlarmList(seekerId) {
 	return alarmList;
 }
 
+export async function getUsersLocationInfo(targetIds) {
+	let locationInfo = [];
+	for (const targetId of targetIds) {
+		const [host, ...other] = await connection.query("select target_id, host from location_status where target_id=?", [targetId]);
+		if (host[0] != null) // targetId가 유효하지 않은 경우는 제외 (나중에는 이미 앞에서 거르므로 이 부분은 지우면 됨)
+			locationInfo.push(host[0]);
+	}
+    return locationInfo;
+}
+
 export async function getGroupLocationInfo(seekerId, groupId) {
     const [locationInfo, ...other] = await connection.query(
         "select gm.target_id, ls.host from group_list gl inner join group_member gm on gl.group_id = gm.group_id left join location_status ls on gm.target_id = ls.target_id where 1=1 and gl.seeker_id=? and gl.group_id=?",
@@ -105,8 +115,8 @@ export async function getGroupLocationInfo(seekerId, groupId) {
 
 export async function reflectWhetherSelected(seekerId, selectedGroupId) {
     await connection.query("update group_list set selected=false where seeker_id=?", [seekerId]);
-    await connection.query("update group_list set selected=true where group_id=?", [selectedGroupId]);
-
+    if (selectedGroupId != null)
+		await connection.query("update group_list set selected=true where group_id=?", [selectedGroupId]);
 }
 
 export async function addGroup(seekerId, groupName) {
