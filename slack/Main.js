@@ -34,14 +34,14 @@ export default (app) => {
 				logger.error(error);
 			}
 		}
-		else 
+		else {
 			await reflectWhetherSelected(seekerId, selected.value);
-
-        await client.views.update({
-            view_id: body.view.id,
-            hash: body.view.hash,
-            view: await mainHomeView(seekerId),
-        });
+        	await client.views.update({
+				view_id: body.view.id,
+				hash: body.view.hash,
+				view: await mainHomeView(seekerId),
+			});
+		}
 		client.previous_view_id = body.view.id;
     });
 
