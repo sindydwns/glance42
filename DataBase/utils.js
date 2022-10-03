@@ -40,8 +40,12 @@ export async function setAllLocationTable(table) {
     return null;
 }
 
-export async function getAllReservedAlarm() {
-    const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, slack_id from alarm");
+export async function getAllReservedAlarm(seekerId) {
+    if (seekerId == null) {
+        const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, slack_id from alarm");
+        return alarms;
+    }
+    const [alarms, ...other] = await connection.query("select seeker_id, target_id, slack_id from alarm where seeker_id = ?", [seekerId]);
     return alarms;
 }
 
@@ -52,6 +56,14 @@ export async function deleteReservedAlarm(ids) {
     if (ids.length == 0)
         return ;
     await connection.query("delete from alarm where alarm_id in (?)", [ids]);
+}
+
+export async function insertAlarm(seekerId, targetId, slackId) {
+    await connection.query("insert into alarm(seeker_id, target_id, slack_id) values(?, ?, ?)", [seekerId, targetId, slackId]);
+}
+
+export async function deleteAlarm(seekerId, targetId) {
+    await connection.query("delete from alarm where seeker_id = ? and target_id = ?", seekerId, targetId);
 }
 
 export async function getSelectedGroupId(seekerId) {
