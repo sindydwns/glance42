@@ -207,3 +207,13 @@ export async function deleteAlarm(seekerId, targetId) {
 		console.error(e);
 	}
 }
+
+export async function insertStatisticHost(data) {
+	try {
+		await connection.query("insert into statistic_host(cluster, student_count) values ?", [data]);
+		return ('success');
+	}
+	catch (e) {
+		console.error(e);
+	}
+}

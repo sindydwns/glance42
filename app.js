@@ -11,7 +11,8 @@ import router from "./Routers/home.js";
 import { schedule } from "./schedule.js";
 
 dotenv.config();
-schedule.loadLocations(process.env.LOAD_LOCATION_PERIOD);
+schedule.loadLocations(process.env.LOAD_LOCATION_PERIOD_SEC);
+schedule.statisticHost(process.env.STATISTIC_HOST_PERIOD_HOUR)
 const app = express();
 app.use(bodyParser.json());
 app.use(logMiddleware);
