@@ -1,4 +1,4 @@
-import { getGroupList, addGroup, delGroup } from "../DataBase/utils.js";
+import { getGroupList, insertGroup, deleteGroup } from "../DataBase/utils.js";
 import { getSeekerId } from "./utils/data.js";
 import { groupManageHomeView, addGroupModalView, delGroupModalView } from "./views.js";
 
@@ -72,7 +72,7 @@ export default (app) => {
         const seekerId = await getSeekerId(body, null, client);
 		
 		let msg = "";
-		const result = await addGroup(seekerId, inputVal);
+		const result = await insertGroup(seekerId, inputVal);
 		if (result)
 			msg = "*성공적으로 생성되었습니다*";
 		try {
@@ -91,7 +91,7 @@ export default (app) => {
         const seekerId = await getSeekerId(body, null, client);
 		
 		let msg = '';
-		const result = await delGroup(seekerId, inputVal);
+		const result = await deleteGroup(seekerId, inputVal);
 		if (result)
 			msg = "*성공적으로 삭제되었습니다*";
 		try {

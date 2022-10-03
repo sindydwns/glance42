@@ -1,4 +1,4 @@
-import { getAlarmList, addAlarm,  delAlarm } from "../DataBase/utils.js";
+import { getAlarmList, insertAlarm,  deleteAlarm } from "../DataBase/utils.js";
 import { getSeekerId, getUserNamebySlackId} from "./utils/data.js";
 import { alarmManageHomeView, addAlarmModalView, delAlarmModalView } from "./views.js";
 
@@ -68,7 +68,7 @@ export default (app) => {
 		let msg = "";
 		for (const slackId of selectedUsers) {
 			const targetId = await getUserNamebySlackId(client, slackId);
-			const result = await addAlarm(seekerId, targetId); 
+			const result = await insertAlarm(seekerId, targetId); 
 			if (result)
 				msg = "*성공적으로 추가되었습니다*";
 		}
@@ -90,7 +90,7 @@ export default (app) => {
 		
 		let msg = "";
 		for (const targetId of inputVal) {
-			let result = await delAlarm(seekerId, targetId);
+			let result = await deleteAlarm(seekerId, targetId);
 			if (result)
 				msg = "*성공적으로 삭제되었습니다*";
 		}

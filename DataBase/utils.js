@@ -1,5 +1,6 @@
 import pool from "../apiDataBase.js";
 
+// DB에 데이터를 넣을 때 한번에 넣을 수 있도록 value 배열을 string으로 변환해주는 함수
 function valueArrayToStr (valueArr) {
 	let str = "values";
 	for (i in valueArr) {
@@ -58,13 +59,13 @@ export async function deleteReservedAlarm(ids) {
     await connection.query("delete from alarm where alarm_id in (?)", [ids]);
 }
 
-export async function insertAlarm(seekerId, targetId, slackId) {
-    await connection.query("insert into alarm(seeker_id, target_id, slack_id) values(?, ?, ?)", [seekerId, targetId, slackId]);
-}
+// export async function insertAlarm(seekerId, targetId, slackId) {
+//     await connection.query("insert into alarm(seeker_id, target_id, slack_id) values(?, ?, ?)", [seekerId, targetId, slackId]);
+// }
 
-export async function deleteAlarm(seekerId, targetId) {
-    await connection.query("delete from alarm where seeker_id = ? and target_id = ?", seekerId, targetId);
-}
+// export async function deleteAlarm(seekerId, targetId) {
+//     await connection.query("delete from alarm where seeker_id = ? and target_id = ?", seekerId, targetId);
+// }
 
 export async function getSelectedGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
@@ -131,7 +132,7 @@ export async function reflectWhetherSelected(seekerId, selectedGroupId) {
 		await connection.query("update group_list set selected=true where group_id=?", [selectedGroupId]);
 }
 
-export async function addGroup(seekerId, groupName) {
+export async function insertGroup(seekerId, groupName) {
 	// const valueArr = [];
 	// targetIds.map(targetId => {
 	// 	valueArr.push([seekerId, tgroupNames]);
@@ -146,7 +147,7 @@ export async function addGroup(seekerId, groupName) {
 	}
 }
 
-export async function delGroup(seekerId, groupId) {
+export async function deleteGroup(seekerId, groupId) {
     try {
 		await connection.query("delete from group_list where seeker_id=? and group_id=?;", [seekerId, groupId]);
 		await connection.query("delete from group_member where group_id=?;", [groupId]);
@@ -157,7 +158,7 @@ export async function delGroup(seekerId, groupId) {
 	}	
 }
 
-export async function addMember(groupId, targetId) {
+export async function insertMember(groupId, targetId) {
 	// const valueArr = [];
 	// targetIds.map(targetId => {
 	// 	valueArr.push([groupId, targetIds]);
@@ -172,7 +173,7 @@ export async function addMember(groupId, targetId) {
 	}
 }
 
-export async function delMember(groupId, targetId) {
+export async function deleteMember(groupId, targetId) {
 	try {
 		await connection.query("delete from group_member where group_id=? and target_id=?;", [groupId, targetId]);
 		return ('success');
@@ -182,7 +183,7 @@ export async function delMember(groupId, targetId) {
 	}
 }
 
-export async function addAlarm(seekerId, targetId) {
+export async function insertAlarm(seekerId, targetId) {
 	// const valueArr = [];
 	// targetIds.map(targetId => {
 	// 	valueArr.push([seekerId, targetIds]);
@@ -197,7 +198,7 @@ export async function addAlarm(seekerId, targetId) {
 	}
 }
 
-export async function delAlarm(seekerId, targetId) {
+export async function deleteAlarm(seekerId, targetId) {
 	try {
 		await connection.query("delete from alarm where seeker_id=? and target_id=?;", [seekerId, targetId]);
 		return ('success');

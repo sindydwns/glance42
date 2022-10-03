@@ -89,6 +89,7 @@ export async function mainHomeView(seekerId, justSelectedUsers) {
 
 	return (HomeViewTemplete([
 			...BlockHeader("👀 염탐하기"),
+			...BlockSectionMrkdwn("\n"),
 			...BlockSectionSelect("염탐할 대상을 선택해주세요", "selectGlanceTarget", groupList, initialSelect),
 			...BlockSectionMrkdwn("\n"),
 			...await BlocklocationInfo(locationInfo, selectedGroupId),

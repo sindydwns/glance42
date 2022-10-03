@@ -1,4 +1,4 @@
-import { getMemberList, addMember, delMember } from "../DataBase/utils.js";
+import { getMemberList, insertMember, deleteMember } from "../DataBase/utils.js";
 import { getSeekerId, getUserNamebySlackId } from "./utils/data.js";
 import { memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 
@@ -84,7 +84,7 @@ export default (app) => {
 		let msg = "";
 		for (const slackId of selectedUsers) {
 			const targetId = await getUserNamebySlackId(client, slackId);
-			const result = await addMember(selectedGroup.value, targetId); 
+			const result = await insertMember(selectedGroup.value, targetId); 
 			if (result)
 				msg = "*성공적으로 추가되었습니다*";
 		}
@@ -108,7 +108,7 @@ export default (app) => {
 
 		let msg = "";
 		for (const targetId of inputVal) {
-			let result = await delMember(selectedGroup.value, targetId);
+			let result = await deleteMember(selectedGroup.value, targetId);
 			if (result)
 				msg = "*성공적으로 삭제되었습니다*";
 		}
