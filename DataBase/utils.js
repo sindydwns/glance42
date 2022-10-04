@@ -1,30 +1,6 @@
 import pool from "../apiDataBase.js";
 
-// DB에 데이터를 넣을 때 한번에 넣을 수 있도록 value 배열을 string으로 변환해주는 함수
-function valueArrayToStr (valueArr) {
-	let str = "values";
-	for (i in valueArr) {
-		str += "(";
-		valueArr[i].map(value => {
-			str += `'${value}',`;
-		});
-		str = str.slice(0, -1);
-		str += "),";
-	}
-	str = str.slice(0, -1);
-	str += ";";
-	return (str);
-}
-
-const connection = await pool.getConnection(async (conn) => conn);
-export async function getAllLocationTable() {
-    const [locations, ...other] = await connection.query("select target_id, host from location_status");
-    const result = [];
-    for (let location of locations) {
-        result[location.target_id] = location.host;
-    }
-    return result;
-}
+export const connection = await pool.getConnection(async (conn) => conn);
 
 export async function setAllLocationTable(table) {
     const keys = Object.keys(table);
@@ -39,24 +15,6 @@ export async function setAllLocationTable(table) {
         keys
     ]);
     return null;
-}
-
-export async function getAllReservedAlarm(seekerId) {
-    if (seekerId == null) {
-        const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, notify_slack_id from alarm");
-        return alarms;
-    }
-    const [alarms, ...other] = await connection.query("select seeker_id, target_id, notify_slack_id from alarm where seeker_id = ?", [seekerId]);
-    return alarms;
-}
-
-/**
- * @param {Array<number>} ids 
- */
-export async function deleteReservedAlarm(ids) {
-    if (ids.length == 0)
-        return ;
-    await connection.query("delete from alarm where alarm_id in (?)", [ids]);
 }
 
 // export async function insertAlarm(seekerId, targetId, slackId) {
@@ -133,17 +91,15 @@ export async function reflectWhetherSelected(seekerId, selectedGroupId) {
 }
 
 export async function insertGroup(seekerId, groupName) {
-	// const valueArr = [];
-	// targetIds.map(targetId => {
-	// 	valueArr.push([seekerId, tgroupNames]);
-	// });
-	// const valueArrStr = valueArrayToStr(valueArr);
+	groupName = typeof(groupName) == "string" ? [groupName] : groupName;
+	const values = groupName.map(x => [seekerId, x, 0]);
 	try {
-		await connection.query("insert into group_list(group_id, seeker_id, group_name, selected) values (null, ?, ?, 0);", [seekerId, groupName]);
-		return ('success');
+		await connection.query("insert into group_list(seeker_id, group_name, selected) values ?;", [values]);
+		return (true);
 	}
 	catch (e) {
 		console.error(e);
+		return (false);
 	}
 }
 
@@ -151,69 +107,104 @@ export async function deleteGroup(seekerId, groupId) {
     try {
 		await connection.query("delete from group_list where seeker_id=? and group_id=?;", [seekerId, groupId]);
 		await connection.query("delete from group_member where group_id=?;", [groupId]);
-		return ('success');
+		return (true);
 	}
 	catch (e) {
 		console.error(e);
+		return (false);
 	}	
 }
 
+/**
+ * @param {string} groupId
+ * @param {string|Array<string>} targetId 
+ * @returns 
+ */
 export async function insertMember(groupId, targetId) {
-	// const valueArr = [];
-	// targetIds.map(targetId => {
-	// 	valueArr.push([groupId, targetIds]);
-	// });
-	// const valueArrStr = valueArrayToStr(valueArr);
+	targetId = typeof(targetId) == "string" ? [targetId] : targetId;
+	const values = targetId.map(x => [groupId, x]);
 	try {
-		await connection.query("insert into group_member(group_id, target_id) values(? , ?);", [groupId, targetId]);
-		return ('success');
+		await connection.query("insert into group_member(group_id, target_id) values ?;", [values]);
+		return (true);
 	}
 	catch (e) {
 		console.error(e);
+		return (false);
 	}
 }
 
 export async function deleteMember(groupId, targetId) {
 	try {
 		await connection.query("delete from group_member where group_id=? and target_id=?;", [groupId, targetId]);
-		return ('success');
+		return (true);
 	}
 	catch (e) {
 		console.error(e);
+		return (false);
 	}
 }
 
-export async function insertAlarm(seekerId, targetId) {
-	// const valueArr = [];
-	// targetIds.map(targetId => {
-	// 	valueArr.push([seekerId, targetIds]);
-	// });
-	// const valueArrStr = valueArrayToStr(valueArr);
+/**
+ * @param {string} seekerId 
+ * @param {string|Array<string>} targetId 
+ * @param {string} notifySlackId
+ * @returns 
+ */
+export async function insertAlarm(seekerId, targetId, notifySlackId) {
+	targetId = typeof(targetId) == "string" ? [targetId] : targetId;
+	const values = targetId.map(x => [seekerId, x, notifySlackId]);
 	try {
-		await connection.query("insert into alarm(seeker_id, target_id) values(? , ?);", [seekerId, targetId]);
-		return ('success');
+		await connection.query("insert into alarm(seeker_id, target_id, notify_slack_id) values ?;", [values]);
+		return (true);
 	}
 	catch (e) {
 		console.error(e);
+		return (false);
 	}
 }
 
 export async function deleteAlarm(seekerId, targetId) {
 	try {
 		await connection.query("delete from alarm where seeker_id=? and target_id=?;", [seekerId, targetId]);
-		return ('success');
+		return (true);
 	}
 	catch (e) {
 		console.error(e);
+		return (false);
 	}
 }
 
 export async function insertStatisticHost(data) {
 	try {
 		await connection.query("insert into statistic_host(cluster, student_count) values ?", [data]);
-		return ('success');
+		return (true);
 	}
 	catch (e) {
 		console.error(e);
+		return (false);
 	}
+}
+
+export async function getAllLocationTable() {
+	const [locations, ...other] = await connection.query("select target_id, host from location_status");
+	const result = [];
+	for (let location of locations) {
+		result[location.target_id] = location.host;
+	}
+	return result;
+}
+
+export async function getAllReservedAlarm(seekerId) {
+    if (seekerId == null) {
+        const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, notify_slack_id from alarm");
+        return alarms;
+    }
+    const [alarms, ...other] = await connection.query("select seeker_id, target_id, notify_slack_id from alarm where seeker_id = ?", [seekerId]);
+    return alarms;
+}
+
+export async function deleteReservedAlarm(ids) {
+    if (ids.length == 0)
+        return ;
+    await connection.query("delete from alarm where alarm_id in (?)", [ids]);
 }
