@@ -1,23 +1,39 @@
 import _schedule from "node-schedule";
 import api42 from "./api42.js";
 import { postDM2User } from "./apiSlack.js";
-import { setAllLocationTable, getAllReservedAlarm, deleteReservedAlarm, insertStatisticHost } from "./DataBase/utils.js";
+import { replaceLocationStatus, deleteAllLocationTable, deleteLocationTable, getAllReservedAlarm, deleteReservedAlarm, insertStatisticHost } from "./DataBase/utils.js";
 
 const campusId = 29;
 export const schedule = {
     loadLocations: (delay) => {
+		let last = 0;
 		if (delay == null)
 			return ;
         _schedule.scheduleJob(`*/${+delay} * * * * *`, async () => {
 			try {
-				console.log(`${new Date()} | upsert location_status`);
-				const total = await getLocation(campusId);
+				// update location
+				const now = new Date();
+				const total = last == 0 ?
+					await getAllActiveLocation(campusId) :
+					await getChangedLocation(campusId, last, now);
+				const deleteTargets = total.reduce((acc, cur) => {
+					if (cur.end_at != null)
+						acc.push(cur.user.login);
+					return acc;
+				}, []);
+				if (last == 0)
+					deleteAllLocationTable();
+				else
+					deleteLocationTable(deleteTargets);
 				const locationTable = total.reduce((acc, cur) => {
-					acc[cur.user.login] = cur.host;
+					if (cur.end_at == null)
+						acc[cur.user.login] = cur.host;
 					return acc;
 				}, {});
-				await setAllLocationTable(locationTable);
-				console.log(`${new Date()} | upsert location_status [${Object.keys(locationTable).length}] items`);
+				await replaceLocationStatus(locationTable);
+				last = now;
+
+				// alarm
 				const alarms = await getAllReservedAlarm();
 				const alarmMap = alarms.reduce((acc, cur) => {
 					acc[cur.target_id] = cur;
@@ -43,7 +59,7 @@ export const schedule = {
 		_schedule.scheduleJob(`45 59 */${+delay} * * *`, async () => {
 			try {
 				console.log(`${new Date()} | statisticHost`);
-				const total = await getLocation(campusId);
+				const total = await getAllActiveLocation(campusId);
 				const studentCount = total.reduce((acc, cur) => {
 					const cluster = /c(\d+)r\d+s\d+/.exec(cur.host)[1];
 					if (cluster == null)
@@ -62,7 +78,7 @@ export const schedule = {
 	}
 };
 
-async function getLocation(campusId) {
+async function getAllActiveLocation(campusId) {
 	const path = `/v2/campus/${campusId}/locations`;
 	let total = [];
 	for (let i = 0; i < 99; i++) {
@@ -71,6 +87,40 @@ async function getLocation(campusId) {
 			"page[number]": i + 1,
 			"filter[active]": true,
 			"filter[primary]": true,
+			"range[host]": "c10,c9r9s9"
+		}};
+		const data = await api42("GET", path, config);
+		if (data.length == 0)
+			break;
+		total = [...total, ...data];
+	}
+	return total;
+}
+
+async function getChangedLocation(campusId, past, now) {
+	const path = `/v2/campus/${campusId}/locations`;
+	let total = [];
+	for (let i = 0; i < 99; i++) {
+		const config = {params:{
+			"page[size]": "100",
+			"page[number]": i + 1,
+			"filter[active]": true,
+			"filter[primary]": true,
+			"range[begin_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
+			"range[host]": "c10,c9r9s9"
+		}};
+		const data = await api42("GET", path, config);
+		if (data.length == 0)
+			break;
+		total = [...total, ...data];
+	}
+	for (let i = 0; i < 99; i++) {
+		const config = {params:{
+			"page[size]": "100",
+			"page[number]": i + 1,
+			"filter[primary]": true,
+			"range[begin_at]": `${new Date(0).toISOString()},${(new Date(past)).toISOString()}`,
+			"range[end_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
 			"range[host]": "c10,c9r9s9"
 		}};
 		const data = await api42("GET", path, config);

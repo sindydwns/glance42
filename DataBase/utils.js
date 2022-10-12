@@ -2,19 +2,54 @@ import pool from "../apiDataBase.js";
 
 export const connection = await pool.getConnection(async (conn) => conn);
 
-export async function setAllLocationTable(table) {
-    const keys = Object.keys(table);
-    if (keys.length == 0) {
-        await connection.query("update location_status set host = null");
-        return;
-    }
-    await connection.query("replace into location_status(target_id, host) values ?", [
-        keys.map(x => [x, table[x]])
-    ]);
-    await connection.query("update location_status set host = null where target_id not in (?)", [
-        keys
-    ]);
-    return null;
+export async function replaceLocationStatus(table) {
+	if (table == null)
+		return (false);
+	const keys = Object.keys(table);
+	if (keys.length == 0)
+		return (true);
+	try {
+		await connection.query("replace into location_status(target_id, host) values ?", [
+			keys.map(x => [x, table[x]])
+		]);
+		return (true);
+	}
+	catch (e) {
+		console.error(e);
+		return (false);
+	}
+}
+
+export async function deleteAllLocationTable() {
+	try {
+		await connection.query("delete from location_status");
+		return (true);
+	}
+	catch (e) {
+		console.error(e);
+		return (false);
+	}
+}
+
+/**
+ * @param {Array<string>} targets intra ids. if null delete all.
+ * @returns 
+ */
+export async function deleteLocationTable(targets) {
+	if (targets == null)
+		return (false);
+	if (targets.length == 0)
+		return (true);
+	try {
+		await connection.query("delete from location_status where target_id in (?)", [
+			targets
+		]);
+		return (true);
+	}
+	catch (e) {
+		console.error(e);
+		return (false);
+	}
 }
 
 // export async function insertAlarm(seekerId, targetId, slackId) {
