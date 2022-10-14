@@ -1,7 +1,7 @@
 import _schedule from "node-schedule";
 import api42 from "./api42.js";
 import { postDM2User } from "./apiSlack.js";
-import { replaceLocationStatus, deleteAllLocationTable, deleteLocationTable, getAllReservedAlarm, deleteReservedAlarm, insertStatisticHost } from "./DataBase/utils.js";
+import { replaceLocationStatus, deleteAllLocationTable, deleteLocationTable, getAllReservedAlarm, deleteReservedAlarm, insertStatisticHost, insertErrorLog } from "./DataBase/utils.js";
 
 const campusId = 29;
 export const schedule = {
@@ -16,6 +16,11 @@ export const schedule = {
 				const total = last == 0 ?
 					await getAllActiveLocation(campusId) :
 					await getChangedLocation(campusId, last, now);
+				if (total == null) {
+					last = 0;
+					insertErrorLog("42API ERROR");
+					throw "42API ERROR";
+				}
 				const deleteTargets = total.reduce((acc, cur) => {
 					if (cur.end_at != null)
 						acc.push(cur.user.login);
@@ -89,10 +94,15 @@ async function getAllActiveLocation(campusId) {
 			"filter[primary]": true,
 			"range[host]": "c10,c9r9s9"
 		}};
-		const data = await api42("GET", path, config);
-		if (data.length == 0)
-			break;
-		total = [...total, ...data];
+		try {
+			const data = await api42("GET", path, config);
+			if (data.length == 0)
+				break;
+			total = [...total, ...data];
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
 	}
 	return total;
 }
@@ -109,10 +119,15 @@ async function getChangedLocation(campusId, past, now) {
 			"range[begin_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
 			"range[host]": "c10,c9r9s9"
 		}};
-		const data = await api42("GET", path, config);
-		if (data.length == 0)
-			break;
-		total = [...total, ...data];
+		try {
+			const data = await api42("GET", path, config);
+			if (data.length == 0)
+				break;
+			total = [...total, ...data];
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
 	}
 	for (let i = 0; i < 99; i++) {
 		const config = {params:{
@@ -123,10 +138,15 @@ async function getChangedLocation(campusId, past, now) {
 			"range[end_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
 			"range[host]": "c10,c9r9s9"
 		}};
-		const data = await api42("GET", path, config);
-		if (data.length == 0)
-			break;
-		total = [...total, ...data];
+		try {
+			const data = await api42("GET", path, config);
+			if (data.length == 0)
+				break;
+			total = [...total, ...data];
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
 	}
 	return total;
 }
