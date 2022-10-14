@@ -87,11 +87,18 @@ export async function mainHomeView(seekerId, justSelectedUsers) {
 		locationInfo = await getGroupLocationInfo(seekerId, selectedGroupId);
 	}
 
+	const timeStamp = () => {
+		const today = new Date();
+		today.setHours(today.getHours() + 9);
+		return today.toISOString().replace("T", " ").substring(0, 19);
+	}
+
 	return (HomeViewTemplete([
 			...BlockHeader("👀 염탐하기"),
 			...BlockSectionMrkdwn("\n"),
 			...BlockSectionSelect("염탐할 대상을 선택해주세요", "selectGlanceTarget", groupList, initialSelect),
 			...BlockSectionMrkdwn("\n"),
+			...BlockSectionMrkdwn(`마지막 업데이트: ${timeStamp()}`),
 			...await BlocklocationInfo(locationInfo, selectedGroupId),
 			...BlockSectionMrkdwn("\n"),
 			...BlockDivider(),
