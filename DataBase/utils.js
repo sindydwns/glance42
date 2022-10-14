@@ -243,3 +243,14 @@ export async function deleteReservedAlarm(ids) {
         return ;
     await connection.query("delete from alarm where alarm_id in (?)", [ids]);
 }
+
+export async function insertErrorLog(message) {
+	try {
+		await connection.query("insert into error_log(message) values(?)", [message]);
+		return (true);
+	}
+	catch (e) {
+		console.error(e);
+		return (false);
+	}
+}
