@@ -13,6 +13,11 @@ export async function getSeekerId(body, event, client) {
     return (seekerId);
 }
 
+export async function getClientSlackId(body, event, client) {
+    const slackId = body ? body.user.id : event.user;
+    return (slackId);
+}
+
 export async function getUserNamebySlackId(client, userId) {
 	const userName = await client.users.info({
         user: userId,

@@ -1,5 +1,5 @@
 import { getGroupList, getMemberList, getSelectedGroupId, getUsersLocationInfo, getGroupLocationInfo, getAlarmList } from "../DataBase/utils.js";
-import { BlockDivider, BlockHeader, BlockSectionMrkdwn,BlockSectionButton, BlockActionButtons, BlockContextMrkdwn, 
+import { BlockDivider, BlockHeader, BlockSectionMrkdwn,BlockSectionButton, BlockActionButtons, BlockLinkButton, BlockContextMrkdwn, 
 	BlockSectionSelect, BlockSingleStaicSelect, BlockMultiStaicSelect, BlockMultiUsersSelect, BlockTextInput} from "./utils/blocks.js"
 
 function formatStrCurrentLocation(locationInfo) {
@@ -112,6 +112,25 @@ export async function mainHomeView(seekerId, justSelectedUsers) {
 			...BlockDivider(),
 			...BlockSectionMrkdwn("\n"),
 			...BlockSectionButton("_사용방법을 모르시겠나요? 여기를 참고하세요!_ 📚", {text:"Help", value:"Help"}, "goManualView"),
+		])
+	);
+}
+
+export async function notRegisteredHomeView() {
+	return (HomeViewTemplete([
+			...BlockHeader("👋 환영합니다!"),
+			...BlockSectionMrkdwn("Glance42를 처음 이용하시는군요!\
+			\n이 앱에 대한 간략한 소개를 해드리겠습니다.\
+			\n\n• Glance42는, 클러스터에 체류하고 있는 카뎃들의 자리를 편리하게 조회👀할 수 있는 슬랙 앱입니다. ~(그래서 염탐42라고도 불려요!)~\
+			\n• 원하는 사람👤의 자리를 이 앱을 통해 조회할 수 있음은 물론이고, 미리 등록해놓은 사람👥들을 한번에 조회할 수도 있습니다.\
+			\n• 어떤 사람👤이 자리에 앉았을 때 봇이 메시지를 보내도록 알람⏰을 등록해둘 수도 있어요!"),
+			...BlockSectionMrkdwn("\n"),
+			...BlockSectionMrkdwn("\n"),
+			...BlockHeader("✨ 처음 서비스를 이용하기 전에 ..."),
+			...BlockSectionMrkdwn("처음 서비스를 이용하기 전 간단한 42API 인증이 필요합니다."),
+			...BlockLinkButton("'인증하기'를 통해 카뎃임을 인증해주세요. \n(인증은 최초 한번만 이루어집니다.)", 
+			{text:'인증하기', value:'auth', url:process.env.OAUTH42_REQUEST_URL},
+			'requestAuth')
 		])
 	);
 }

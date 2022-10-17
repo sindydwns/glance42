@@ -89,8 +89,8 @@ export function BlockActionButtons(items) {
     ];
 }
 
-export function BlockSectionButton(desText, item, actionId) {
-    if (desText == null || desText == "") return [];
+export function BlockSectionButton(descText, item, actionId) {
+    if (descText == null || descText == "") return [];
     if (item.text == null || item.text == "") return [];
     if (item.value == null || item.value == "") return [];
     if (actionId == null || actionId == "") return [];
@@ -99,7 +99,7 @@ export function BlockSectionButton(desText, item, actionId) {
             type: "section",
             text: {
                 type: "mrkdwn",
-                text: desText,
+                text: descText,
             },
             accessory: {
                 type: "button",
@@ -113,6 +113,33 @@ export function BlockSectionButton(desText, item, actionId) {
             },
         },
     ];
+}
+
+export function BlockLinkButton(descText, item, actionId) {
+	if (descText == null || descText == "") return [];
+    if (item.text == null || item.text == "") return [];
+    if (item.value == null || item.value == "") return [];
+    if (actionId == null || actionId == "") return [];
+	return [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": descText,
+			},
+			"accessory": {
+				"type": "button",
+				"text": {
+					"type": "plain_text",
+					"text": item.text,
+					"emoji": true
+				},
+				"value": item.value,
+				"url": item.url,
+				"action_id": actionId
+			}
+		}
+	]
 }
 
 /* ---------------------------- INPUT BLOCKS --------------------------------- */

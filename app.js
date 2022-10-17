@@ -6,8 +6,8 @@ import homeRouter from "./Routers/home.js";
 import apiRouter from "./Routers/api.js";
 import slackRouter from "./Routers/slack.js";
 import testRouter from "./Routers/test.js";
+import auth42Router from "./Routers/auth42.js";
 import errorMiddleware from "./error.js";
-import router from "./Routers/home.js";
 import { schedule } from "./schedule.js";
 
 dotenv.config();
@@ -22,6 +22,7 @@ app.use("/slack", slackRouter);
 if (process.env.DEV_MODE) {
 	app.use("/test", testRouter);
 }
+app.use('/login/42', auth42Router);
 app.use(errorMiddleware);
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 4200);

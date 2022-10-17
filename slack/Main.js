@@ -1,16 +1,23 @@
-import { reflectWhetherSelected } from "../DataBase/utils.js";
-import { getSeekerId, getUserNamebySlackId } from "./utils/data.js";
-import { mainHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
+import { reflectWhetherSelected, isExistSlackId } from "../DataBase/utils.js";
+import { getSeekerId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
+import { mainHomeView, notRegisteredHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
+
+export let clientSlackId;
 
 export default (app) => {
 
     app.event("app_home_opened", async ({ event, client, logger }) => {
         try {
+            clientSlackId = await getClientSlackId(null, event, client);
             const seekerId = await getSeekerId(null, event, client);
-
+			let view;
+			if (await isExistSlackId(clientSlackId) == true)
+				view = await mainHomeView(seekerId);
+			else
+				view = await notRegisteredHomeView();
             const result = await client.views.publish({
                 user_id: event.user,
-                view: await mainHomeView(seekerId),
+                view: view,
             });
         } catch (error) {
             logger.error(error);
