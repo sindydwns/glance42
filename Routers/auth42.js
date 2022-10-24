@@ -3,7 +3,7 @@ import app from "express";
 import session from "express-session";
 import passport from "passport";
 import passport42 from "passport-42";
-import {registerNewSlackId} from "../DataBase/utils.js"
+import {registerNewClient} from "../DataBase/utils.js"
 import { clientSlackId } from "../slack/Main.js";
 
 var FortyTwoStrategy = passport42.Strategy;
@@ -16,7 +16,7 @@ passport.use(new FortyTwoStrategy({
 	function (accessToken, refreshToken, profile, cb) {
 	//   console.log('accessToken', accessToken, 'refreshToken', refreshToken);
 	// console.log(profile.username);
-	registerNewSlackId(profile.username, clientSlackId);
+	registerNewClient(profile.username, clientSlackId);
 	  return cb(null, profile);
 	})
 );
