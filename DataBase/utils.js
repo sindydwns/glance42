@@ -105,7 +105,9 @@ export async function getUsersLocationInfo(targetIds) {
 	let locationInfo = [];
 	for (const targetId of targetIds) {
 		const [host, ...other] = await connection.query("select target_id, host from location_status where target_id=?", [targetId]);
-		if (host[0] != null) // targetId가 유효하지 않은 경우는 제외 (나중에는 이미 앞에서 거르므로 이 부분은 지우면 됨)
+		if (host[0] == null)
+			locationInfo.push({target_id: targetId, host: null});
+		else
 			locationInfo.push(host[0]);
 	}
     return locationInfo;
