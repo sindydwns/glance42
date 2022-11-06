@@ -23,8 +23,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Run build
-        run: npm run build
 
   deploy:
     name: CD Pipeline
@@ -49,8 +47,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Run build
-        run: npm run build
 
       - name: Install AWS CLI 2
         run: |
