@@ -60,6 +60,16 @@ export async function deleteLocationTable(targets) {
 //     await connection.query("delete from alarm where seeker_id = ? and target_id = ?", seekerId, targetId);
 // }
 
+export async function getIntraIdbySlackId(slackId) {
+	const [user_id, ...other] = await connection.query(
+        "select ul.user_id from user_list ul where 1=1 and ul.slack_id = ?",
+        [slackId]
+    );
+    if (user_id.length === 0) return null;
+    const returnVal = user_id[0].user_id;
+    return returnVal;
+}
+
 export async function getSelectedGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
         "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.selected = true;",

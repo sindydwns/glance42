@@ -1,12 +1,12 @@
 import { getGroupList, insertGroup, deleteGroup } from "../DataBase/utils.js";
-import { getSeekerId } from "./utils/data.js";
+import { getClientIntraId } from "./utils/data.js";
 import { groupManageHomeView, addGroupModalView, delGroupModalView } from "./views.js";
 
 export default (app) => {
 
     app.action("OpenModalAddGroup", async ({ ack, body, client, logger }) => {
         await ack();
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 
         try {
             const result = await client.views.open({
@@ -28,7 +28,7 @@ export default (app) => {
 
     app.action("OpenModalDelGroup", async ({ ack, body, client, logger }) => {
         await ack();
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
 		if (await getGroupList(seekerId) != "")
@@ -69,7 +69,7 @@ export default (app) => {
 	app.view({callback_id: 'callbackAddGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["writeAddGroupName"]['value'];
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
 		const result = await insertGroup(seekerId, inputVal);
@@ -88,7 +88,7 @@ export default (app) => {
 	app.view({callback_id:'callbackDelGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitDelGroup"]['selected_option'].value;
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = '';
 		const result = await deleteGroup(seekerId, inputVal);
