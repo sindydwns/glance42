@@ -61,12 +61,12 @@ export async function deleteLocationTable(targets) {
 // }
 
 export async function getIntraIdbySlackId(slackId) {
-	const [user_id, ...other] = await connection.query(
-        "select ul.user_id from user_list ul where 1=1 and ul.slack_id = ?",
+	const [intra_id, ...other] = await connection.query(
+        "select ul.intra_id from user_list ul where 1=1 and ul.slack_id = ?",
         [slackId]
     );
-    if (user_id.length === 0) return null;
-    const returnVal = user_id[0].user_id;
+    if (intra_id.length === 0) return null;
+    const returnVal = intra_id[0].intra_id;
     return returnVal;
 }
 
@@ -277,6 +277,6 @@ export async function isExistSlackId(clientSlackId) {
 
 // registerNewClient 혹은 쿼리명 그대로 따라가서 updateSlackId
 export async function registerNewClient(clientIntraId, clientSlackId) {
-	await connection.query("insert into user_list(user_id, blackhole, slack_id) values(?, 0, ?)", [clientIntraId, clientSlackId]);
+	await connection.query("insert into user_list(intra_id, blackhole, slack_id) values(?, 0, ?)", [clientIntraId, clientSlackId]);
 	// 이미 해당 intraId에 slackId값이 있거나, 해당 slackId가 다른 레코드에 이미 있는 경우 예외처리 필요
 }
