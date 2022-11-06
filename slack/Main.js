@@ -1,6 +1,6 @@
 import { reflectWhetherSelected, isExistSlackId } from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
-import { mainHomeView, notRegisteredHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
+import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
 
 export let clientSlackId;
 
@@ -24,6 +24,14 @@ export default (app) => {
         }
     });
 
+    app.action("requestAuth", async ({ ack, body, client, logger }) => {
+		await client.views.update({
+			view_id: body.view.id,
+			hash: body.view.hash,
+			view: await requestRegisterHomeView(),
+			})
+	});
+	
     app.action("selectGlanceTarget", async ({ ack, body, client, logger }) => {
         await ack();
         const selected = body.actions[0].selected_option;

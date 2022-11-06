@@ -135,6 +135,15 @@ export async function notRegisteredHomeView() {
 	);
 }
 
+export async function requestRegisterHomeView() {
+	return (HomeViewTemplete([
+		...BlockHeader("서비스 이용을 위한 인증 시도 중..."),
+		...BlockSectionMrkdwn("인증이 완료되었다면 화면을 새로고침해주세요."),
+	])
+	);
+}
+
+
 export async function groupManageHomeView(seekerId, msg) {
 	const groupList_ = await getGroupList(seekerId);
 	const groupList = groupList_.map(x=>x.group_name);
