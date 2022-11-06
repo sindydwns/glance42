@@ -275,8 +275,17 @@ export async function isExistSlackId(clientSlackId) {
 	return (exist[0]["registered"])
 }
 
-// registerNewClient 혹은 쿼리명 그대로 따라가서 updateSlackId
+export async function isExistIntraId(clientIntraId) {
+	const [exist, ...other] = await connection.query(
+        "select exists(select * from user_list where intra_id=?) as registered;",
+        [clientIntraId]
+    );
+	return (exist[0]["registered"])
+}
+
 export async function registerNewClient(clientIntraId, clientSlackId) {
-	await connection.query("insert into user_list(intra_id, blackhole, slack_id) values(?, 0, ?)", [clientIntraId, clientSlackId]);
-	// 이미 해당 intraId에 slackId값이 있거나, 해당 slackId가 다른 레코드에 이미 있는 경우 예외처리 필요
+	if (await isExistIntraId(clientIntraId) == false)
+		await connection.query("insert into user_list(intra_id, blackhole, slack_id) values(?, 0, ?)", [clientIntraId, clientSlackId]);
+	else
+		await connection.query("update user_list set slack_id=? where intra_id=?", [clientSlackId, clientIntraId]);
 }
