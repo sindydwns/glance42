@@ -1,5 +1,5 @@
 import { getMemberList, insertMember, deleteMember } from "../DataBase/utils.js";
-import { getSeekerId, getUserNamebySlackId } from "./utils/data.js";
+import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 
 export default (app) => {
@@ -9,7 +9,7 @@ export default (app) => {
             await ack();
        	 	const selected = body.actions[0].selected_option;
 			const selectedGroup = {text: selected.text.text, value: selected.value};
-			const seekerId = await getSeekerId(body, null, client);
+			const seekerId = await getClientIntraId(body, null, client);
 			
 			if (selectedGroup.value != "No-option")
 			{
@@ -28,7 +28,7 @@ export default (app) => {
 	app.action("OpenModalAddMember", async ({ ack, body, client, logger }) => {
         await ack();
 		const selectedGroup = client.selected_group;
-		const seekerId = await getSeekerId(body, null, client);
+		const seekerId = await getClientIntraId(body, null, client);
 
         try {
             const result = await client.views.open({
@@ -51,7 +51,7 @@ export default (app) => {
 	app.action("OpenModalDelMember", async ({ ack, body, client, logger }) => {
         await ack();
 		const selectedGroup = client.selected_group;
-		const seekerId = await getSeekerId(body, null, client);
+		const seekerId = await getClientIntraId(body, null, client);
 
 		let msg = "";
 		if (await getMemberList(selectedGroup.value) != "")
@@ -89,7 +89,7 @@ export default (app) => {
 				msg = "*성공적으로 추가되었습니다*";
 		}
 		try {
-            const seekerId = await getSeekerId(body, null, client);
+            const seekerId = await getClientIntraId(body, null, client);
             const result = await client.views.update({
 				view_id: client.previous_view_id,
 				view: await memberManageHomeView(seekerId, client.selected_group, msg),
@@ -104,7 +104,7 @@ export default (app) => {
 		const inputVal = view['state']['values'][view.blocks[0].block_id]['submitDelMember']['selected_options']
 		.map((x) => (x.value));
 		const selectedGroup = client.selected_group;
-		const seekerId = await getSeekerId(body, null, client);
+		const seekerId = await getClientIntraId(body, null, client);
 
 		let msg = "";
 		for (const targetId of inputVal) {

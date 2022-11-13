@@ -1,6 +1,6 @@
 import { reflectWhetherSelected, isExistSlackId } from "../DataBase/utils.js";
-import { getSeekerId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
-import { mainHomeView, notRegisteredHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
+import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
+import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
 
 export let clientSlackId;
 
@@ -9,7 +9,7 @@ export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {
         try {
             clientSlackId = await getClientSlackId(null, event, client);
-            const seekerId = await getSeekerId(null, event, client);
+            const seekerId = await getClientIntraId(null, event, client);
 			let view;
 			if (await isExistSlackId(clientSlackId) == true)
 				view = await mainHomeView(seekerId);
@@ -24,10 +24,18 @@ export default (app) => {
         }
     });
 
+    app.action("requestAuth", async ({ ack, body, client, logger }) => {
+		await client.views.update({
+			view_id: body.view.id,
+			hash: body.view.hash,
+			view: await requestRegisterHomeView(),
+			})
+	});
+	
     app.action("selectGlanceTarget", async ({ ack, body, client, logger }) => {
         await ack();
         const selected = body.actions[0].selected_option;
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 
 		if (selected.value == "selectUserFromWorkspace")
 		{
@@ -55,7 +63,7 @@ export default (app) => {
 	app.view({callback_id:'callbackSelectGlanceUser', type:'view_submission'}, async ({ ack, body, view, client, logger }) => {
 		await ack();
 		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectDone-GlanceUser']['selected_users'];
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 
 		let targetIds = [];
 		for (const slackId of selectedUsers) {
@@ -80,7 +88,7 @@ export default (app) => {
 
 	app.action("goMainView", async ({ack, body, client}) => {
 		await ack();
-		const seekerId = await getSeekerId(body, null, client);
+		const seekerId = await getClientIntraId(body, null, client);
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
@@ -92,7 +100,7 @@ export default (app) => {
     app.action("goGroupManageView", async ({ ack, body, client, logger }) => {
         try {
             await ack();
-            const seekerId = await getSeekerId(body, null, client);
+            const seekerId = await getClientIntraId(body, null, client);
 			
             await client.views.update({
                 view_id: body.view.id,
@@ -107,7 +115,7 @@ export default (app) => {
 
 	app.action("goAlarmManageView", async ({ack, body, client, logger}) => {
 		await ack();
-		const seekerId = await getSeekerId(body, null, client);
+		const seekerId = await getClientIntraId(body, null, client);
 
 		await client.views.update({
 			view_id: body.view.id,
@@ -119,7 +127,7 @@ export default (app) => {
 	
 	app.action("goMemberManageView", async ({ack, body, client}) => {
 		await ack();
-		const seekerId = await getSeekerId(body, null, client);
+		const seekerId = await getClientIntraId(body, null, client);
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,

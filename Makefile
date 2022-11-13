@@ -14,7 +14,7 @@ SRC = \
 	package.json
 
 $(TARGET): $(SRC)
-	zip -r $(TARGET) $(SRC)
+	zip -r $@ $^
 
 all: $(TARGET)
 

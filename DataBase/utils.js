@@ -60,6 +60,16 @@ export async function deleteLocationTable(targets) {
 //     await connection.query("delete from alarm where seeker_id = ? and target_id = ?", seekerId, targetId);
 // }
 
+export async function getIntraIdbySlackId(slackId) {
+	const [intra_id, ...other] = await connection.query(
+        "select ul.intra_id from user_list ul where 1=1 and ul.slack_id = ?",
+        [slackId]
+    );
+    if (intra_id.length === 0) return null;
+    const returnVal = intra_id[0].intra_id;
+    return returnVal;
+}
+
 export async function getSelectedGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
         "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.selected = true;",
@@ -105,7 +115,9 @@ export async function getUsersLocationInfo(targetIds) {
 	let locationInfo = [];
 	for (const targetId of targetIds) {
 		const [host, ...other] = await connection.query("select target_id, host from location_status where target_id=?", [targetId]);
-		if (host[0] != null) // targetId가 유효하지 않은 경우는 제외 (나중에는 이미 앞에서 거르므로 이 부분은 지우면 됨)
+		if (host[0] == null)
+			locationInfo.push({target_id: targetId, host: null});
+		else
 			locationInfo.push(host[0]);
 	}
     return locationInfo;
@@ -263,8 +275,17 @@ export async function isExistSlackId(clientSlackId) {
 	return (exist[0]["registered"])
 }
 
-// registerNewClient 혹은 쿼리명 그대로 따라가서 updateSlackId
+export async function isExistIntraId(clientIntraId) {
+	const [exist, ...other] = await connection.query(
+        "select exists(select * from user_list where intra_id=?) as registered;",
+        [clientIntraId]
+    );
+	return (exist[0]["registered"])
+}
+
 export async function registerNewClient(clientIntraId, clientSlackId) {
-	await connection.query("insert into user_list(user_id, blackhole, slack_id) values(?, 0, ?)", [clientIntraId, clientSlackId]);
-	// 이미 해당 intraId에 slackId값이 있거나, 해당 slackId가 다른 레코드에 이미 있는 경우 예외처리 필요
+	if (await isExistIntraId(clientIntraId) == false)
+		await connection.query("insert into user_list(intra_id, blackhole, slack_id) values(?, 0, ?)", [clientIntraId, clientSlackId]);
+	else
+		await connection.query("update user_list set slack_id=? where intra_id=?", [clientSlackId, clientIntraId]);
 }

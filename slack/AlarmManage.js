@@ -1,12 +1,12 @@
 import { getAlarmList, insertAlarm,  deleteAlarm } from "../DataBase/utils.js";
-import { getSeekerId, getUserNamebySlackId} from "./utils/data.js";
+import { getClientIntraId, getUserNamebySlackId} from "./utils/data.js";
 import { alarmManageHomeView, addAlarmModalView, delAlarmModalView } from "./views.js";
 
 export default (app) => {
 	
 	app.action("OpenModalAddAlarm", async ({ ack, body, client, logger }) => {
         await ack();
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 
         try {
             const result = await client.views.open({
@@ -28,7 +28,7 @@ export default (app) => {
 
     app.action("OpenModalDelAlarm", async ({ ack, body, client, logger }) => {
         await ack();
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 
 		let msg = "";
 		if (await getAlarmList(seekerId) != "")
@@ -63,7 +63,7 @@ export default (app) => {
 	app.view({callback_id:'callbackAddAlarm', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['submitAddAlarm']['selected_users'];
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
 		for (const slackId of selectedUsers) {
@@ -86,7 +86,7 @@ export default (app) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]['submitDelAlarm']['selected_options']
 		.map((x) => (x.value));
-        const seekerId = await getSeekerId(body, null, client);
+        const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
 		for (const targetId of inputVal) {
