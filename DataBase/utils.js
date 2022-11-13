@@ -241,13 +241,9 @@ export async function getAllLocationTable() {
 	return result;
 }
 
-export async function getAllReservedAlarm(seekerId) {
-    if (seekerId == null) {
-        const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, u.slack_id as notify_slack_id from alarm a inner join user_list u on a.seeker_id = u.intra_id");
-        return alarms;
-    }
-    const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, u.slack_id as notify_slack_id from alarm a inner join user_list u on a.seeker_id = u.intra_id where a.seeker_id = ?", [seekerId]);
-    return alarms;
+export async function getAllReservedAlarm() {
+	const [alarms, ...other] = await connection.query("select a.alarm_id, a.seeker_id, a.target_id, ls.host, u.slack_id as notify_slack_id from alarm a inner join user_list u on a.seeker_id = u.intra_id left join location_status ls on a.target_id = ls.target_id where ls.host is not null;");
+	return alarms;
 }
 
 export async function deleteReservedAlarm(ids) {

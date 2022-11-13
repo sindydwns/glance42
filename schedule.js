@@ -40,19 +40,11 @@ export const schedule = {
 
 				// alarm
 				const alarms = await getAllReservedAlarm();
-				const alarmMap = alarms.reduce((acc, cur) => {
-					acc[cur.target_id] = cur;
-					return acc;
-				}, {});
-				const done = [];
-				for (let user in locationTable)
-					if (alarmMap[user])
-						done.push(alarmMap[user]);
-				console.log("todo alarm", done);
-				for (let id in done)
-					if (done[id].notify_slack_id)
-						postDM2User(done[id].notify_slack_id, `${done[id].target_id} is online`);
-				await deleteReservedAlarm(done.map(x => x.alarm_id));
+				console.log("todo alarm", alarms);
+				for (let id in alarms)
+					if (alarms[id].notify_slack_id)
+						postDM2User(alarms[id].notify_slack_id, `${alarms[id].target_id} is online on ${alarms[id].host}`);
+				await deleteReservedAlarm(alarms.map(x => x.alarm_id));
 			} catch(e) {
 				console.error(e);
 			}
