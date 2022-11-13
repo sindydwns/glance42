@@ -7,23 +7,23 @@ scheduleObjs.api42pagingParams =  {
 }
 
 scheduleObjs.getAllActiveLocationParams = {
-	...api42pagingParams,
+	...scheduleObjs.api42pagingParams,
 	"filter[active]": true,
 };
 
 scheduleObjs.getChangedLocationLoginFunc = (past, now) => ({
-	...api42pagingParams,
+	...scheduleObjs.api42pagingParams,
 	"filter[active]": true,
 	"range[begin_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
 });
 
 scheduleObjs.getChangedLocationLogoutFunc = (past, now) => ({
-	...api42pagingParams,
+	...scheduleObjs.api42pagingParams,
 	"range[begin_at]": `${new Date(0).toISOString()},${(new Date(past)).toISOString()}`,
 	"range[end_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
 });
 
-for(const params of scheduleObjs)
-	Object.freeze(params);
+for(const key in scheduleObjs)
+	Object.freeze(scheduleObjs[key]);
 
 export default scheduleObjs;

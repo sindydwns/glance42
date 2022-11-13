@@ -1,10 +1,10 @@
 import _schedule from "node-schedule";
-import api42 from "./api42.js";
-import { postDM2User } from "./apiSlack.js";
-import { replaceLocationStatus, deleteAllLocationTable, deleteLocationTable, getAllReservedAlarm, deleteReservedAlarm, insertStatisticHost, insertErrorLog } from "./DataBase/utils.js";
+import api42 from "../api42.js";
+import { postDM2User } from "../apiSlack.js";
+import { replaceLocationStatus, deleteAllLocationTable, deleteLocationTable, getAllReservedAlarm, deleteReservedAlarm, insertStatisticHost, insertErrorLog } from "../DataBase/utils.js";
 import scheduleObjs from "../constants.js";
 
-function getAllpageInfo(path, params) {
+async function getAllpageInfo(path, params) {
 	let total = [];
 	for (let i = 0; i < 99; i++) {
 		const config = { 

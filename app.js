@@ -8,7 +8,7 @@ import slackRouter from "./Routers/slack.js";
 import testRouter from "./Routers/test.js";
 import auth42Router from "./Routers/auth42.js";
 import errorMiddleware from "./error.js";
-import { schedule } from "./schedule.js";
+import { schedule } from "./Schedule/schedule.js";
 
 dotenv.config();
 schedule.loadLocations(process.env.LOAD_LOCATION_PERIOD_SEC);
