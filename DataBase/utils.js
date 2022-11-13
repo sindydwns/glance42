@@ -231,10 +231,10 @@ export async function getAllLocationTable() {
 
 export async function getAllReservedAlarm(seekerId) {
     if (seekerId == null) {
-        const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, notify_slack_id from alarm");
+        const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, u.slack_id as notify_slack_id from alarm a inner join user_list u on a.seeker_id = u.intra_id");
         return alarms;
     }
-    const [alarms, ...other] = await connection.query("select seeker_id, target_id, notify_slack_id from alarm where seeker_id = ?", [seekerId]);
+    const [alarms, ...other] = await connection.query("select alarm_id, seeker_id, target_id, u.slack_id as notify_slack_id from alarm a inner join user_list u on a.seeker_id = u.intra_id where a.seeker_id = ?", [seekerId]);
     return alarms;
 }
 
