@@ -9,9 +9,10 @@ SRC = \
 	app.js \
 	error.js \
 	log.js \
-	schedule.js \
 	apiDataBase.js \
-	package.json
+	package.json \
+	Schedule/schedule.js \
+	constants.js
 
 $(TARGET): $(SRC)
 	zip -r $@ $^

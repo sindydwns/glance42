@@ -2,6 +2,28 @@ import _schedule from "node-schedule";
 import api42 from "./api42.js";
 import { postDM2User } from "./apiSlack.js";
 import { replaceLocationStatus, deleteAllLocationTable, deleteLocationTable, getAllReservedAlarm, deleteReservedAlarm, insertStatisticHost, insertErrorLog } from "./DataBase/utils.js";
+import scheduleObjs from "../constants.js";
+
+function getAllpageInfo(path, params) {
+	let total = [];
+	for (let i = 0; i < 99; i++) {
+		const config = { 
+			params:{
+			...params,
+			"page[number]": i + 1,
+		}};
+		try {
+			const data = await api42("GET", path, config);
+			if (data.length == 0)
+				break;
+			total = [...total, ...data];
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	}
+	return total;
+}
 
 const campusId = 29;
 export const schedule = {
@@ -77,68 +99,13 @@ export const schedule = {
 
 async function getAllActiveLocation(campusId) {
 	const path = `/v2/campus/${campusId}/locations`;
-	let total = [];
-	for (let i = 0; i < 99; i++) {
-		const config = {params:{
-			"page[size]": "100",
-			"page[number]": i + 1,
-			"filter[active]": true,
-			"filter[primary]": true,
-			"range[host]": "c10,c9r9s9"
-		}};
-		try {
-			const data = await api42("GET", path, config);
-			if (data.length == 0)
-				break;
-			total = [...total, ...data];
-		} catch (e) {
-			console.error(e);
-			return null;
-		}
-	}
-	return total;
+	return getAllpageInfo(path, scheduleObjs.getAllActiveLocationParams)
 }
 
 async function getChangedLocation(campusId, past, now) {
 	const path = `/v2/campus/${campusId}/locations`;
-	let total = [];
-	for (let i = 0; i < 99; i++) {
-		const config = {params:{
-			"page[size]": "100",
-			"page[number]": i + 1,
-			"filter[active]": true,
-			"filter[primary]": true,
-			"range[begin_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
-			"range[host]": "c10,c9r9s9"
-		}};
-		try {
-			const data = await api42("GET", path, config);
-			if (data.length == 0)
-				break;
-			total = [...total, ...data];
-		} catch (e) {
-			console.error(e);
-			return null;
-		}
-	}
-	for (let i = 0; i < 99; i++) {
-		const config = {params:{
-			"page[size]": "100",
-			"page[number]": i + 1,
-			"filter[primary]": true,
-			"range[begin_at]": `${new Date(0).toISOString()},${(new Date(past)).toISOString()}`,
-			"range[end_at]": `${new Date(past).toISOString()},${(new Date(now)).toISOString()}`,
-			"range[host]": "c10,c9r9s9"
-		}};
-		try {
-			const data = await api42("GET", path, config);
-			if (data.length == 0)
-				break;
-			total = [...total, ...data];
-		} catch (e) {
-			console.error(e);
-			return null;
-		}
-	}
-	return total;
+	return [
+		...getAllpageInfo(path, scheduleObjs.getChangedLocationLoginFunc(past, now)),
+		...getAllpageInfo(path, scheduleObjs.getChangedLocationLogoutFunc(past, now))
+	];
 }
