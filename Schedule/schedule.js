@@ -99,13 +99,13 @@ export const schedule = {
 
 async function getAllActiveLocation(campusId) {
 	const path = `/v2/campus/${campusId}/locations`;
-	return getAllpageInfo(path, scheduleObjs.getAllActiveLocationParams)
+	return await getAllpageInfo(path, scheduleObjs.getAllActiveLocationParams)
 }
 
 async function getChangedLocation(campusId, past, now) {
 	const path = `/v2/campus/${campusId}/locations`;
 	return [
-		...getAllpageInfo(path, scheduleObjs.getChangedLocationLoginFunc(past, now)),
-		...getAllpageInfo(path, scheduleObjs.getChangedLocationLogoutFunc(past, now))
+		...(await getAllpageInfo(path, scheduleObjs.getChangedLocationLoginFunc(past, now))),
+		...(await getAllpageInfo(path, scheduleObjs.getChangedLocationLogoutFunc(past, now)))
 	];
 }
