@@ -263,7 +263,7 @@ export async function insertErrorLog(message) {
 	}
 }
 
-export async function isExistSlackId(clientSlackId) {
+export async function isCertifiedSlackId(clientSlackId) {
 	const [exist, ...other] = await connection.query(
         "select exists(select * from user_list where slack_id=?) as registered;",
         [clientSlackId]
@@ -285,3 +285,14 @@ export async function registerNewClient(clientIntraId, clientSlackId) {
 	else
 		await connection.query("update user_list set slack_id=? where intra_id=?", [clientSlackId, clientIntraId]);
 }
+
+export async function getUserInfo(intraId) {
+	const data = await connection.query("select * from user_list where intra_id=?", [intraId]);
+
+	return(data[0][0]);
+}
+
+export async function updateCertified(intraId) {
+	await connection.query("update user_list set is_certified = true where intra_id=?", [intraId]);
+}
+

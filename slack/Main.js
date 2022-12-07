@@ -1,17 +1,17 @@
-import { reflectWhetherSelected, isExistSlackId } from "../DataBase/utils.js";
+import { reflectWhetherSelected, isCertifiedSlackId, getUserInfo, updateCertified } from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
 import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
 
-export let clientSlackId;
-
 export default (app) => {
-
     app.event("app_home_opened", async ({ event, client, logger }) => {
         try {
-            clientSlackId = await getClientSlackId(null, event, client);
+            const clientSlackId = await getClientSlackId(null, event, client);
+			const clientDisplayName = await getUserNamebySlackId(client, clientSlackId);
+			const userInfo = await getUserInfo(clientDisplayName);
             const seekerId = await getClientIntraId(null, event, client);
+
 			let view;
-			if (await isExistSlackId(clientSlackId) == true)
+			if (userInfo.is_certified && clientSlackId == userInfo.slack_id)
 				view = await mainHomeView(seekerId);
 			else
 				view = await notRegisteredHomeView();

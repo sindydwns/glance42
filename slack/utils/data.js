@@ -12,9 +12,9 @@ export async function getClientIntraId(body, event, client) {
     return (seekerId);
 }
 
-export async function getUserNamebySlackId(client, userId) {
+export async function getUserNamebySlackId(client, slackId) {
 	const userName = await client.users.info({
-        user: userId,
+        user: slackId,
     });
 	const displayName = userName.user.profile.display_name;
 	const realName = userName.user.profile.real_name;
