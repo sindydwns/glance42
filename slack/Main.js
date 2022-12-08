@@ -1,6 +1,7 @@
-import { reflectWhetherSelected, isCertifiedSlackId, getUserInfo, updateCertified } from "../DataBase/utils.js";
+import { reflectWhetherSelected, getUserInfo } from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
 import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
+import { encrypt } from "../utils.js";
 
 export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {
@@ -8,13 +9,13 @@ export default (app) => {
             const clientSlackId = await getClientSlackId(null, event, client);
 			const clientDisplayName = await getUserNamebySlackId(client, clientSlackId);
 			const userInfo = await getUserInfo(clientDisplayName);
-            const seekerId = await getClientIntraId(null, event, client);
+            const intraId = await getClientIntraId(null, event, client);
 
 			let view;
-			if (userInfo.is_certified && clientSlackId == userInfo.slack_id)
-				view = await mainHomeView(seekerId);
+			if (clientSlackId == userInfo?.slack_id)
+				view = await mainHomeView(intraId);
 			else
-				view = await notRegisteredHomeView();
+				view = await notRegisteredHomeView(encrypt(clientSlackId));
             const result = await client.views.publish({
                 user_id: event.user,
                 view: view,

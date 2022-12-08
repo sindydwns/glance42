@@ -12,7 +12,8 @@ SRC = \
 	apiDataBase.js \
 	package.json \
 	Schedule/schedule.js \
-	constants.js
+	constants.js \
+	utils.js
 
 $(TARGET): $(SRC)
 	zip -r $@ $^
