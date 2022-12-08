@@ -116,7 +116,7 @@ export async function mainHomeView(seekerId, justSelectedUsers) {
 	);
 }
 
-export async function notRegisteredHomeView(id) {
+export async function notRegisteredHomeView(slackId) {
 	return (HomeViewTemplete([
 			...BlockHeader("👋 환영합니다!"),
 			...BlockSectionMrkdwn("Glance42를 처음 이용하시는군요!\
@@ -129,7 +129,7 @@ export async function notRegisteredHomeView(id) {
 			...BlockHeader("✨ 처음 서비스를 이용하기 전에 ..."),
 			...BlockSectionMrkdwn("처음 서비스를 이용하기 전 간단한 42API 인증이 필요합니다."),
 			...BlockLinkButton("'인증하기'를 통해 카뎃임을 인증해주세요. \n(인증은 최초 한번만 이루어집니다.)", 
-			{text:'인증하기', value:'auth', url:`${process.env.OAUTH42_REQUEST_URL}?id=${id}`},
+			{text:'인증하기', value:'auth', url:`${process.env.OAUTH42_REQUEST_URL}?guess=${slackId}`},
 			'requestAuth')
 		])
 	);
