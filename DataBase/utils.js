@@ -52,14 +52,6 @@ export async function deleteLocationTable(targets) {
 	}
 }
 
-// export async function insertAlarm(seekerId, targetId, slackId) {
-//     await connection.query("insert into alarm(seeker_id, target_id, slack_id) values(?, ?, ?)", [seekerId, targetId, slackId]);
-// }
-
-// export async function deleteAlarm(seekerId, targetId) {
-//     await connection.query("delete from alarm where seeker_id = ? and target_id = ?", seekerId, targetId);
-// }
-
 export async function getIntraIdbySlackId(slackId) {
 	const [intra_id, ...other] = await connection.query(
         "select ul.intra_id from user_list ul where 1=1 and ul.slack_id = ?",
@@ -74,16 +66,6 @@ export async function getSelectedGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
         "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.selected = true;",
         [seekerId]
-    );
-    if (groupId.length === 0) return null;
-    const returnVal = groupId[0].group_id;
-    return returnVal;
-}
-
-export async function getGroupId(seekerId, groupName) {
-    const [groupId, ...other] = await connection.query(
-        "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.group_name = ?",
-        [seekerId, groupName]
     );
     if (groupId.length === 0) return null;
     const returnVal = groupId[0].group_id;
@@ -230,15 +212,6 @@ export async function insertStatisticHost(data) {
 		console.error(e);
 		return (false);
 	}
-}
-
-export async function getAllLocationTable() {
-	const [locations, ...other] = await connection.query("select target_id, host from location_status");
-	const result = [];
-	for (let location of locations) {
-		result[location.target_id] = location.host;
-	}
-	return result;
 }
 
 export async function getAllReservedAlarm() {
