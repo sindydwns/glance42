@@ -58,7 +58,6 @@ export default (app) => {
 				view: await mainHomeView(seekerId),
 			});
 		}
-		client.previous_view_id = body.view.id;
     });
 
 	app.view({callback_id:'callbackSelectGlanceUser', type:'view_submission'}, async ({ ack, body, view, client, logger }) => {
@@ -67,13 +66,14 @@ export default (app) => {
         const seekerId = await getClientIntraId(body, null, client);
 
 		let targetIds = [];
+		console.log(selectedUsers);
 		for (const slackId of selectedUsers) {
 			const targetId = await getUserNamebySlackId(client, slackId);
 			targetIds.push(targetId);
 		}
 		try {
-			const result = await client.views.update({
-				view_id: client.previous_view_id,
+			const result = await client.views.publish({
+				user_id: body.user.id,
 				view: await mainHomeView(seekerId, targetIds),
 			});
 		} catch (e) {
@@ -111,7 +111,6 @@ export default (app) => {
         } catch (error) {
             logger.error(error);
         }
-		client.previous_view_id = body.view.id;
     });
 
 	app.action("goAlarmManageView", async ({ack, body, client, logger}) => {
@@ -123,7 +122,6 @@ export default (app) => {
 			hash: body.view.hash,
 			view : await alarmManageHomeView(seekerId),
 		});
-		client.previous_view_id = body.view.id;
 	})
 	
 	app.action("goMemberManageView", async ({ack, body, client}) => {

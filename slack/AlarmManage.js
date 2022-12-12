@@ -17,8 +17,8 @@ export default (app) => {
             logger.error(error);
         }
 		try {
-            await client.views.update({
-                view_id: client.previous_view_id,
+            await client.views.publish({
+                user_id: body.user.id,
                 view: await alarmManageHomeView(seekerId),
             });
         } catch (error) {
@@ -45,8 +45,8 @@ export default (app) => {
 		else msg = ">등록된 알람이 없습니다!\n>'알람 추가' 버튼을 눌러 새로운 알람을 등록해보세요."
 		+ "\n\n*삭제할 수 있는 알람이 없습니다.*";
 		try {
-            await client.views.update({
-                view_id: client.previous_view_id,
+            await client.views.publish({
+                user_id: body.user.id,
                 view: await alarmManageHomeView(seekerId, msg),
             });
         } catch (error) {
@@ -64,7 +64,7 @@ export default (app) => {
 		await ack();
 		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['submitAddAlarm']['selected_users'];
         const seekerId = await getClientIntraId(body, null, client);
-		
+
 		let msg = "";
 		for (const slackId of selectedUsers) {
 			const targetId = await getUserNamebySlackId(client, slackId);
@@ -73,8 +73,8 @@ export default (app) => {
 				msg = "*성공적으로 추가되었습니다*";
 		}
 		try {
-            const result = await client.views.update({
-				view_id: client.previous_view_id,
+            const result = await client.views.publish({
+				user_id: body.user.id,
 				view: await alarmManageHomeView(seekerId, msg),
 			});
         } catch (e) {
@@ -95,8 +95,8 @@ export default (app) => {
 				msg = "*성공적으로 삭제되었습니다*";
 		}
 		try {
-            const result = await client.views.update({
-				view_id: client.previous_view_id,
+            const result = await client.views.publish({
+				user_id: body.user.id,
 				view: await alarmManageHomeView(seekerId, msg),
 			});
         } catch (e) {

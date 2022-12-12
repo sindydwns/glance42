@@ -16,9 +16,10 @@ export default (app) => {
         } catch (error) {
             logger.error(error);
         }
+		// 그룹을 생성한 후 생기는 메시지가 다른 동작을 했을 때 없어지게 하기 위해
 		try {
-            const result = await client.views.update({
-				view_id: client.previous_view_id,
+            const result = await client.views.publish({
+				user_id: body.user.id,
 				view: await groupManageHomeView(seekerId),
 			});
         } catch (e) {
@@ -46,7 +47,7 @@ export default (app) => {
 		+ "\n\n*삭제할 수 있는 그룹이 없습니다.*";
 		try {
             const result = await client.views.update({
-				view_id: client.previous_view_id,
+				view_id: body.view.id,
 				view: await groupManageHomeView(seekerId, msg),
 			});
         } catch (e) {
@@ -76,8 +77,8 @@ export default (app) => {
 		if (result)
 			msg = "*성공적으로 생성되었습니다*";
 		try {
-			const result = await client.views.update({
-				view_id: client.previous_view_id,
+			const result = await client.views.publish({
+				user_id: body.user.id,
 				view: await groupManageHomeView(seekerId, msg),
 			});
 		} catch (e) {
@@ -95,8 +96,8 @@ export default (app) => {
 		if (result)
 			msg = "*성공적으로 삭제되었습니다*";
 		try {
-			const result = await client.views.update({
-				view_id: client.previous_view_id,
+			const result = await client.views.publish({
+				user_id: body.user.id,
 				view: await groupManageHomeView(seekerId, msg),
 			});
 		} catch (e) {
