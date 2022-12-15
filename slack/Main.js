@@ -66,7 +66,6 @@ export default (app) => {
         const seekerId = await getClientIntraId(body, null, client);
 
 		let targetIds = [];
-		console.log(selectedUsers);
 		for (const slackId of selectedUsers) {
 			const targetId = await getUserNamebySlackId(client, slackId);
 			targetIds.push(targetId);
