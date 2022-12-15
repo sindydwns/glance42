@@ -39,8 +39,8 @@ export default (app) => {
             logger.error(error);
         }
 		try {
-            const result = await client.views.update({
-                view_id: client.previous_view_id,
+            const result = await client.views.publish({
+                user_id: body.user.id,
 				view: await memberManageHomeView(seekerId, selectedGroup),
 			});
         } catch (e) {
@@ -68,8 +68,8 @@ export default (app) => {
 		else msg = ">선택한 그룹에 등록된 멤버가 없습니다!\n>'멤버 추가' 버튼을 눌러 새로운 멤버를 추가해보세요."
 		+ "\n\n*삭제할 수 있는 멤버가 없습니다.*";
 		try {
-            const result = await client.views.update({
-                view_id: client.previous_view_id,
+            const result = await client.views.publish({
+                user_id: body.user.id,
 				view: await memberManageHomeView(seekerId, selectedGroup, msg),
 			});
         } catch (e) {
@@ -90,8 +90,8 @@ export default (app) => {
 		}
 		try {
             const seekerId = await getClientIntraId(body, null, client);
-            const result = await client.views.update({
-				view_id: client.previous_view_id,
+            const result = await client.views.publish({
+                user_id: body.user.id,
 				view: await memberManageHomeView(seekerId, client.selected_group, msg),
 			});
         } catch (e) {
@@ -113,8 +113,8 @@ export default (app) => {
 				msg = "*성공적으로 삭제되었습니다*";
 		}
 		try {
-            const result = await client.views.update({
-                view_id: client.previous_view_id,
+            const result = await client.views.publish({
+                user_id: body.user.id,
 				view: await memberManageHomeView(seekerId, selectedGroup, msg),
 			});
         } catch (e) {
