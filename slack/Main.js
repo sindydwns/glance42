@@ -1,6 +1,6 @@
-import { reflectWhetherSelected, getUserInfo } from "../DataBase/utils.js";
+import { updateSelectedGroup, getUserInfo } from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
-import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectGlanceUserModalView } from "./views.js";
+import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectUserFromWorkspaceModalView } from "./views.js";
 import { encrypt } from "../utils.js";
 
 export default (app) => {
@@ -30,7 +30,7 @@ export default (app) => {
 			view_id: body.view.id,
 			hash: body.view.hash,
 			view: await requestRegisterHomeView(),
-			})
+		})
 	});
 	
     app.action("selectGlanceTarget", async ({ ack, body, client, logger }) => {
@@ -38,20 +38,20 @@ export default (app) => {
         const selected = body.actions[0].selected_option;
         const seekerId = await getClientIntraId(body, null, client);
 
-		if (selected.value == "selectUserFromWorkspace")
+		if (selected.value == "usersFromWorkspace")
 		{
-			await reflectWhetherSelected(seekerId, null);
+			await updateSelectedGroup(seekerId, null);
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
-					view: await selectGlanceUserModalView(),
+					view: await selectUserFromWorkspaceModalView(),
 				});
 			} catch (error) {
 				logger.error(error);
 			}
 		}
 		else {
-			await reflectWhetherSelected(seekerId, selected.value);
+			await updateSelectedGroup(seekerId, selected.value);
         	await client.views.update({
 				view_id: body.view.id,
 				hash: body.view.hash,
@@ -60,7 +60,7 @@ export default (app) => {
 		}
     });
 
-	app.view({callback_id:'callbackSelectGlanceUser', type:'view_submission'}, async ({ ack, body, view, client, logger }) => {
+	app.view({callback_id:'callbackSelectUserFromWorkspace', type:'view_submission'}, async ({ ack, body, view, client, logger }) => {
 		await ack();
 		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectDone-GlanceUser']['selected_users'];
         const seekerId = await getClientIntraId(body, null, client);
@@ -123,15 +123,15 @@ export default (app) => {
 		});
 	})
 	
-	app.action("goMemberManageView", async ({ack, body, client}) => {
-		await ack();
-		const seekerId = await getClientIntraId(body, null, client);
-		await client.views.update({
-			view_id: body.view.id,
-			hash: body.view.hash,
-			view: await memberManageHomeView(seekerId)
-		})
-	});
+	// app.action("goMemberManageView", async ({ack, body, client}) => {
+	// 	await ack();
+	// 	const seekerId = await getClientIntraId(body, null, client);
+	// 	await client.views.update({
+	// 		view_id: body.view.id,
+	// 		hash: body.view.hash,
+	// 		view: await memberManageHomeView(seekerId)
+	// 	})
+	// });
 
     app.action("goManualView", async ({ ack, body, client, logger }) => {
         try {

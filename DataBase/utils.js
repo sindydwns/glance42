@@ -131,7 +131,7 @@ export async function getGroupLocationInfo(seekerId, groupId) {
     return locationInfo;
 }
 
-export async function reflectWhetherSelected(seekerId, selectedGroupId) {
+export async function updateSelectedGroup(seekerId, selectedGroupId) {
     await connection.query("update group_list set selected=false where seeker_id=?", [seekerId]);
     if (selectedGroupId != null)
 		await connection.query("update group_list set selected=true where group_id=?", [selectedGroupId]);
