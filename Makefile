@@ -9,7 +9,7 @@ SRC = \
 	app.js \
 	error.js \
 	log.js \
-	apiDataBase.js \
+	setting.js \
 	package.json \
 	Schedule/schedule.js \
 	constants.js \
