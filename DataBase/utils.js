@@ -162,6 +162,11 @@ export async function deleteGroup(seekerId, groupId) {
 	}	
 }
 
+export async function updateGroupName(GroupId, newGroupName) {
+    await connection.query("update group_list set group_name=? where group_id=?", [newGroupName, GroupId]);
+	return (true);
+}
+
 /**
  * @param {string} groupId
  * @param {string|Array<string>} targetId 

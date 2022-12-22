@@ -168,6 +168,7 @@ export async function groupManageHomeView(seekerId, msg) {
 		...BlockActionButtons([
 			{text:"그룹 생성", value:"그룹 생성", actionId:"OpenModalAddGroup"},
 			{text:"그룹 삭제", value:"그룹 삭제", actionId:"OpenModalDelGroup"},
+			{text:"그룹 이름 변경", value:"그룹 이름 변경", actionId:"OpenModalModifyGroupName"},
 		]),
 	]));
 }
@@ -268,6 +269,18 @@ export async function delGroupModalView(seekerId) {
 	});
 	return (ModalViewTemplete("그룹 삭제", "callbackDelGroup", ([
 			BlockSingleStaicSelect("삭제할 그룹을 선택해주세요\n(해당 그룹이 완전히 삭제되며, 되돌릴 수 없습니다)", "submitDelGroup", groupList)
+		])
+	));
+}
+
+export async function modifyGroupNameModalView(seekerId) {
+	const groupList_ = await getGroupList(seekerId);
+	const groupList = groupList_.map(item => {
+		return {text:item.group_name, value:String(item.group_id)}
+	});
+	return (ModalViewTemplete("그룹 이름 변경", "callbackModifyGroupName", ([
+			BlockSingleStaicSelect("이름을 변경할 그룹을 선택해주세요", "selectModifyGroup", groupList),
+			BlockTextInput("변경할 그룹명을 입력해주세요\n(기존 그룹 이름과 중복될 수 없습니다.)", "writeModifyGroupName")
 		])
 	));
 }
