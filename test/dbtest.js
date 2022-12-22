@@ -1,7 +1,7 @@
 import assert from "assert";
 import { sequelize } from "../setting.js"
 import * as userFuncs from "../DataBase/dbuser.js"; // ekwak
-// import * as groupFuncs from "../DataBase/utils.js"; // hyeyukim
+import * as groupFuncs from "../DataBase/utils.js"; // hyeyukim
 // import * as alarmFuncs from "../DataBase/utils.js"; // sanghwal
 import { User, LocationStatus, Group, GroupMember } from "../models/index.js";
 
@@ -138,14 +138,156 @@ assert.deepEqual(
 	"타인의 그룹을 조회"
 );
 
-// groupFuncs.getSelectedGroupId();
-// groupFuncs.getGroupList();
-// groupFuncs.getMemberList();
-// groupFuncs.reflectWhetherSelected();
+
+await sequelize.sync({force: true});
+const yonshin = await userFuncs.registerNewClient("yonshin", "AAAAAAAA");
+const hyeyukim = await userFuncs.registerNewClient("hyeyukim", "BBBBBBBB");
+const sanghwal = await userFuncs.registerNewClient("sanghwal", "CCCCCCCC");
+
 // groupFuncs.insertGroup();
-// groupFuncs.deleteGroup();
+const yonshinGroup1 = await groupFuncs.insertGroup(yonshin.intraId, "yonshin group");
+assert.equal((await Group.findAll()).length, 1);
+assert.equal((await Group.findOne({ where: {intraId: "yonshin"}})).groupId, yonshinGroup1.groupId);
+assert.equal((await Group.findOne({ where: {intraId: "yonshin"}})).name, "yonshin group");
+const hyeyukimGroup1 = await groupFuncs.insertGroup(hyeyukim.intraId, "hyeyukim group");
+assert.equal((await Group.findAll()).length, 2);
+assert.equal((await Group.findOne({ where: {intraId: "yonshin"}})).groupId, yonshinGroup1.groupId);
+assert.equal((await Group.findOne({ where: {intraId: "yonshin"}})).name, "yonshin group");
+assert.equal((await Group.findOne({ where: {intraId: "hyeyukim"}})).groupId, hyeyukimGroup1.groupId);
+assert.equal((await Group.findOne({ where: {intraId: "hyeyukim"}})).name, "hyeyukim group");
+const yonshinGroup2 = await groupFuncs.insertGroup(yonshin.intraId, "sanghwal group"); // yonshin has two group
+assert.equal((await Group.findAll()).length, 3);
+assert.equal((await Group.findOne({ where: {intraId: "yonshin"}})).groupId, yonshinGroup1.groupId);
+assert.equal((await Group.findOne({ where: {intraId: "yonshin"}})).name, "yonshin group");
+assert.equal((await Group.findOne({ where: {intraId: "hyeyukim"}})).groupId, hyeyukimGroup1.groupId);
+assert.equal((await Group.findOne({ where: {intraId: "hyeyukim"}})).name, "hyeyukim group");
+assert.equal((await Group.findOne({ where: {intraId: "sanghwal"}})).groupId, yonshinGroup2.groupId);
+assert.equal((await Group.findOne({ where: {intraId: "sanghwal"}})).name, "sanghwal group");
+assert.notEqual(yonshinGroup1.groupId, hyeyukimGroup1.groupId);
+assert.notEqual(hyeyukimGroup1.groupId, yonshinGroup2.groupId);
+assert.notEqual(yonshinGroup2.groupId, yonshinGroup1.groupId);
+
 // groupFuncs.insertMember();
+await groupFuncs.insertMember(yonshinGroup1.groupId, "hyeyukim");
+assert.equal((await GroupMember.findAll()).length, 1);
+assert.deepEqual(
+	(await GroupMember.findAll({ where: {groupId: yonshinGroup1.groupId}})).map(x => x.targetId).sort(),
+	["hyeyukim"].sort()
+);
+await groupFuncs.insertMember(yonshinGroup1.groupId, ["yonshin", "sanghwal", "ekwak"]);
+assert.equal((await GroupMember.findAll()).length, 4);
+assert.deepEqual(
+	(await GroupMember.findAll({ where: {groupId: yonshinGroup1.groupId}})).map(x => x.targetId).sort(),
+	["yonshin", "hyeyukim", "sanghwal", "ekwak"].sort()
+);
+await groupFuncs.insertMember(hyeyukimGroup1.groupId, ["yonshin", "ekwak"]);
+assert.equal((await GroupMember.findAll()).length, 6);
+assert.deepEqual(
+	(await GroupMember.findAll({ where: {groupId: hyeyukimGroup1.groupId}})).map(x => x.targetId).sort(),
+	["yonshin", "ekwak"].sort()
+);
+await groupFuncs.insertMember(yonshinGroup2.groupId, ["yonshin"]);
+assert.equal((await GroupMember.findAll()).length, 7);
+assert.deepEqual(
+	(await GroupMember.findAll({ where: {groupId: yonshinGroup2.groupId}})).map(x => x.targetId).sort(),
+	["yonshin"].sort()
+);
+
+// groupFuncs.updateSelectedGroup();
+assert.equal((await Group.findAll({ where: {selected: false}})).length, 3);
+await groupFuncs.updateSelectedGroup(yonshin.intraId, yonshinGroup1.groupId);
+assert.equal((await Group.findAll({ where: {selected: false}})).length, 2);
+assert.deepEqual(
+	await Group.findOne({ where: {selected: true, intraId: yonshin.intraId, groupId: yonshinGroup1.groupId}}),
+	yonshinGroup1
+);
+await groupFuncs.updateSelectedGroup(hyeyukim.intraId, hyeyukimGroup1.groupId);
+assert.equal((await Group.findAll({ where: {selected: false}})).length, 1);
+assert.deepEqual(
+	await Group.findOne({ where: {selected: true, intraId: hyeyukim.intraId, groupId: hyeyukimGroup1.groupId}}),
+	hyeyukimGroup1
+);
+await groupFuncs.updateSelectedGroup(yonshin.intraId, yonshinGroup2.groupId);
+assert.equal((await Group.findAll({ where: {selected: false}})).length, 1);
+assert.deepEqual(
+	await Group.findOne({ where: {selected: true, intraId: yonshin.intraId, groupId: yonshinGroup2.groupId}}),
+	yonshinGroup2
+);
+await groupFuncs.updateSelectedGroup(yonshin.intraId, hyeyukimGroup1.groupId);
+assert.equal((await Group.findAll({ where: {selected: false}})).length, 1);
+assert.deepEqual(
+	await Group.findOne({ where: {selected: true, intraId: hyeyukim.intraId, groupId: hyeyukimGroup1.groupId}}),
+	hyeyukimGroup1
+);
+assert.deepEqual(
+	await Group.findOne({ where: {selected: true, intraId: yonshin.intraId, groupId: yonshinGroup2.groupId}}),
+	yonshinGroup2
+);
+
+// groupFuncs.getSelectedGroupId();
+assert.deepEqual(
+	await groupFuncs.getSelectedGroupId(yonshin.intraId),
+	yonshinGroup2
+);
+assert.deepEqual(
+	await groupFuncs.getSelectedGroupId(hyeyukim.intraId),
+	hyeyukimGroup1
+);
+assert.ok((await groupFuncs.getSelectedGroupId(sanghwal.intraId)) == null);
+
+// groupFuncs.getGroupList();
+assert.deepEqual(
+	await groupFuncs.getGroupList(yonshin.intraId)?.map(x => x.groupId).sort(),
+	[yonshinGroup1.groupId, yonshinGroup2.groupId].sort()
+);
+assert.deepEqual(
+	await groupFuncs.getGroupList(hyeyukim.intraId)?.map(x => x.groupId).sort(),
+	[hyeyukimGroup1.groupId].sort()
+);
+assert.deepEqual(
+	await groupFuncs.getGroupList(sanghwal.intraId)?.map(x => x.groupId).sort(),
+	[].sort()
+);
+assert.deepEqual(
+	await groupFuncs.getGroupList("")?.map(x => x.groupId).sort(),
+	[].sort()
+);
+
+// groupFuncs.getMemberList();
+assert.deepEqual(
+	(await groupFuncs.getMemberList(yonshinGroup1.groupId)).sort(),
+	["yonshin", "hyeyukim", "sanghwal", "ekwak"].sort()
+);
+assert.deepEqual(
+	(await groupFuncs.getMemberList(hyeyukimGroup1.groupId)).sort(),
+	["yonshin", "ekwak"].sort()
+);
+assert.deepEqual(
+	(await groupFuncs.getMemberList(yonshinGroup2.groupId)).sort(),
+	["yonshin"].sort()
+);
+
 // groupFuncs.deleteMember();
+await groupFuncs.deleteMember(yonshinGroup1.groupId, "ekwak");
+assert.deepEqual(
+	(await groupFuncs.getMemberList(yonshinGroup1.groupId)).sort(),
+	["yonshin", "hyeyukim", "sanghwal"].sort()
+);
+assert.deepEqual(
+	(await groupFuncs.getMemberList(hyeyukimGroup1.groupId)).sort(),
+	["yonshin", "ekwak"].sort()
+);
+
+// groupFuncs.deleteGroup();
+await groupFuncs.deleteGroup(yonshin.intraId, yonshinGroup1.groupId);
+assert.ok(await Group.findOne({ where: {groupId: yonshinGroup1.groupId}}) == null);
+assert.ok(await GroupMember.findOne({ where: {groupId: yonshinGroup1.groupId}}) == null);
+assert.ok(await Group.findOne({ where: {groupId: hyeyukimGroup1.groupId}}) != null);
+assert.ok(await GroupMember.findOne({ where: {groupId: hyeyukimGroup1.groupId}}) != null);
+assert.ok(await Group.findOne({ where: {groupId: yonshinGroup2.groupId}}) != null);
+assert.ok(await GroupMember.findOne({ where: {groupId: yonshinGroup2.groupId}}) != null);
+
+
 
 // alarmFuncs.getAlarmList();
 // alarmFuncs.insertAlarm();
