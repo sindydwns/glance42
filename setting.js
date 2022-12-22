@@ -9,8 +9,5 @@ export const sequelize = new Sequelize({
     database: process.env.DEV_MODE ? process.env.DEV_DB_DATA : process.env.DB_DATA,
     host: process.env.DEV_MODE ? process.env.DEV_DB_HOST : process.env.DB_HOST,
     dialect: "mysql",
-    dialectOptions: {
-        ssl: {trustServerCertificate: true}
-    },
 });
 export default sequelize;
