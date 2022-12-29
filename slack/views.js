@@ -168,6 +168,7 @@ export async function groupManageHomeView(seekerId, msg) {
 		...BlockActionButtons([
 			{text:"그룹 생성", value:"그룹 생성", actionId:"OpenModalAddGroup"},
 			{text:"그룹 삭제", value:"그룹 삭제", actionId:"OpenModalDelGroup"},
+			{text:"그룹 이름 변경", value:"그룹 이름 변경", actionId:"OpenModalModifyGroupName"},
 		]),
 	]));
 }

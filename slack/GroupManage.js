@@ -1,6 +1,6 @@
-import { getGroupList, insertGroup, deleteGroup, isRegisteredGroupName } from "../DataBase/utils.js";
+import { getGroupList, insertGroup, deleteGroup, updateGroupName,isRegisteredGroupName } from "../DataBase/utils.js";
 import { getClientIntraId } from "./utils/data.js";
-import { groupManageHomeView, addGroupModalView, delGroupModalView } from "./views.js";
+import { groupManageHomeView, addGroupModalView, delGroupModalView, modifyGroupNameModalView } from "./views.js";
 
 export default (app) => {
 
@@ -49,6 +49,28 @@ export default (app) => {
             const result = await client.views.update({
 				view_id: body.view.id,
 				view: await groupManageHomeView(seekerId, msg),
+			});
+        } catch (e) {
+            logger.error(e);
+        }
+    });
+
+    app.action("OpenModalModifyGroupName", async ({ ack, body, client, logger }) => {
+        await ack();
+        const seekerId = await getClientIntraId(body, null, client);
+
+        try {
+            const result = await client.views.open({
+                trigger_id: body.trigger_id,
+                view: await modifyGroupNameModalView(seekerId),
+            });
+        } catch (error) {
+            logger.error(error);
+        }
+		try {
+            const result = await client.views.publish({
+				user_id: body.user.id,
+				view: await groupManageHomeView(seekerId),
 			});
         } catch (e) {
             logger.error(e);
@@ -106,4 +128,30 @@ export default (app) => {
 			logger.error(e);
 		}
 	});
+
+	app.view({callback_id: 'callbackModifyGroupName', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
+		await ack();
+		const modyfyGroupId = view['state']['values'][view.blocks[0].block_id]["selectModifyNameGroup"]["selected_option"]['value'];
+		const modyfyGroupName = view['state']['values'][view.blocks[1].block_id]["writeModifyGroupName"]['value'];
+		const seekerId = await getClientIntraId(body, null, client);
+
+		let msg = "";
+		const result = await updateGroupName(modyfyGroupId, modyfyGroupName);
+		if (result)
+			msg = "*성공적으로 수정되었습니다*";
+		try {
+			const result = await client.views.publish({
+				user_id: body.user.id,
+				view: await groupManageHomeView(seekerId, msg),
+			});
+		} catch (e) {
+			logger.error(e);
+		}
+	});
+
+	app.action("writeModifyGroupName", async ({ ack, body, client, logger}) => {
+		await ack();
+		// 적은 그룹 이름에 대한 valid check하기 (이미 있는 그룹명과 중복되지 않는지 확인)
+	});
+
 }
