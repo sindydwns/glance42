@@ -249,7 +249,7 @@ export async function manualHomeView() {
 export async function selectUserFromWorkspaceModalView() {
 	return (ModalViewTemplete("워크스페이스에서 유저 선택", "callbackSelectUserFromWorkspace", ([
 			BlockMultiUsersSelect("염탐할 유저를 선택해주세요.\n(물론, 카뎃만 선택 가능합니다!)",
-			 "selectDone-GlanceUser")
+			 "selectGlanceUser")
 		])
 	));
 }
@@ -267,7 +267,19 @@ export async function delGroupModalView(seekerId) {
 		return {text:item.group_name, value:String(item.group_id)}
 	});
 	return (ModalViewTemplete("그룹 삭제", "callbackDelGroup", ([
-			BlockSingleStaicSelect("삭제할 그룹을 선택해주세요\n(해당 그룹이 완전히 삭제되며, 되돌릴 수 없습니다)", "submitDelGroup", groupList)
+			BlockSingleStaicSelect("삭제할 그룹을 선택해주세요\n(해당 그룹이 완전히 삭제되며, 되돌릴 수 없습니다)", "selectDelGroup", groupList)
+		])
+	));
+}
+
+export async function modifyGroupNameModalView(seekerId) {
+	const groupList_ = await getGroupList(seekerId);
+	const groupList = groupList_.map(item => {
+		return {text:item.group_name, value:String(item.group_id)}
+	});
+	return (ModalViewTemplete("그룹 이름 변경", "callbackModifyGroupName", ([
+			BlockSingleStaicSelect("이름을 변경할 그룹을 선택해주세요", "selectModifyNameGroup", groupList),
+			BlockTextInput("변경할 그룹명을 입력해주세요", "writeModifyGroupName")
 		])
 	));
 }
@@ -275,7 +287,7 @@ export async function delGroupModalView(seekerId) {
 export async function addAlarmModalView() {
 	return (ModalViewTemplete("알람 추가", "callbackAddAlarm", ([
 			BlockMultiUsersSelect("알람을 받을 유저를 선택해주세요\n(물론, 카뎃만 선택 가능합니다!)",
-			 "submitAddAlarm")
+			 "selectAddAlarm")
 		])
 	));
 }
@@ -286,7 +298,7 @@ export async function delAlarmModalView(seekerId) {
 		return {text:item.target_id, value:String(item.target_id)}
 	});
 	return (ModalViewTemplete("알람 삭제", "callbackDelAlarm", ([
-			BlockMultiStaicSelect("삭제할 알람을 선택해주세요", "submitDelAlarm", alarmList)
+			BlockMultiStaicSelect("삭제할 알람을 선택해주세요", "selectDelAlarm", alarmList)
 		])
 	));
 }
@@ -294,7 +306,7 @@ export async function delAlarmModalView(seekerId) {
 export async function addMemberModalView() {
 	return (ModalViewTemplete("멤버 추가", "callbackAddMember", ([
 			BlockMultiUsersSelect("멤버로 추가할 유저를 선택해주세요\n(물론, 카뎃만 선택 가능합니다!)",
-			 "submitAddMember")
+			 "selectAddMember")
 		])
 	));
 }
@@ -305,7 +317,7 @@ export async function delMemberModalView(groupId) {
 		return {text:item.target_id, value:String(item.target_id)}
 	});
 	return (ModalViewTemplete("멤버 삭제", "callbackDelMember", ([
-			BlockMultiStaicSelect("그룹에서 삭제할 멤버를 선택해주세요", "submitDelMember", memberList)
+			BlockMultiStaicSelect("그룹에서 삭제할 멤버를 선택해주세요", "selectDelMember", memberList)
 		])
 	));
 }

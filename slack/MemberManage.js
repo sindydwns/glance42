@@ -56,7 +56,7 @@ export default (app) => {
 
 	app.view({callback_id:'callbackAddMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['submitAddMember']['selected_users'];
+		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectAddMember']['selected_users'];
 		const seekerId = await getClientIntraId(body, null, client);
 		const selectedGroupId = await getSelectedGroupId(seekerId);
 
@@ -80,7 +80,7 @@ export default (app) => {
 
 	app.view({callback_id:'callbackDelMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const selectedMembers = view['state']['values'][view.blocks[0].block_id]['submitDelMember']['selected_options']
+		const selectedMembers = view['state']['values'][view.blocks[0].block_id]['selectDelMember']['selected_options']
 		.map((x) => (x.value));
 		const seekerId = await getClientIntraId(body, null, client);
 		const selectedGroupId = await getSelectedGroupId(seekerId);

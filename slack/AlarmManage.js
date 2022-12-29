@@ -62,7 +62,7 @@ export default (app) => {
 
 	app.view({callback_id:'callbackAddAlarm', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['submitAddAlarm']['selected_users'];
+		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectAddAlarm']['selected_users'];
         const seekerId = await getClientIntraId(body, null, client);
 
 		let msg = "";
@@ -84,7 +84,7 @@ export default (app) => {
 
 	app.view({callback_id: 'callbackDelAlarm', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const inputVal = view['state']['values'][view.blocks[0].block_id]['submitDelAlarm']['selected_options']
+		const inputVal = view['state']['values'][view.blocks[0].block_id]['selectDelAlarm']['selected_options']
 		.map((x) => (x.value));
         const seekerId = await getClientIntraId(body, null, client);
 		

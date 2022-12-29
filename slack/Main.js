@@ -62,7 +62,7 @@ export default (app) => {
 
 	app.view({callback_id:'callbackSelectUserFromWorkspace', type:'view_submission'}, async ({ ack, body, view, client, logger }) => {
 		await ack();
-		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectDone-GlanceUser']['selected_users'];
+		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectGlanceUser']['selected_users'];
         const seekerId = await getClientIntraId(body, null, client);
 
 		let targetIds = [];
@@ -80,7 +80,7 @@ export default (app) => {
 		}
 	});
 
-    app.action("selectDone-GlanceUser", async ({ ack, body, client, logger }) => {
+    app.action("selectGlanceUser", async ({ ack, body, client, logger }) => {
 		await ack();
 		// const selectedUsers = view['state']['values'][view.blocks[0].block_id];
 		console.log("유저 하나 선택...");

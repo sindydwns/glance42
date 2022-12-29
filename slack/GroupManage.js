@@ -61,7 +61,7 @@ export default (app) => {
 		// 적은 그룹 이름에 대한 valid check하기 (이미 있는 그룹명과 중복되지 않는지 확인)
 	});
 
-	app.action("submitDelGroup", async ({ ack, body, client, logger}) => {
+	app.action("selectDelGroup", async ({ ack, body, client, logger}) => {
 		await ack();
 		console.log("정말 지우시겠습니까");
 		// 그룹 삭제에 대한 경고하기 (정말 지우시겠습니까?)
@@ -88,7 +88,7 @@ export default (app) => {
 	
 	app.view({callback_id:'callbackDelGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitDelGroup"]['selected_option'].value;
+		const inputVal = view['state']['values'][view.blocks[0].block_id]["selectDelGroup"]['selected_option'].value;
         const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = '';
