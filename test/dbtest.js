@@ -3,7 +3,7 @@ import { sequelize } from "../setting.js"
 import * as userFuncs from "../DataBase/dbuser.js"; // ekwak
 import * as groupFuncs from "../DataBase/groupManage.js"; // hyeyukim
 // import * as alarmFuncs from "../DataBase/utils.js"; // sanghwal
-import { User, LocationStatus, Group, GroupMember } from "../models/index.js";
+import { User, LocationStatus, Group, GroupMember, Alarm, StatisticsHost } from "../models/index.js";
 
 const strcmp = (str1, str2) => str1 < str2 ? -1 : str1 > str2 ? 1 : 0;
 const sortByTargetId = (o1, o2) => strcmp(o1.targetId, o2.targetId);
@@ -292,18 +292,29 @@ async function test2() {
 	assert.ok(await Group.findOne({ where: {groupId: yonshinGroup2.groupId}}) != null);
 	assert.ok(await GroupMember.findOne({ where: {groupId: yonshinGroup2.groupId}}) != null);
 }
+/*
 async function test3() {
 	await sequelize.sync({force: true});
+	const yonshin = User.create({intraId: "yonshin", slackId: "AAAAAAAA"});
+	const sanghwal = User.create({intraId: "sanghwal", slackId: "BBBBBBBB"});
+	const ekwak = User.create({intraId: "ekwak", slackId: "CCCCCCCC"});
 
-	// alarmFuncs.getAlarmList();
-	
 	// alarmFuncs.insertAlarm();
-	// alarmFuncs.deleteAlarm();
+	await alarmFuncs.insertAlarm(yonshin.intraId, ekwak.intraId, yonshin.slackId);
+	assert.equal((await Alarm.findAll({ where: {intraId: yonshin.intraId}})).length, 1);
+	assert.equal((await Alarm.findAll({ where: {targetId: yonshin.intraId}})).length, 1);
+	await alarmFuncs.insertAlarm(yonshin.intraId, ekwak.intraId, yonshin.slackId);
+
+	await alarmFuncs.insertAlarm(yonshin.intraId, ekwak.intraId, yonshin.slackId);
+	// alarmFuncs.getAlarmList();
+	await alarmFuncs.getAlarmList();
 	// alarmFuncs.getAllReservedAlarm();
-	// alarmFuncs.insertStatisticHost();
 	// alarmFuncs.deleteReservedAlarm();
+	// alarmFuncs.deleteAlarm();
+	// alarmFuncs.insertStatisticHost();
 	// alarmFuncs.insertErrorLog();
 }
+*/
 test2();
 
 
