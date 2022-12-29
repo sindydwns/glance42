@@ -113,7 +113,7 @@ async function test1() {
 	GroupMember.create({groupId: createdGroup3.groupId, targetId: "hyeyukim"});
 	GroupMember.create({groupId: createdGroup3.groupId, targetId: "sanghwal"});
 	const createdGroup4 = await Group.create({intraId: "ekwak", name: "test group 4"});
-	assert.equal(await userFuncs.getGroupLocationInfo("yonshin", createdGroup1.groupId), );
+
 	assert.deepEqual(
 		(await userFuncs.getGroupLocationInfo("yonshin", createdGroup1.groupId)).sort(sortByTargetId),
 		[{targetId:"ekwak", host:"c2r2s2"}, {targetId:"hyeyukim", host:"c3r3s3"}].sort(sortByTargetId),

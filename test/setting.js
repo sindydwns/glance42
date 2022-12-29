@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import process from "process";
 import dotenv from "dotenv";
-import setTestEnv from "./test/env.path.js";
+import setTestEnv from "./env.path.js";
 
 setTestEnv();
 export const sequelize = new Sequelize({
