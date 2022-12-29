@@ -280,7 +280,7 @@ export async function modifyGroupNameModalView(seekerId) {
 	});
 	return (ModalViewTemplete("그룹 이름 변경", "callbackModifyGroupName", ([
 			BlockSingleStaicSelect("이름을 변경할 그룹을 선택해주세요", "selectModifyGroup", groupList),
-			BlockTextInput("변경할 그룹명을 입력해주세요\n(기존 그룹 이름과 중복될 수 없습니다.)", "writeModifyGroupName")
+			BlockTextInput("변경할 그룹명을 입력해주세요", "writeModifyGroupName")
 		])
 	));
 }
