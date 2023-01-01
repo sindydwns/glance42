@@ -1,4 +1,4 @@
-import { getMemberList, insertMember, deleteMember, getSelectedGroupId } from "../DataBase/utils.js";
+import { getMemberList, insertMember, deleteMember, getSelectedGroupId, selectDuplicatedGroupMember } from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { mainHomeView, memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 
@@ -55,20 +55,27 @@ export default (app) => {
     });
 
 	app.view({callback_id:'callbackAddMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
-		await ack();
-		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectAddMember']['selected_users'];
+		const selectedUsersSlackId = view['state']['values'][view.blocks[0].block_id]['selectAddMember']['selected_users'];
+		const selectedUsersIntraId = await Promise.all(selectedUsersSlackId.map(x => getUserNamebySlackId(client, x)));
 		const seekerId = await getClientIntraId(body, null, client);
 		const selectedGroupId = await getSelectedGroupId(seekerId);
+		const duplicatedGroupMember = await selectDuplicatedGroupMember(selectedGroupId, selectedUsersIntraId);
 
+		if (duplicatedGroupMember.length != 0) {
+			const duplicatedGroupMemberStr = duplicatedGroupMember.map(x => `'${x.target_id}'`).join(", ");
+			await ack({response_action:"errors", errors:{
+				"multiUsersSelect-groupMember": `${duplicatedGroupMemberStr}는 선택한 그룹에 이미 존재하는 멤버입니다.`
+				}});
+			return ;
+		}
+		await ack();
 		let msg = "";
-		for (const slackId of selectedUsers) {
-			const targetId = await getUserNamebySlackId(client, slackId);
+		for (const targetId of selectedUsersIntraId) {
 			const result = await insertMember(selectedGroupId, targetId); 
 			if (result)
 				msg = "*성공적으로 추가되었습니다*";
 		}
 		try {
-            const seekerId = await getClientIntraId(body, null, client);
             const result = await client.views.publish({
                 user_id: body.user.id,
 				view: await mainHomeView(seekerId, null, msg),

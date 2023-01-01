@@ -249,14 +249,14 @@ export async function manualHomeView() {
 export async function selectUserFromWorkspaceModalView() {
 	return (ModalViewTemplete("워크스페이스에서 유저 선택", "callbackSelectUserFromWorkspace", ([
 			BlockMultiUsersSelect("염탐할 유저를 선택해주세요.\n(물론, 카뎃만 선택 가능합니다!)",
-			 "selectGlanceUser")
+			 "selectGlanceUser", "multiUsersSelect-glanceUser")
 		])
 	));
 }
 
 export async function addGroupModalView() {
 	return (ModalViewTemplete("그룹 추가", "callbackAddGroup", ([
-			BlockTextInput("추가할 그룹명을 입력해주세요", "writeAddGroupName")
+			BlockTextInput("추가할 그룹명을 입력해주세요", "writeAddGroupName", "textInput-groupName"),
 		])
 	));
 }
@@ -279,7 +279,7 @@ export async function modifyGroupNameModalView(seekerId) {
 	});
 	return (ModalViewTemplete("그룹 이름 변경", "callbackModifyGroupName", ([
 			BlockSingleStaicSelect("이름을 변경할 그룹을 선택해주세요", "selectModifyNameGroup", groupList),
-			BlockTextInput("변경할 그룹명을 입력해주세요", "writeModifyGroupName")
+			BlockTextInput("변경할 그룹명을 입력해주세요", "writeModifyGroupName", "textInput-groupName")
 		])
 	));
 }
@@ -287,7 +287,7 @@ export async function modifyGroupNameModalView(seekerId) {
 export async function addAlarmModalView() {
 	return (ModalViewTemplete("알람 추가", "callbackAddAlarm", ([
 			BlockMultiUsersSelect("알람을 받을 유저를 선택해주세요\n(물론, 카뎃만 선택 가능합니다!)",
-			 "selectAddAlarm")
+			 "selectAddAlarm", "multiUsersSelect-alarm")
 		])
 	));
 }
@@ -306,7 +306,7 @@ export async function delAlarmModalView(seekerId) {
 export async function addMemberModalView() {
 	return (ModalViewTemplete("멤버 추가", "callbackAddMember", ([
 			BlockMultiUsersSelect("멤버로 추가할 유저를 선택해주세요\n(물론, 카뎃만 선택 가능합니다!)",
-			 "selectAddMember")
+			 "selectAddMember", "multiUsersSelect-groupMember")
 		])
 	));
 }

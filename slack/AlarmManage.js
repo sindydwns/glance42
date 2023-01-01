@@ -1,5 +1,5 @@
-import { getAlarmList, insertAlarm,  deleteAlarm } from "../DataBase/utils.js";
-import { getClientIntraId, getUserNamebySlackId} from "./utils/data.js";
+import { getAlarmList, insertAlarm,  deleteAlarm, selectDuplicatedAlarm } from "../DataBase/utils.js";
+import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { alarmManageHomeView, addAlarmModalView, delAlarmModalView } from "./views.js";
 
 export default (app) => {
@@ -54,20 +54,22 @@ export default (app) => {
         }
     });
 
-	app.action("validCheck-SelectUser", async ({ ack, body, client, logger}) => {
-		await ack();
-		console.log("Maybe this is for error check of selected value?");
-		// 선택한 워크스페이스 유저에 대한 valid check하기 (user_list에 속한 id인지 확인)
-	});
-
 	app.view({callback_id:'callbackAddAlarm', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
-		await ack();
-		const selectedUsers = view['state']['values'][view.blocks[0].block_id]['selectAddAlarm']['selected_users'];
+		const selectedUsersSlackId = view['state']['values'][view.blocks[0].block_id]['selectAddAlarm']['selected_users'];
+		const selectedUsersIntraId = await Promise.all(selectedUsersSlackId.map(x => getUserNamebySlackId(client, x)));
         const seekerId = await getClientIntraId(body, null, client);
+		const duplicatedAlarm = await selectDuplicatedAlarm(seekerId, selectedUsersIntraId);
 
+		if (duplicatedAlarm.length != 0) {
+			const duplicatedAlarmStr = duplicatedAlarm.map(x => `'${x.target_id}'`).join(", ");
+			await ack({response_action:"errors", errors:{
+				"multiUsersSelect-alarm": `${duplicatedAlarmStr}는 이미 등록된 알람입니다.`
+				}});
+			return ;
+		}
+		await ack();
 		let msg = "";
-		for (const slackId of selectedUsers) {
-			const targetId = await getUserNamebySlackId(client, slackId);
+		for (const targetId of selectedUsersIntraId) {
 			const result = await insertAlarm(seekerId, targetId); 
 			if (result)
 				msg = "*성공적으로 추가되었습니다*";

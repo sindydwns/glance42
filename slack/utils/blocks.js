@@ -144,11 +144,12 @@ export function BlockLinkButton(descText, item, actionId) {
 
 /* ---------------------------- INPUT BLOCKS --------------------------------- */
 
-export function BlockTextInput(labelText, actionId) {
+export function BlockTextInput(labelText, actionId, blockId = "textInput") {
     if (labelText == null || labelText == "" || actionId == null || actionId == "") return [];
 	return {
 		"dispatch_action": true,
 		"type": "input",
+		"block_id": blockId,
 		"element": {
 			"type": "plain_text_input",
 			"dispatch_action_config": {
@@ -231,9 +232,10 @@ export function BlockMultiStaicSelect(labelText, actionId, items) {
 	}
 }
 
-export function BlockMultiUsersSelect(labelText, actionId) {
+export function BlockMultiUsersSelect(labelText, actionId, blockId = "multiUsersSelect") {
     return {
 		"type": "input",
+		"block_id": blockId,
 		"element": {
 			"type": "multi_users_select",
 			"placeholder": {
