@@ -70,13 +70,13 @@ async function BlocklocationInfo(locationInfo, selectedGroupId)
 	}
 }
 
-export async function mainHomeView(seekerId, justSelectedUsers) {
-	const groupList_ = await getGroupList(seekerId);
+export async function mainHomeView(intraId, justSelectedUsers) {
+	const groupList_ = await getGroupList(intraId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
 	});
 	groupList.push({text:"워크스페이스에서 유저 선택...", value:"selectUserFromWorkspace"});
-	const selectedGroupId = await getSelectedGroupId(seekerId);
+	const selectedGroupId = await getSelectedGroupId(intraId);
 	const initialSelect = groupList.filter((item) => item.selected)[0];
 	
 	let locationInfo = null;
@@ -84,7 +84,7 @@ export async function mainHomeView(seekerId, justSelectedUsers) {
 		locationInfo = await getUsersLocationInfo(justSelectedUsers);
 	}
 	else if (selectedGroupId != "") {
-		locationInfo = await getGroupLocationInfo(seekerId, selectedGroupId);
+		locationInfo = await getGroupLocationInfo(intraId, selectedGroupId);
 	}
 
 	const timeStamp = () => {
@@ -144,8 +144,8 @@ export async function requestRegisterHomeView() {
 }
 
 
-export async function groupManageHomeView(seekerId, msg) {
-	const groupList_ = await getGroupList(seekerId);
+export async function groupManageHomeView(intraId, msg) {
+	const groupList_ = await getGroupList(intraId);
 	const groupList = groupList_.map(x=>x.group_name);
 	if (groupList.length == 0 && msg == null)
 		msg = ">생성된 그룹이 없습니다!\n>'그룹 생성' 버튼을 눌러 새로운 그룹을 생성해보세요.";
@@ -189,8 +189,8 @@ export async function alarmManageHomeView(seekerId, msg) {
 	]);
 }
 
-export async function memberManageHomeView(seekerId, selectGroup, msg) {
-	const groupList_ = await getGroupList(seekerId);
+export async function memberManageHomeView(intraId, selectGroup, msg) {
+	const groupList_ = await getGroupList(intraId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
 	});
@@ -256,8 +256,8 @@ export async function addGroupModalView() {
 	));
 }
 
-export async function delGroupModalView(seekerId) {
-	const groupList_ = await getGroupList(seekerId);
+export async function delGroupModalView(intraId) {
+	const groupList_ = await getGroupList(intraId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id)}
 	});

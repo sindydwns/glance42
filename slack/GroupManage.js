@@ -28,15 +28,15 @@ export default (app) => {
 
     app.action("OpenModalDelGroup", async ({ ack, body, client, logger }) => {
         await ack();
-        const seekerId = await getClientIntraId(body, null, client);
+        const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
-		if (await getGroupList(seekerId) != "")
+		if (await getGroupList(intraId) != "")
 		{
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
-					view: await delGroupModalView(seekerId),
+					view: await delGroupModalView(intraId),
 				});
 			} catch (error) {
 				logger.error(error);
@@ -47,7 +47,7 @@ export default (app) => {
 		try {
             const result = await client.views.update({
 				view_id: client.previous_view_id,
-				view: await groupManageHomeView(seekerId, msg),
+				view: await groupManageHomeView(intraId, msg),
 			});
         } catch (e) {
             logger.error(e);
@@ -69,16 +69,16 @@ export default (app) => {
 	app.view({callback_id: 'callbackAddGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["writeAddGroupName"]['value'];
-        const seekerId = await getClientIntraId(body, null, client);
+        const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
-		const result = await insertGroup(seekerId, inputVal);
+		const result = await insertGroup(intraId, inputVal);
 		if (result)
 			msg = "*성공적으로 생성되었습니다*";
 		try {
 			const result = await client.views.update({
 				view_id: client.previous_view_id,
-				view: await groupManageHomeView(seekerId, msg),
+				view: await groupManageHomeView(intraId, msg),
 			});
 		} catch (e) {
 			logger.error(e);
@@ -88,16 +88,16 @@ export default (app) => {
 	app.view({callback_id:'callbackDelGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitDelGroup"]['selected_option'].value;
-        const seekerId = await getClientIntraId(body, null, client);
+        const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = '';
-		const result = await deleteGroup(seekerId, inputVal);
+		const result = await deleteGroup(intraId, inputVal);
 		if (result)
 			msg = "*성공적으로 삭제되었습니다*";
 		try {
 			const result = await client.views.update({
 				view_id: client.previous_view_id,
-				view: await groupManageHomeView(seekerId, msg),
+				view: await groupManageHomeView(intraId, msg),
 			});
 		} catch (e) {
 			logger.error(e);
