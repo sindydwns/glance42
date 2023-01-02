@@ -73,9 +73,9 @@ async function BlocklocationInfo(locationInfo, selectedType)
 	}
 }
 
-export async function mainHomeView(seekerId, selectedUsersFromWorkspace, msg) {
+export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 	const selectedType =  (selectedUsersFromWorkspace ? "selectUserFromWorkspace" : "selectGroup");
-	const groupList = await getGroupList(seekerId);
+	const groupList = await getGroupList(intraId);
 	const selectOptionList = groupList.map(item => {
 		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
 	});
@@ -90,7 +90,7 @@ export async function mainHomeView(seekerId, selectedUsersFromWorkspace, msg) {
 		locationInfo = await getUsersLocationInfo(selectedUsersFromWorkspace);
 	else
 	{
-		locationInfo = await getGroupLocationInfo(seekerId, initialSelect.value);
+		locationInfo = await getGroupLocationInfo(intraId, initialSelect.value);
 		memberManageButtonsBlock = BlockActionButtons([
 			{text:"멤버 추가", value:"멤버 추가", actionId:"OpenModalAddMember"},
 			{text:"멤버 삭제", value:"멤버 삭제", actionId:"OpenModalDelMember"},]);
@@ -150,8 +150,9 @@ export async function requestRegisterHomeView() {
 	);
 }
 
-export async function groupManageHomeView(seekerId, msg) {
-	const groupList_ = await getGroupList(seekerId);
+
+export async function groupManageHomeView(intraId, msg) {
+	const groupList_ = await getGroupList(intraId);
 	const groupList = groupList_.map(x=>x.group_name);
 	if (groupList.length == 0 && msg == null)
 		msg = ">생성된 그룹이 없습니다!\n>'그룹 생성' 버튼을 눌러 새로운 그룹을 생성해보세요.";
@@ -173,9 +174,9 @@ export async function groupManageHomeView(seekerId, msg) {
 	]));
 }
 
-export async function alarmManageHomeView(seekerId, msg) {
-	const alarmList_ = await getAlarmList(seekerId);
-	const alarmList = alarmList_.map(x=>x.target_id);
+export async function alarmManageHomeView(intraId, msg) {
+	const alarmList_ = await getAlarmList(intraId);
+	const alarmList = alarmList_.map(x=>x.targetId);
 	if (alarmList.length == 0 && msg == null)
 		msg = ">등록된 알람이 없습니다!\n>'알람 추가' 버튼을 눌러 새로운 알람을 등록해보세요.";
 	return HomeViewTemplete([
@@ -195,8 +196,8 @@ export async function alarmManageHomeView(seekerId, msg) {
 	]);
 }
 
-export async function memberManageHomeView(seekerId, selectGroup, msg) {
-	const groupList_ = await getGroupList(seekerId);
+export async function memberManageHomeView(intraId, selectGroup, msg) {
+	const groupList_ = await getGroupList(intraId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
 	});
@@ -262,8 +263,8 @@ export async function addGroupModalView() {
 	));
 }
 
-export async function delGroupModalView(seekerId) {
-	const groupList_ = await getGroupList(seekerId);
+export async function delGroupModalView(intraId) {
+	const groupList_ = await getGroupList(intraId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id)}
 	});
@@ -293,10 +294,10 @@ export async function addAlarmModalView() {
 	));
 }
 
-export async function delAlarmModalView(seekerId) {
-	const alarmList_ = await getAlarmList(seekerId);
+export async function delAlarmModalView(intraId) {
+	const alarmList_ = await getAlarmList(intraId);
 	const alarmList = alarmList_.map(item => {
-		return {text:item.target_id, value:String(item.target_id)}
+		return {text:item.targetId, value:String(item.targetId)}
 	});
 	return (ModalViewTemplete("알람 삭제", "callbackDelAlarm", ([
 			BlockMultiStaicSelect("삭제할 알람을 선택해주세요", "selectDelAlarm", alarmList)

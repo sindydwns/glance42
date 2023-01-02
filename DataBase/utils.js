@@ -1,6 +1,7 @@
-import pool from "../apiDataBase.js";
+import pool from "../setting.js";
 
 export const connection = await pool.getConnection(async (conn) => conn);
+
 
 export async function replaceLocationStatus(table) {
 	if (table == null)
@@ -19,7 +20,7 @@ export async function replaceLocationStatus(table) {
 		return (false);
 	}
 }
-
+ 
 export async function deleteAllLocationTable() {
 	try {
 		await connection.query("delete from location_status");
@@ -30,7 +31,6 @@ export async function deleteAllLocationTable() {
 		return (false);
 	}
 }
-
 /**
  * @param {Array<string>} targets intra ids. if null delete all.
  * @returns 
@@ -51,14 +51,20 @@ export async function deleteLocationTable(targets) {
 		return (false);
 	}
 }
+export async function isExistIntraId(clientIntraId) {
+	const [exist, ...other] = await connection.query(
+        "select exists(select * from user_list where intra_id=?) as registered;",
+        [clientIntraId]
+    );
+	return (exist[0]["registered"])
+}
+export async function registerNewClient(clientIntraId, clientSlackId) {
+	if (await isExistIntraId(clientIntraId) == false)
+		await connection.query("insert into user_list(intra_id, slack_id) values(?, ?)", [clientIntraId, clientSlackId]);
+	else
+		await connection.query("update user_list set slack_id=? where intra_id=?", [clientSlackId, clientIntraId]);
+}
 
-// export async function insertAlarm(seekerId, targetId, slackId) {
-//     await connection.query("insert into alarm(seeker_id, target_id, slack_id) values(?, ?, ?)", [seekerId, targetId, slackId]);
-// }
-
-// export async function deleteAlarm(seekerId, targetId) {
-//     await connection.query("delete from alarm where seeker_id = ? and target_id = ?", seekerId, targetId);
-// }
 
 export async function getIntraIdbySlackId(slackId) {
 	const [intra_id, ...other] = await connection.query(
@@ -69,21 +75,42 @@ export async function getIntraIdbySlackId(slackId) {
     const returnVal = intra_id[0].intra_id;
     return returnVal;
 }
+//쿼리 개선 필요
+export async function getUsersLocationInfo(targetIds) {
+	let locationInfo = [];
+	for (const targetId of targetIds) {
+		const [host, ...other] = await connection.query("select target_id, host from location_status where target_id=?", [targetId]);
+		if (host[0] == null)
+			locationInfo.push({target_id: targetId, host: null});
+		else
+			locationInfo.push(host[0]);
+	}
+    return locationInfo;
+}
+export async function getGroupLocationInfo(seekerId, groupId) {
+    const [locationInfo, ...other] = await connection.query(
+        "select gm.target_id, ls.host from group_list gl inner join group_member gm on gl.group_id = gm.group_id left join location_status ls on gm.target_id = ls.target_id where 1=1 and gl.seeker_id=? and gl.group_id=?",
+        [seekerId, groupId]
+    );
+    return locationInfo;
+}
+
+export async function getUserInfo(intraId) {
+	const data = await connection.query("select * from user_list where intra_id=?", [intraId]);
+
+	return(data[0][0]);
+}
+
+
+
+
+
+
 
 export async function getSelectedGroupId(seekerId) {
     const [groupId, ...other] = await connection.query(
         "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.selected = true;",
         [seekerId]
-    );
-    if (groupId.length === 0) return null;
-    const returnVal = groupId[0].group_id;
-    return returnVal;
-}
-
-export async function getGroupId(seekerId, groupName) {
-    const [groupId, ...other] = await connection.query(
-        "select gl.group_id from group_list gl where 1=1 and gl.seeker_id = ? and gl.group_name = ?",
-        [seekerId, groupName]
     );
     if (groupId.length === 0) return null;
     const returnVal = groupId[0].group_id;
@@ -136,7 +163,6 @@ export async function updateSelectedGroup(seekerId, selectedGroupId) {
     if (selectedGroupId != null)
 		await connection.query("update group_list set selected=true where group_id=?", [selectedGroupId]);
 }
-
 export async function insertGroup(seekerId, groupName) {
 	groupName = typeof(groupName) == "string" ? [groupName] : groupName;
 	const values = groupName.map(x => [seekerId, x, 0]);
@@ -149,7 +175,6 @@ export async function insertGroup(seekerId, groupName) {
 		return (false);
 	}
 }
-
 export async function deleteGroup(seekerId, groupId) {
     try {
 		await connection.query("delete from group_list where seeker_id=? and group_id=?;", [seekerId, groupId]);
@@ -172,6 +197,7 @@ export async function updateGroupName(GroupId, newGroupName) {
  * @param {string|Array<string>} targetId 
  * @returns 
  */
+// 함수 이름 변경 필요.
 export async function insertMember(groupId, targetId) {
 	targetId = typeof(targetId) == "string" ? [targetId] : targetId;
 	const values = targetId.map(x => [groupId, x]);
@@ -184,7 +210,7 @@ export async function insertMember(groupId, targetId) {
 		return (false);
 	}
 }
-
+// 함수 이름 변경 팔요.
 export async function deleteMember(groupId, targetId) {
 	try {
 		await connection.query("delete from group_member where group_id=? and target_id=?;", [groupId, targetId]);
@@ -215,16 +241,6 @@ export async function insertAlarm(seekerId, targetId) {
 	}
 }
 
-export async function deleteAlarm(seekerId, targetId) {
-	try {
-		await connection.query("delete from alarm where seeker_id=? and target_id=?;", [seekerId, targetId]);
-		return (true);
-	}
-	catch (e) {
-		console.error(e);
-		return (false);
-	}
-}
 
 export async function insertStatisticHost(data) {
 	try {

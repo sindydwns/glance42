@@ -36,11 +36,11 @@ export default (app) => {
     app.action("selectGlanceTarget", async ({ ack, body, client, logger }) => {
         await ack();
         const selected = body.actions[0].selected_option;
-        const seekerId = await getClientIntraId(body, null, client);
+        const intraId = await getClientIntraId(body, null, client);
 
 		if (selected.value == "usersFromWorkspace")
 		{
-			await updateSelectedGroup(seekerId, null);
+			await updateSelectedGroup(intraId, null);
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
@@ -51,11 +51,11 @@ export default (app) => {
 			}
 		}
 		else {
-			await updateSelectedGroup(seekerId, selected.value);
+			await updateSelectedGroup(intraId, selected.value);
         	await client.views.update({
 				view_id: body.view.id,
 				hash: body.view.hash,
-				view: await mainHomeView(seekerId),
+				view: await mainHomeView(intraId),
 			});
 		}
     });
