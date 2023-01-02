@@ -1,4 +1,4 @@
-import { getGroupList, insertGroup, deleteGroup, updateGroupName } from "../DataBase/utils.js";
+import { getGroupList, insertGroup, deleteGroup, updateGroupName,isRegisteredGroupName } from "../DataBase/utils.js";
 import { getClientIntraId } from "./utils/data.js";
 import { groupManageHomeView, addGroupModalView, delGroupModalView, modifyGroupNameModalView } from "./views.js";
 
@@ -78,23 +78,25 @@ export default (app) => {
     });
 
 	app.action("writeAddGroupName", async ({ ack, body, client, logger}) => {
-		await ack({response_action:"errors", errors:"에러메세지"});
-		console.log("Maybe this is for error check of selected value?");
-		// 적은 그룹 이름에 대한 valid check하기 (이미 있는 그룹명과 중복되지 않는지 확인)
+		await ack();
 	});
 
-	app.action("submitDelGroup", async ({ ack, body, client, logger}) => {
+	app.action("selectDelGroup", async ({ ack, body, client, logger}) => {
 		await ack();
-		console.log("정말 지우시겠습니까");
-		// 그룹 삭제에 대한 경고하기 (정말 지우시겠습니까?)
 	});
 	
 	app.view({callback_id: 'callbackAddGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
-		await ack();
 		const inputVal = view['state']['values'][view.blocks[0].block_id]["writeAddGroupName"]['value'];
         const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
+		if (await isRegisteredGroupName(seekerId, inputVal)) {
+			await ack({response_action:"errors", errors:{
+				"textInput-groupName": "이미 존재하는 그룹의 이름입니다."
+			  }});
+			return ;
+		}
+		await ack();
 		const result = await insertGroup(seekerId, inputVal);
 		if (result)
 			msg = "*성공적으로 생성되었습니다*";
@@ -110,7 +112,7 @@ export default (app) => {
 	
 	app.view({callback_id:'callbackDelGroup', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const inputVal = view['state']['values'][view.blocks[0].block_id]["submitDelGroup"]['selected_option'].value;
+		const inputVal = view['state']['values'][view.blocks[0].block_id]["selectDelGroup"]['selected_option'].value;
         const seekerId = await getClientIntraId(body, null, client);
 		
 		let msg = '';
@@ -129,10 +131,9 @@ export default (app) => {
 
 	app.view({callback_id: 'callbackModifyGroupName', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const modyfyGroupId = view['state']['values'][view.blocks[0].block_id]["selectModifyGroup"]["selected_option"]['value'];
+		const modyfyGroupId = view['state']['values'][view.blocks[0].block_id]["selectModifyNameGroup"]["selected_option"]['value'];
 		const modyfyGroupName = view['state']['values'][view.blocks[1].block_id]["writeModifyGroupName"]['value'];
 		const seekerId = await getClientIntraId(body, null, client);
-		
 		let msg = "";
 		const result = await updateGroupName(modyfyGroupId, modyfyGroupName);
 		if (result)

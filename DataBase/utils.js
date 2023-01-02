@@ -202,11 +202,11 @@ export async function deleteMember(groupId, targetId) {
  * @param {string} notifySlackId
  * @returns 
  */
-export async function insertAlarm(seekerId, targetId, notifySlackId) {
+export async function insertAlarm(seekerId, targetId) {
 	targetId = typeof(targetId) == "string" ? [targetId] : targetId;
-	const values = targetId.map(x => [seekerId, x, notifySlackId]);
+	const values = targetId.map(x => [seekerId, x]);
 	try {
-		await connection.query("insert into alarm(seeker_id, target_id, notify_slack_id) values ?;", [values]);
+		await connection.query("insert into alarm(seeker_id, target_id) values ?;", [values]);
 		return (true);
 	}
 	catch (e) {
@@ -268,7 +268,7 @@ export async function insertErrorLog(message) {
 	}
 }
 
-export async function isExistIntraId(clientIntraId) {
+export async function isExistIntraId(seekerId) {
 	const [exist, ...other] = await connection.query(
         "select exists(select * from user_list where intra_id=?) as registered;",
         [clientIntraId]
@@ -287,4 +287,28 @@ export async function getUserInfo(intraId) {
 	const data = await connection.query("select * from user_list where intra_id=?", [intraId]);
 
 	return(data[0][0]);
+}
+
+export async function isRegisteredGroupName(seekerId, groupName) {
+	const [exist, ...other] = await connection.query(
+        "select exists(select * from group_list where seeker_id=? and group_name=?) as registered;",
+        [seekerId, groupName]
+    );
+	return (exist[0]["registered"])
+}
+
+export async function selectDuplicatedGroupMember(groupId, groupMembers) {
+	const res = await connection.query(
+        "select * from group_member where group_id=? and target_id in (?)",
+        [groupId, groupMembers]
+    );
+	return (res[0]);
+}
+
+export async function selectDuplicatedAlarm(seekerId, alarms) {
+	const res = await connection.query(
+        "select * from alarm where seeker_id=? and target_id in (?)",
+        [seekerId, alarms]
+    );
+	return (res[0]);
 }
