@@ -134,7 +134,6 @@ export default (app) => {
 		const modyfyGroupId = view['state']['values'][view.blocks[0].block_id]["selectModifyNameGroup"]["selected_option"]['value'];
 		const modyfyGroupName = view['state']['values'][view.blocks[1].block_id]["writeModifyGroupName"]['value'];
 		const seekerId = await getClientIntraId(body, null, client);
-
 		let msg = "";
 		const result = await updateGroupName(modyfyGroupId, modyfyGroupName);
 		if (result)
