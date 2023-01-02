@@ -167,9 +167,9 @@ export async function groupManageHomeView(intraId, msg) {
 	]));
 }
 
-export async function alarmManageHomeView(seekerId, msg) {
-	const alarmList_ = await getAlarmList(seekerId);
-	const alarmList = alarmList_.map(x=>x.target_id);
+export async function alarmManageHomeView(intraId, msg) {
+	const alarmList_ = await getAlarmList(intraId);
+	const alarmList = alarmList_.map(x=>x.targetId);
 	if (alarmList.length == 0 && msg == null)
 		msg = ">등록된 알람이 없습니다!\n>'알람 추가' 버튼을 눌러 새로운 알람을 등록해보세요.";
 	return HomeViewTemplete([
@@ -275,10 +275,10 @@ export async function addAlarmModalView() {
 	));
 }
 
-export async function delAlarmModalView(seekerId) {
-	const alarmList_ = await getAlarmList(seekerId);
+export async function delAlarmModalView(intraId) {
+	const alarmList_ = await getAlarmList(intraId);
 	const alarmList = alarmList_.map(item => {
-		return {text:item.target_id, value:String(item.target_id)}
+		return {text:item.targetId, value:String(item.targetId)}
 	});
 	return (ModalViewTemplete("알람 삭제", "callbackDelAlarm", ([
 			BlockMultiStaicSelect("삭제할 알람을 선택해주세요", "submitDelAlarm", alarmList)
