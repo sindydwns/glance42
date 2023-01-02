@@ -1,4 +1,4 @@
-import pool from "../apiDataBase.js";
+import pool from "../setting.js";
 
 export const connection = await pool.getConnection(async (conn) => conn);
 
@@ -19,7 +19,7 @@ export async function replaceLocationStatus(table) {
 		return (false);
 	}
 }
-
+ 
 export async function deleteAllLocationTable() {
 	try {
 		await connection.query("delete from location_status");
