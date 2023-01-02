@@ -5,28 +5,27 @@ import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { mainHomeView, memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 
 export default (app) => {
-
-	app.action("OpenModalAddMember", async ({ ack, body, client, logger }) => {
-        await ack();
-		const seekerId = await getClientIntraId(body, null, client);
+    app.action('OpenModalAddMember', async ({ ack, body, client, logger }) => {
+        await ack()
+        const seekerId = await getClientIntraId(body, null, client)
 
         try {
             const result = await client.views.open({
                 trigger_id: body.trigger_id,
-                view: await addMemberModalView()
-            });
+                view: await addMemberModalView(),
+            })
         } catch (error) {
-            logger.error(error);
+            logger.error(error)
         }
-		try {
+        try {
             const result = await client.views.publish({
                 user_id: body.user.id,
-				view: await mainHomeView(seekerId),
-			});
+                view: await mainHomeView(seekerId),
+            })
         } catch (e) {
-            logger.error(e);
+            logger.error(e)
         }
-    });
+    })
 
 	app.action("OpenModalDelMember", async ({ ack, body, client, logger }) => {
         await ack();
@@ -49,12 +48,12 @@ export default (app) => {
 		try {
             const result = await client.views.publish({
                 user_id: body.user.id,
-				view: await mainHomeView(seekerId, null, msg),
-			});
+                view: await mainHomeView(seekerId, null, msg),
+            })
         } catch (e) {
-            logger.error(e);
+            logger.error(e)
         }
-    });
+    })
 
 	app.view({callback_id:'callbackAddMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		const selectedUsersSlackId = view['state']['values'][view.blocks[0].block_id]['selectAddMember']['selected_users'];
@@ -85,7 +84,7 @@ export default (app) => {
         } catch (e) {
             logger.error(e);
         }
-	});
+    )
 
 	app.view({callback_id:'callbackDelMember', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
@@ -108,7 +107,5 @@ export default (app) => {
         } catch (e) {
             logger.error(e);
         }
-	});
-
+    )
 }
-

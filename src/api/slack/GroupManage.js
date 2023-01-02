@@ -5,10 +5,9 @@ import { isRegisteredGroupName } from "../api/DataBase/dbGroup.js.js.js"
 import * as view from "./views.js";
 
 export default (app) => {
-
-    app.action("OpenModalAddGroup", async ({ ack, body, client, logger }) => {
-        await ack();
-        const seekerId = await getClientIntraId(body, null, client);
+    app.action('OpenModalAddGroup', async ({ ack, body, client, logger }) => {
+        await ack()
+        const seekerId = await getClientIntraId(body, null, client)
 
         try {
             const result = await client.views.open({
@@ -16,7 +15,7 @@ export default (app) => {
                 view: await view.addGroupModalView(),
             });
         } catch (error) {
-            logger.error(error);
+            logger.error(error)
         }
 		// 그룹을 생성한 후 생기는 메시지가 다른 동작을 했을 때 없어지게 하기 위해
 		try {
@@ -75,13 +74,13 @@ export default (app) => {
 				view: await view.groupManageHomeView(seekerId),
 			});
         } catch (e) {
-            logger.error(e);
+            logger.error(e)
         }
-    });
+    })
 
-	app.action("writeAddGroupName", async ({ ack, body, client, logger}) => {
-		await ack();
-	});
+    app.action('OpenModalDelGroup', async ({ ack, body, client, logger }) => {
+        await ack()
+        const seekerId = await getClientIntraId(body, null, client)
 
 	app.action("selectDelGroup", async ({ ack, body, client, logger}) => {
 		await ack();
@@ -150,9 +149,23 @@ export default (app) => {
 		}
 	});
 
-	app.action("writeModifyGroupName", async ({ ack, body, client, logger}) => {
-		await ack();
-		// 적은 그룹 이름에 대한 valid check하기 (이미 있는 그룹명과 중복되지 않는지 확인)
-	});
+            try {
+                const result = await client.views.open({
+                    trigger_id: body.trigger_id,
+                    view: await modifyGroupNameModalView(seekerId),
+                })
+            } catch (error) {
+                logger.error(error)
+            }
+            try {
+                const result = await client.views.publish({
+                    user_id: body.user.id,
+                    view: await groupManageHomeView(seekerId),
+                })
+            } catch (e) {
+                logger.error(e)
+            }
+        }
+    )
 
 }

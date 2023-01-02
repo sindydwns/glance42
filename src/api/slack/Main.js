@@ -26,7 +26,19 @@ export default (app) => {
         }
     });
 
-    app.action("requestAuth", async ({ ack, body, client, logger }) => {
+			if (clientSlackId === userInfo?.slack_id)
+				view = await mainHomeView(intraId);
+			else view = await notRegisteredHomeView(encrypt(clientSlackId));
+			const result = await client.views.publish({
+				user_id: event.user,
+				view,
+			});
+		} catch (error) {
+			logger.error(error);
+		}
+	});
+
+	app.action("requestAuth", async ({ ack, body, client, logger }) => {
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
@@ -81,11 +93,17 @@ export default (app) => {
 		}
 	});
 
-    app.action("selectGlanceUser", async ({ ack, body, client, logger }) => {
-		await ack();
-		// const selectedUsers = view['state']['values'][view.blocks[0].block_id];
-		console.log("유저 하나 선택...");
-	});
+	app.view(
+		{
+			callback_id: "callbackSelectUserFromWorkspace",
+			type: "view_submission",
+		},
+		async ({ ack, body, view, client, logger }) => {
+			await ack();
+			const selectedUsers =
+				view.state.values.view.blocks[0].block_id.selectGlanceUser
+					.selected_users;
+			const seekerId = await getClientIntraId(body, null, client);
 
 	app.action("goMainView", async ({ack, body, client}) => {
 		await ack();
@@ -113,7 +131,22 @@ export default (app) => {
         }
     });
 
-	app.action("goAlarmManageView", async ({ack, body, client, logger}) => {
+	app.action("goGroupManageView", async ({ ack, body, client, logger }) => {
+		try {
+			await ack();
+			const seekerId = await getClientIntraId(body, null, client);
+
+			await client.views.update({
+				view_id: body.view.id,
+				hash: body.view.hash,
+				view: await groupManageHomeView(seekerId),
+			});
+		} catch (error) {
+			logger.error(error);
+		}
+	});
+
+	app.action("goAlarmManageView", async ({ ack, body, client, logger }) => {
 		await ack();
 		const seekerId = await getClientIntraId(body, null, client);
 
@@ -148,4 +181,13 @@ export default (app) => {
         }
     });
 
+			await client.views.update({
+				view_id: body.view.id,
+				hash: body.view.hash,
+				view: await manualHomeView(),
+			});
+		} catch (error) {
+			logger.error(error);
+		}
+	});
 };

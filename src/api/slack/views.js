@@ -8,7 +8,6 @@ function formatStrUnorderedList(items) {
     for (let i in items) {
         res += (`•  ${items[i]} \n`);
     }
-	return (res)
 }
 
 /* -------------------------------- VIEW TEMPLATE ------------------------------- */
@@ -21,26 +20,26 @@ function HomeViewTemplete(blocks) {
 };
 
 function ModalViewTemplete(titleText, callbackId, blocks) {
-	return {
-		callback_id : callbackId, 
-		type: "modal",
-		title: {
-			"type": "plain_text",
-			"text": titleText,
-			"emoji": true
-		},
-		submit: {
-			"type": "plain_text",
-			"text": "Submit",
-			"emoji": true
-		},
-		close: {
-			"type": "plain_text",
-			"text": "Cancel",
-			"emoji": true
-		},
-		blocks: blocks
-	}
+    return {
+        callback_id: callbackId,
+        type: "modal",
+        title: {
+            type: "plain_text",
+            text: titleText,
+            emoji: true,
+        },
+        submit: {
+            type: "plain_text",
+            text: "Submit",
+            emoji: true,
+        },
+        close: {
+            type: "plain_text",
+            text: "Cancel",
+            emoji: true,
+        },
+        blocks: blocks,
+    }
 }
 
 /* -------------------------------- HOME VIEWS ---------------------------------- */
@@ -54,9 +53,9 @@ export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 	const initialSelect = selectOptionList.filter((item) => item.selected)[0];
 	selectOptionList.push({text:"워크스페이스에서 유저 선택...", value:"usersFromWorkspace"});
 
-	let locationInfo;
-	let memberManageButtonsBlock = [];
-	let messageBlock = [];
+    let locationInfo
+    let memberManageButtonsBlock = []
+    let messageBlock = []
 
 	if (selectedType == "selectUserFromWorkspace")
 		locationInfo = await dbUser.getUsersLocationInfo(selectedUsersFromWorkspace);
