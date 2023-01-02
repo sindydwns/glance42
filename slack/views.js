@@ -285,18 +285,6 @@ export async function modifyGroupNameModalView(seekerId) {
 	));
 }
 
-export async function modifyGroupNameModalView(seekerId) {
-	const groupList_ = await getGroupList(seekerId);
-	const groupList = groupList_.map(item => {
-		return {text:item.group_name, value:String(item.group_id)}
-	});
-	return (ModalViewTemplete("그룹 이름 변경", "callbackModifyGroupName", ([
-			BlockSingleStaicSelect("이름을 변경할 그룹을 선택해주세요", "selectModifyGroup", groupList),
-			BlockTextInput("변경할 그룹명을 입력해주세요", "writeModifyGroupName")
-		])
-	));
-}
-
 export async function addAlarmModalView() {
 	return (ModalViewTemplete("알람 추가", "callbackAddAlarm", ([
 			BlockMultiUsersSelect("알람을 받을 유저를 선택해주세요\n(물론, 카뎃만 선택 가능합니다!)",
