@@ -1,5 +1,5 @@
 
-import { getIntraIdbySlackId } from "../../DataBase/utils.js";
+import * as dbuser from "../../DataBase/dbuser.js";
 
 export async function getClientSlackId(body, event, client) {
     const slackId = body ? body.user.id : event.user;
@@ -8,7 +8,7 @@ export async function getClientSlackId(body, event, client) {
 
 export async function getClientIntraId(body, event, client) {
 	const slackId = body ? body.user.id : event.user;
-	const seekerId = getIntraIdbySlackId(slackId);
+	const seekerId = dbuser.getIntraIdbySlackId(slackId);
     return (seekerId);
 }
 

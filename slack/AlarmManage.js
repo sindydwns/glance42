@@ -1,4 +1,5 @@
-import { getAlarmList, insertAlarm,  deleteAlarm, selectDuplicatedAlarm } from "../DataBase/utils.js";
+import * as dbalarm from "../DataBase/alarm.js";
+import * as dbdbdbdb from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { alarmManageHomeView, addAlarmModalView, delAlarmModalView } from "./views.js";
 
@@ -28,15 +29,15 @@ export default (app) => {
 
     app.action("OpenModalDelAlarm", async ({ ack, body, client, logger }) => {
         await ack();
-        const seekerId = await getClientIntraId(body, null, client);
+        const intraId = await getClientIntraId(body, null, client);
 
 		let msg = "";
-		if (await getAlarmList(seekerId) != "")
+		if (await dbalarm.getAlarmList(intraId) != "")
 		{
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
-					view: await delAlarmModalView(seekerId),
+					view: await delAlarmModalView(intraId),
 				});
 			} catch (error) {
 				logger.error(error);
@@ -47,7 +48,7 @@ export default (app) => {
 		try {
             await client.views.publish({
                 user_id: body.user.id,
-                view: await alarmManageHomeView(seekerId, msg),
+                view: await alarmManageHomeView(intraId, msg),
             });
         } catch (error) {
             logger.error(error);
@@ -57,8 +58,8 @@ export default (app) => {
 	app.view({callback_id:'callbackAddAlarm', type:'view_submission'}, async ({ack, body, view, client, logger}) => {
 		const selectedUsersSlackId = view['state']['values'][view.blocks[0].block_id]['selectAddAlarm']['selected_users'];
 		const selectedUsersIntraId = await Promise.all(selectedUsersSlackId.map(x => getUserNamebySlackId(client, x)));
-        const seekerId = await getClientIntraId(body, null, client);
-		const duplicatedAlarm = await selectDuplicatedAlarm(seekerId, selectedUsersIntraId);
+        const intraId = await getClientIntraId(body, null, client);
+		const duplicatedAlarm = await dbdbdbdb.selectDuplicatedAlarm(intraId, selectedUsersIntraId);
 
 		if (duplicatedAlarm.length != 0) {
 			const duplicatedAlarmStr = duplicatedAlarm.map(x => `'${x.target_id}'`).join(", ");
@@ -70,14 +71,14 @@ export default (app) => {
 		await ack();
 		let msg = "";
 		for (const targetId of selectedUsersIntraId) {
-			const result = await insertAlarm(seekerId, targetId); 
+			const result = await dbalarm.insertAlarm(intraId, targetId); 
 			if (result)
 				msg = "*성공적으로 추가되었습니다*";
 		}
 		try {
             const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await alarmManageHomeView(seekerId, msg),
+				view: await alarmManageHomeView(intraId, msg),
 			});
         } catch (e) {
             logger.error(e);
@@ -86,20 +87,18 @@ export default (app) => {
 
 	app.view({callback_id: 'callbackDelAlarm', type: 'view_submission'}, async ({ack, body, view, client, logger}) => {
 		await ack();
-		const inputVal = view['state']['values'][view.blocks[0].block_id]['selectDelAlarm']['selected_options']
+		const selectedAlarms = view['state']['values'][view.blocks[0].block_id]['selectDelAlarm']['selected_options']
 		.map((x) => (x.value));
-        const seekerId = await getClientIntraId(body, null, client);
+        const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
-		for (const targetId of inputVal) {
-			let result = await deleteAlarm(seekerId, targetId);
-			if (result)
-				msg = "*성공적으로 삭제되었습니다*";
-		}
+		const result = await dbalarm.deleteAlarm(intraId, selectedAlarms);
+		if (result)
+			msg = "*성공적으로 삭제되었습니다*";
 		try {
             const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await alarmManageHomeView(seekerId, msg),
+				view: await alarmManageHomeView(intraId, msg),
 			});
         } catch (e) {
             logger.error(e);

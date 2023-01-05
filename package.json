@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js --watch ./",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/dbtest.js"
   },
   "author": "",
   "license": "ISC",
@@ -22,7 +22,8 @@
     "mysql2": "^2.3.3",
     "node-schedule": "^2.1.0",
     "passport": "^0.6.0",
-    "passport-42": "^1.2.6"
+    "passport-42": "^1.2.6",
+    "sequelize": "^6.26.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
