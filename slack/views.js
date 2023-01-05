@@ -1,4 +1,6 @@
-import { getGroupList, getMemberList, getUsersLocationInfo, getGroupLocationInfo, getAlarmList } from "../DataBase/utils.js";
+import * as dbgroup from "../DataBase/groupManage.js";
+import * as dbuser from "../DataBase/dbuser.js";
+import * as dbalarm from "../DataBase/alarm.js";
 import { BlockDivider, BlockHeader, BlockSectionMrkdwn,BlockSectionButton, BlockActionButtons, BlockLinkButton, BlockContextMrkdwn, 
 	BlockSectionSelect, BlockSingleStaicSelect, BlockMultiStaicSelect, BlockMultiUsersSelect, BlockTextInput} from "./utils/blocks.js"
 
@@ -75,7 +77,7 @@ async function BlocklocationInfo(locationInfo, selectedType)
 
 export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 	const selectedType =  (selectedUsersFromWorkspace ? "selectUserFromWorkspace" : "selectGroup");
-	const groupList = await getGroupList(intraId);
+	const groupList = await dbgroup.getGroupList(intraId);
 	const selectOptionList = groupList.map(item => {
 		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
 	});
@@ -87,10 +89,10 @@ export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 	let messageBlock = [];
 
 	if (selectedType == "selectUserFromWorkspace")
-		locationInfo = await getUsersLocationInfo(selectedUsersFromWorkspace);
+		locationInfo = await dbuser.getUsersLocationInfo(selectedUsersFromWorkspace);
 	else
 	{
-		locationInfo = await getGroupLocationInfo(intraId, initialSelect.value);
+		locationInfo = await dbuser.getGroupLocationInfo(intraId, initialSelect.value);
 		memberManageButtonsBlock = BlockActionButtons([
 			{text:"멤버 추가", value:"멤버 추가", actionId:"OpenModalAddMember"},
 			{text:"멤버 삭제", value:"멤버 삭제", actionId:"OpenModalDelMember"},]);
@@ -152,7 +154,7 @@ export async function requestRegisterHomeView() {
 
 
 export async function groupManageHomeView(intraId, msg) {
-	const groupList_ = await getGroupList(intraId);
+	const groupList_ = await dbgroup.getGroupList(intraId);
 	const groupList = groupList_.map(x=>x.group_name);
 	if (groupList.length == 0 && msg == null)
 		msg = ">생성된 그룹이 없습니다!\n>'그룹 생성' 버튼을 눌러 새로운 그룹을 생성해보세요.";
@@ -175,7 +177,7 @@ export async function groupManageHomeView(intraId, msg) {
 }
 
 export async function alarmManageHomeView(intraId, msg) {
-	const alarmList_ = await getAlarmList(intraId);
+	const alarmList_ = await dbalarm.getAlarmList(intraId);
 	const alarmList = alarmList_.map(x=>x.targetId);
 	if (alarmList.length == 0 && msg == null)
 		msg = ">등록된 알람이 없습니다!\n>'알람 추가' 버튼을 눌러 새로운 알람을 등록해보세요.";
@@ -197,12 +199,12 @@ export async function alarmManageHomeView(intraId, msg) {
 }
 
 export async function memberManageHomeView(intraId, selectGroup, msg) {
-	const groupList_ = await getGroupList(intraId);
+	const groupList_ = await dbgroup.getGroupList(intraId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
 	});
 	if (selectGroup) {
-		const memberList_ = await getMemberList(selectGroup.value);
+		const memberList_ = await dbgroup.getMemberList(selectGroup.value);
 		const memberList = memberList_.map(x=>x.target_id);
 		if (memberList.length == 0 && msg == null)
 			msg = ">선택한 그룹에 등록된 멤버가 없습니다!\n>'멤버 추가' 버튼을 눌러 새로운 멤버를 추가해보세요.";
@@ -264,7 +266,7 @@ export async function addGroupModalView() {
 }
 
 export async function delGroupModalView(intraId) {
-	const groupList_ = await getGroupList(intraId);
+	const groupList_ = await dbgroup.getGroupList(intraId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id)}
 	});
@@ -275,7 +277,7 @@ export async function delGroupModalView(intraId) {
 }
 
 export async function modifyGroupNameModalView(seekerId) {
-	const groupList_ = await getGroupList(seekerId);
+	const groupList_ = await dbgroup.getGroupList(seekerId);
 	const groupList = groupList_.map(item => {
 		return {text:item.group_name, value:String(item.group_id)}
 	});
@@ -295,7 +297,7 @@ export async function addAlarmModalView() {
 }
 
 export async function delAlarmModalView(intraId) {
-	const alarmList_ = await getAlarmList(intraId);
+	const alarmList_ = await dbalarm.getAlarmList(intraId);
 	const alarmList = alarmList_.map(item => {
 		return {text:item.targetId, value:String(item.targetId)}
 	});
@@ -314,7 +316,7 @@ export async function addMemberModalView() {
 }
 
 export async function delMemberModalView(groupId) {
-	const memberList_ = await getMemberList(groupId);
+	const memberList_ = await dbgroup.getMemberList(groupId);
 	const memberList = memberList_.map(item => {
 		return {text:item.target_id, value:String(item.target_id)}
 	});

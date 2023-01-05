@@ -1,4 +1,5 @@
-import { updateSelectedGroup, getUserInfo } from "../DataBase/utils.js";
+import * as dbuser from "../DataBase/dbuser.js";
+import * as dbgroup from "../DataBase/groupManage.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
 import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectUserFromWorkspaceModalView } from "./views.js";
 import { encrypt } from "../utils.js";
@@ -8,7 +9,7 @@ export default (app) => {
         try {
             const clientSlackId = await getClientSlackId(null, event, client);
 			const clientDisplayName = await getUserNamebySlackId(client, clientSlackId);
-			const userInfo = await getUserInfo(clientDisplayName);
+			const userInfo = await dbuser.getUserInfo(clientDisplayName);
             const intraId = await getClientIntraId(null, event, client);
 
 			let view;
@@ -40,7 +41,7 @@ export default (app) => {
 
 		if (selected.value == "usersFromWorkspace")
 		{
-			await updateSelectedGroup(intraId, null);
+			await dbgroup.updateSelectedGroup(intraId, null);
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
@@ -51,7 +52,7 @@ export default (app) => {
 			}
 		}
 		else {
-			await updateSelectedGroup(intraId, selected.value);
+			await dbgroup.updateSelectedGroup(intraId, selected.value);
         	await client.views.update({
 				view_id: body.view.id,
 				hash: body.view.hash,

@@ -7,14 +7,3 @@ export { default as GroupMember } from "./groupMember.js";
 export { default as LocationStatus } from "./locationStatus.js";
 export { default as StatisticsHost } from "./statisticsHost.js";
 export { default as User } from "./user.js";
-
-Group.hasMany(GroupMember, {
-	as: "groupMembers",
-	// foreignKey: "groupId",
-	// otherKey: "groupId"
-});
-
-GroupMember.belongsTo(Group, {
-	as: "groups",
-	foreignKey: "groupId",
-});

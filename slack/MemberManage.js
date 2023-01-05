@@ -1,4 +1,5 @@
-import { getMemberList, insertMember, deleteMember, getSelectedGroupId, selectDuplicatedGroupMember } from "../DataBase/utils.js";
+import * as dbgroup from "../DataBase/groupManage.js";
+import * as dbdbdbdb from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { mainHomeView, memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 
@@ -29,10 +30,10 @@ export default (app) => {
 	app.action("OpenModalDelMember", async ({ ack, body, client, logger }) => {
         await ack();
 		const seekerId = await getClientIntraId(body, null, client);
-		const selectedGroupId = await getSelectedGroupId(seekerId);
+		const selectedGroupId = await dbgroup.getSelectedGroupId(seekerId);
 
 		let msg = "";
-		if (await getMemberList(selectedGroupId) != "")
+		if (await dbgroup.getMemberList(selectedGroupId) != "")
 		{
 			try {
 				const result = await client.views.open({
@@ -58,8 +59,8 @@ export default (app) => {
 		const selectedUsersSlackId = view['state']['values'][view.blocks[0].block_id]['selectAddMember']['selected_users'];
 		const selectedUsersIntraId = await Promise.all(selectedUsersSlackId.map(x => getUserNamebySlackId(client, x)));
 		const seekerId = await getClientIntraId(body, null, client);
-		const selectedGroupId = await getSelectedGroupId(seekerId);
-		const duplicatedGroupMember = await selectDuplicatedGroupMember(selectedGroupId, selectedUsersIntraId);
+		const selectedGroupId = await dbgroup.getSelectedGroupId(seekerId);
+		const duplicatedGroupMember = await dbdbdbdb.selectDuplicatedGroupMember(selectedGroupId, selectedUsersIntraId);
 
 		if (duplicatedGroupMember.length != 0) {
 			const duplicatedGroupMemberStr = duplicatedGroupMember.map(x => `'${x.target_id}'`).join(", ");
@@ -71,7 +72,7 @@ export default (app) => {
 		await ack();
 		let msg = "";
 		for (const targetId of selectedUsersIntraId) {
-			const result = await insertMember(selectedGroupId, targetId); 
+			const result = await dbgroup.insertMember(selectedGroupId, targetId); 
 			if (result)
 				msg = "*성공적으로 추가되었습니다*";
 		}
@@ -90,11 +91,11 @@ export default (app) => {
 		const selectedMembers = view['state']['values'][view.blocks[0].block_id]['selectDelMember']['selected_options']
 		.map((x) => (x.value));
 		const seekerId = await getClientIntraId(body, null, client);
-		const selectedGroupId = await getSelectedGroupId(seekerId);
+		const selectedGroupId = await dbgroup.getSelectedGroupId(seekerId);
 
 		let msg = "";
 		for (const targetId of selectedMembers) {
-			let result = await deleteMember(selectedGroupId, targetId);
+			let result = await dbgroup.deleteMember(selectedGroupId, targetId);
 			if (result)
 				msg = "*성공적으로 삭제되었습니다*";
 		}

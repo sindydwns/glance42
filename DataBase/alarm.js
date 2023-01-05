@@ -1,5 +1,5 @@
-import { Alarm, ErrorLog, StatisticsHost } from "./models/index.js";
-import { sequelize } from "./setting.js";
+import { Alarm, ErrorLog, StatisticsHost } from "../models/index.js";
+import { sequelize } from "../setting.js";
 
 /**
  * @param {string} intraId

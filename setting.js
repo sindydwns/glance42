@@ -8,7 +8,7 @@ export const sequelize = new Sequelize({
     password: process.env.DEV_MODE ? process.env.DEV_DB_PASS : process.env.DB_PASS,
     database: process.env.DEV_MODE ? process.env.DEV_DB_DATA : process.env.DB_DATA,
     host: process.env.DEV_MODE ? process.env.DEV_DB_HOST : process.env.DB_HOST,
-    dialect: process.env.DB_TYPE,
+    dialect: "mysql",
     dialectOptions: {
         ssl: {trustServerCertificate: true}
     },

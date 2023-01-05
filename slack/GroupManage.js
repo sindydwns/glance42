@@ -1,4 +1,5 @@
-import { getGroupList, insertGroup, deleteGroup, updateGroupName,isRegisteredGroupName } from "../DataBase/utils.js";
+import * as dbgroup from "../DataBase/groupManage.js";
+import * as dbdbdbdb from "../DataBase/utils.js";
 import { getClientIntraId } from "./utils/data.js";
 import { groupManageHomeView, addGroupModalView, delGroupModalView, modifyGroupNameModalView } from "./views.js";
 
@@ -32,7 +33,7 @@ export default (app) => {
         const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
-		if (await getGroupList(intraId) != "")
+		if (await dbgroup.getGroupList(intraId) != "")
 		{
 			try {
 				const result = await client.views.open({
@@ -90,14 +91,14 @@ export default (app) => {
         const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
-		if (await isRegisteredGroupName(intraId, inputVal)) {
+		if (await dbdbdbdb.isRegisteredGroupName(intraId, inputVal)) {
 			await ack({response_action:"errors", errors:{
 				"textInput-groupName": "이미 존재하는 그룹의 이름입니다."
 			  }});
 			return ;
 		}
 		await ack();
-		const result = await insertGroup(intraId, inputVal);
+		const result = await dbgroup.insertGroup(intraId, inputVal);
 		if (result)
 			msg = "*성공적으로 생성되었습니다*";
 		try {
@@ -116,7 +117,7 @@ export default (app) => {
         const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = '';
-		const result = await deleteGroup(intraId, inputVal);
+		const result = await dbgroup.deleteGroup(intraId, inputVal);
 		if (result)
 			msg = "*성공적으로 삭제되었습니다*";
 		try {
@@ -135,7 +136,7 @@ export default (app) => {
 		const modyfyGroupName = view['state']['values'][view.blocks[1].block_id]["writeModifyGroupName"]['value'];
 		const seekerId = await getClientIntraId(body, null, client);
 		let msg = "";
-		const result = await updateGroupName(modyfyGroupId, modyfyGroupName);
+		const result = await dbgroup.updateGroupName(modyfyGroupId, modyfyGroupName);
 		if (result)
 			msg = "*성공적으로 수정되었습니다*";
 		try {
