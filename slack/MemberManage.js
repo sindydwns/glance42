@@ -63,7 +63,7 @@ export default (app) => {
 		const duplicatedGroupMember = await dbdbdbdb.selectDuplicatedGroupMember(selectedGroupId, selectedUsersIntraId);
 
 		if (duplicatedGroupMember.length != 0) {
-			const duplicatedGroupMemberStr = duplicatedGroupMember.map(x => `'${x.target_id}'`).join(", ");
+			const duplicatedGroupMemberStr = duplicatedGroupMember.map(x => `'${x.targetId}'`).join(", ");
 			await ack({response_action:"errors", errors:{
 				"multiUsersSelect-groupMember": `${duplicatedGroupMemberStr}는 선택한 그룹에 이미 존재하는 멤버입니다.`
 				}});

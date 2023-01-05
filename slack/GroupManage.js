@@ -136,7 +136,7 @@ export default (app) => {
 		const modyfyGroupName = view['state']['values'][view.blocks[1].block_id]["writeModifyGroupName"]['value'];
 		const seekerId = await getClientIntraId(body, null, client);
 		let msg = "";
-		const result = await dbgroup.updateGroupName(modyfyGroupId, modyfyGroupName);
+		const result = await dbdbdbdb.updateGroupName(modyfyGroupId, modyfyGroupName);
 		if (result)
 			msg = "*성공적으로 수정되었습니다*";
 		try {

@@ -98,7 +98,6 @@ export async function updateSelectedGroup(intraId, selectedGroupId) {
 				groupId : selectedGroupId
 			}
 		});
-		console.log(existingGroup);
 		if (existingGroup == null && selectedGroupId != null)
 			throw ("intraId and selectedGroupId doesn't match!");
 		await Group.update({

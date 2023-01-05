@@ -1,4 +1,4 @@
-import { Alarm, ErrorLog, StatisticsHost } from "../models/index.js";
+import { Alarm, User, LocationStatus, ErrorLog, StatisticsHost } from "../models/index.js";
 import { sequelize } from "../setting.js";
 
 /**

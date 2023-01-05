@@ -275,12 +275,12 @@ async function test2() {
 	// groupFuncs.deleteMember();
 	await groupFuncs.deleteMember(yonshinGroup1.groupId, "ekwak");
 	assert.deepEqual(
-		(await groupFuncs.getMemberList(yonshinGroup1.groupId)).sort(),
-		["yonshin", "hyeyukim", "sanghwal"].sort()
+		(await groupFuncs.getMemberList(yonshinGroup1.groupId)).sort(sortByTargetId),
+		[{targetId:"yonshin"}, {targetId:"hyeyukim"}, {targetId:"sanghwal"}].sort(sortByTargetId)
 	);
 	assert.deepEqual(
-		(await groupFuncs.getMemberList(hyeyukimGroup1.groupId)).sort(),
-		["yonshin", "ekwak"].sort()
+		(await groupFuncs.getMemberList(hyeyukimGroup1.groupId)).sort(sortByTargetId),
+		[{targetId:"yonshin"}, {targetId:"ekwak"}].sort(sortByTargetId)
 	);
 	
 	// groupFuncs.deleteGroup();
@@ -365,7 +365,7 @@ async function test3() {
 	assert((await ErrorLog.findAll())[0].message, "yonshin error");
 
 }
-await test3();
+await test2();
 
 
 

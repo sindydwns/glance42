@@ -1,6 +1,7 @@
 import _schedule from "node-schedule";
 import api42 from "../api42.js";
 import { postDM2User } from "../apiSlack.js";
+import * as dbuser from "../DataBase/dbuser.js";
 import * as dbalarm from "../DataBase/alarm.js";
 import scheduleObjs from "../constants.js";
 
@@ -49,24 +50,23 @@ export const schedule = {
 					return acc;
 				}, []);
 				if (last == 0)
-					dbalarm.deleteAllLocationTable();
+					dbuser.deleteAllLocationTable();
 				else
-					dbalarm.deleteLocationTable(deleteTargets);
+					dbuser.deleteLocationTable(deleteTargets);
 				const locationTable = total.reduce((acc, cur) => {
 					if (cur.end_at == null)
 						acc[cur.user.login] = cur.host;
 					return acc;
 				}, {});
-				await dbalarm.replaceLocationStatus(locationTable);
+				await dbuser.replaceLocationStatus(locationTable);
 				last = now;
 
 				// alarm
 				const alarms = await dbalarm.getAllReservedAlarm();
-				console.log("todo alarm", alarms);
 				for (let id in alarms)
-					if (alarms[id].notify_slack_id)
-						postDM2User(alarms[id].notify_slack_id, `${alarms[id].target_id} is online on ${alarms[id].host}`);
-				await dbalarm.deleteReservedAlarm(alarms.map(x => x.alarm_id));
+					if (alarms[id].slackId)
+						postDM2User(alarms[id].slackId, `${alarms[id].targetId} is online on ${alarms[id].host}`);
+				await dbalarm.deleteReservedAlarm(alarms.map(x => x.alarmId));
 			} catch(e) {
 				console.error(e);
 			}

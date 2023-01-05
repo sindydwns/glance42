@@ -62,7 +62,7 @@ export default (app) => {
 		const duplicatedAlarm = await dbdbdbdb.selectDuplicatedAlarm(intraId, selectedUsersIntraId);
 
 		if (duplicatedAlarm.length != 0) {
-			const duplicatedAlarmStr = duplicatedAlarm.map(x => `'${x.target_id}'`).join(", ");
+			const duplicatedAlarmStr = duplicatedAlarm.map(x => `'${x.targetId}'`).join(", ");
 			await ack({response_action:"errors", errors:{
 				"multiUsersSelect-alarm": `${duplicatedAlarmStr}는 이미 등록된 알람입니다.`
 				}});

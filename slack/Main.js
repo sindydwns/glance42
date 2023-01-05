@@ -13,7 +13,7 @@ export default (app) => {
             const intraId = await getClientIntraId(null, event, client);
 
 			let view;
-			if (clientSlackId == userInfo?.slack_id)
+			if (clientSlackId == userInfo?.slackId)
 				view = await mainHomeView(intraId);
 			else
 				view = await notRegisteredHomeView(encrypt(clientSlackId));

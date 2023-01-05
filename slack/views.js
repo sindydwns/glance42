@@ -9,7 +9,7 @@ function formatStrCurrentLocation(locationInfo) {
 		return ("\n");
     let rv = "";
     locationInfo.forEach((elem) => {
-        const targetId = elem.target_id;
+        const targetId = elem.targetId;
         const location = elem.host;
         if (location) rv += `*<https://profile.intra.42.fr/users/${targetId}|✅ ${targetId}> : ${location}*\n`;
         else rv += `*<https://profile.intra.42.fr/users/${targetId}|❌ ${targetId}> : No*\n`;
@@ -59,7 +59,7 @@ function ModalViewTemplete(titleText, callbackId, blocks) {
 
 async function BlocklocationInfo(locationInfo, selectedType)
 {	
-	if (selectedType == "selectGroup" && locationInfo == "") {
+	if (selectedType == "selectGroup" && locationInfo == null) {
 		return [...BlockContextMrkdwn(
 			">선택한 그룹에 등록된 멤버가 없습니다.\n>'멤버 추가'로 멤버를 추가해보세요!")];
 	}
@@ -79,12 +79,12 @@ export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 	const selectedType =  (selectedUsersFromWorkspace ? "selectUserFromWorkspace" : "selectGroup");
 	const groupList = await dbgroup.getGroupList(intraId);
 	const selectOptionList = groupList.map(item => {
-		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
+		return {text:item.name, value:String(item.groupId), selected:item.selected}
 	});
 	const initialSelect = selectOptionList.filter((item) => item.selected)[0];
 	selectOptionList.push({text:"워크스페이스에서 유저 선택...", value:"usersFromWorkspace"});
 
-	let locationInfo;
+	let locationInfo = null;
 	let memberManageButtonsBlock = [];
 	let messageBlock = [];
 
@@ -92,7 +92,8 @@ export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 		locationInfo = await dbuser.getUsersLocationInfo(selectedUsersFromWorkspace);
 	else
 	{
-		locationInfo = await dbuser.getGroupLocationInfo(intraId, initialSelect.value);
+		if (initialSelect != null)
+			locationInfo = await dbuser.getGroupLocationInfo(intraId, initialSelect.value);
 		memberManageButtonsBlock = BlockActionButtons([
 			{text:"멤버 추가", value:"멤버 추가", actionId:"OpenModalAddMember"},
 			{text:"멤버 삭제", value:"멤버 삭제", actionId:"OpenModalDelMember"},]);
@@ -155,7 +156,7 @@ export async function requestRegisterHomeView() {
 
 export async function groupManageHomeView(intraId, msg) {
 	const groupList_ = await dbgroup.getGroupList(intraId);
-	const groupList = groupList_.map(x=>x.group_name);
+	const groupList = groupList_.map(x=>x.name);
 	if (groupList.length == 0 && msg == null)
 		msg = ">생성된 그룹이 없습니다!\n>'그룹 생성' 버튼을 눌러 새로운 그룹을 생성해보세요.";
 	return (HomeViewTemplete([
@@ -201,11 +202,11 @@ export async function alarmManageHomeView(intraId, msg) {
 export async function memberManageHomeView(intraId, selectGroup, msg) {
 	const groupList_ = await dbgroup.getGroupList(intraId);
 	const groupList = groupList_.map(item => {
-		return {text:item.group_name, value:String(item.group_id), selected:item.selected}
+		return {text:item.name, value:String(item.groupId), selected:item.selected}
 	});
 	if (selectGroup) {
 		const memberList_ = await dbgroup.getMemberList(selectGroup.value);
-		const memberList = memberList_.map(x=>x.target_id);
+		const memberList = memberList_.map(x=>x.targetId);
 		if (memberList.length == 0 && msg == null)
 			msg = ">선택한 그룹에 등록된 멤버가 없습니다!\n>'멤버 추가' 버튼을 눌러 새로운 멤버를 추가해보세요.";
 		return HomeViewTemplete([
@@ -268,7 +269,7 @@ export async function addGroupModalView() {
 export async function delGroupModalView(intraId) {
 	const groupList_ = await dbgroup.getGroupList(intraId);
 	const groupList = groupList_.map(item => {
-		return {text:item.group_name, value:String(item.group_id)}
+		return {text:item.name, value:String(item.groupId)}
 	});
 	return (ModalViewTemplete("그룹 삭제", "callbackDelGroup", ([
 			BlockSingleStaicSelect("삭제할 그룹을 선택해주세요\n(해당 그룹이 완전히 삭제되며, 되돌릴 수 없습니다)", "selectDelGroup", groupList)
@@ -279,7 +280,7 @@ export async function delGroupModalView(intraId) {
 export async function modifyGroupNameModalView(seekerId) {
 	const groupList_ = await dbgroup.getGroupList(seekerId);
 	const groupList = groupList_.map(item => {
-		return {text:item.group_name, value:String(item.group_id)}
+		return {text:item.name, value:String(item.groupId)}
 	});
 	return (ModalViewTemplete("그룹 이름 변경", "callbackModifyGroupName", ([
 			BlockSingleStaicSelect("이름을 변경할 그룹을 선택해주세요", "selectModifyNameGroup", groupList),
@@ -318,7 +319,7 @@ export async function addMemberModalView() {
 export async function delMemberModalView(groupId) {
 	const memberList_ = await dbgroup.getMemberList(groupId);
 	const memberList = memberList_.map(item => {
-		return {text:item.target_id, value:String(item.target_id)}
+		return {text:item.targetId, value:String(item.targetId)}
 	});
 	return (ModalViewTemplete("멤버 삭제", "callbackDelMember", ([
 			BlockMultiStaicSelect("그룹에서 삭제할 멤버를 선택해주세요", "selectDelMember", memberList)
