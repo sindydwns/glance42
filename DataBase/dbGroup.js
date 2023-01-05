@@ -18,3 +18,30 @@ export async function insertGroup(intraId, name) {
       return false;
     }
   }
+
+export async function updateGroupName(GroupId, newGroupName) {
+    await Group.update({ name: newGroupName }, { where: { groupId: GroupId } });
+    return true;
+  }
+
+export async function isRegisteredGroupName(intraId, groupName) {
+  const group = await Group.findOne({
+    where: {
+    intraId,
+    name: groupName
+    }
+  });
+  return (group !== null);
+}
+
+export async function selectDuplicatedGroupMember(groupId, groupMembers) {
+  groupMembers = Array.isArray(groupMembers) ? groupMembers : [groupMembers];
+  const res_ = await GroupMember.findAll({
+    where: {
+      groupId,
+      targetId : groupMembers,
+    }
+  });
+  const res = res_.map(x => x.dataValues);
+  return (res);
+}

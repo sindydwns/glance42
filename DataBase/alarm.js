@@ -149,3 +149,16 @@ export async function getAllReservedAlarm() {
 		return (false);
 	}
 }
+
+export async function selectDuplicatedAlarm(intraId, alarms)
+{
+	alarms = Array.isArray(alarms) ? alarms : [alarms];
+	const res_ = await Alarm.findAll({
+		where: {
+			intraId,
+			targetId : alarms,
+		}
+	});
+	const res = res_.map(x => x.dataValues);
+	return (res);
+}
