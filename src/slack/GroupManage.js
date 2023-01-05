@@ -1,7 +1,8 @@
-import * as dbgroup from "../DataBase/groupManage.js";
-import * as dbdbdbdb from "../DataBase/utils.js";
+import * as dbgroup from "../api/DataBase/dbGroup.js";
+import * as db from "../api/DataBase/dbGarbage.js";
 import { getClientIntraId } from "./utils/data.js";
-import { groupManageHomeView, addGroupModalView, delGroupModalView, modifyGroupNameModalView } from "./views.js";
+import { isRegisteredGroupName } from "../api/DataBase/dbGroup.js"
+import * as view from "./views.js";
 
 export default (app) => {
 
@@ -12,7 +13,7 @@ export default (app) => {
         try {
             const result = await client.views.open({
                 trigger_id: body.trigger_id,
-                view: await addGroupModalView(),
+                view: await view.addGroupModalView(),
             });
         } catch (error) {
             logger.error(error);
@@ -21,7 +22,7 @@ export default (app) => {
 		try {
             const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await groupManageHomeView(seekerId),
+				view: await view.groupManageHomeView(seekerId),
 			});
         } catch (e) {
             logger.error(e);
@@ -38,7 +39,7 @@ export default (app) => {
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
-					view: await delGroupModalView(intraId),
+					view: await view.delGroupModalView(intraId),
 				});
 			} catch (error) {
 				logger.error(error);
@@ -49,7 +50,7 @@ export default (app) => {
 		try {
             const result = await client.views.update({
 				view_id: body.view.id,
-				view: await groupManageHomeView(intraId, msg),
+				view: await view.groupManageHomeView(intraId, msg),
 			});
         } catch (e) {
             logger.error(e);
@@ -63,7 +64,7 @@ export default (app) => {
         try {
             const result = await client.views.open({
                 trigger_id: body.trigger_id,
-                view: await modifyGroupNameModalView(seekerId),
+                view: await view.modifyGroupNameModalView(seekerId),
             });
         } catch (error) {
             logger.error(error);
@@ -71,7 +72,7 @@ export default (app) => {
 		try {
             const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await groupManageHomeView(seekerId),
+				view: await view.groupManageHomeView(seekerId),
 			});
         } catch (e) {
             logger.error(e);
@@ -91,7 +92,7 @@ export default (app) => {
         const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
-		if (await dbdbdbdb.isRegisteredGroupName(intraId, inputVal)) {
+		if (await isRegisteredGroupName(intraId, inputVal)) {
 			await ack({response_action:"errors", errors:{
 				"textInput-groupName": "이미 존재하는 그룹의 이름입니다."
 			  }});
@@ -104,7 +105,7 @@ export default (app) => {
 		try {
 			const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await groupManageHomeView(intraId, msg),
+				view: await view.groupManageHomeView(intraId, msg),
 			});
 		} catch (e) {
 			logger.error(e);
@@ -123,7 +124,7 @@ export default (app) => {
 		try {
 			const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await groupManageHomeView(intraId, msg),
+				view: await view.groupManageHomeView(intraId, msg),
 			});
 		} catch (e) {
 			logger.error(e);
@@ -142,7 +143,7 @@ export default (app) => {
 		try {
 			const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await groupManageHomeView(seekerId, msg),
+				view: await view.groupManageHomeView(seekerId, msg),
 			});
 		} catch (e) {
 			logger.error(e);

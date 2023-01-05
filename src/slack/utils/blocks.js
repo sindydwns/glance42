@@ -1,4 +1,39 @@
 
+/* -------------------------- LOCATION INFO BLOCK ---------------------------- */
+
+function formatStrCurrentLocation(locationInfo) {
+	if (locationInfo.length == 0)
+		return ("\n");
+    let rv = "";
+    locationInfo.forEach((elem) => {
+        const targetId = elem.target_id;
+        const location = elem.host;
+        if (location) rv += `*<https://profile.intra.42.fr/users/${targetId}|✅ ${targetId}> : ${location}*\n`;
+        else rv += `*<https://profile.intra.42.fr/users/${targetId}|❌ ${targetId}> : No*\n`;
+    });
+    return rv;
+}
+
+export async function locationInfo(locationInfo, selectedType)
+{	
+	if (selectedType == "selectGroup" && locationInfo == "") {
+		return [...BlockContextMrkdwn(
+			">선택한 그룹에 등록된 멤버가 없습니다.\n>'멤버 추가'로 멤버를 추가해보세요!")];
+	}
+	else {
+		const timeStamp = () => {
+			const today = new Date();
+			today.setHours(today.getHours() + 9);
+			return today.toISOString().replace("T", " ").substring(0, 19);
+		};
+		const formattedLocationInfoStr = formatStrCurrentLocation(locationInfo);
+		return [...BlockSectionMrkdwn(`마지막 업데이트: ${timeStamp()}`),
+		...BlockSectionMrkdwn(formattedLocationInfoStr)];
+	}
+}
+
+/* ----------------------------- SELECT BLOCK -------------------------------- */
+
 function SelectOptions(items) {
 	if (items == "" || items == null)
 		items = [{text:"선택할 대상이 없습니다", value:"No-option"}];
@@ -14,7 +49,7 @@ function SelectOptions(items) {
 
 /* -------------------------- ONLY TEXT BLOCKS ------------------------------- */
 
-export function BlockDivider() {
+export function Divider() {
     return [
         {
             type: "divider",
@@ -22,7 +57,7 @@ export function BlockDivider() {
     ];
 }
 
-export function BlockHeader(text) {
+export function Header(text) {
     if (text == null || text == "") return [];
     return [
         {
@@ -36,7 +71,7 @@ export function BlockHeader(text) {
     ];
 }
 
-export function BlockSectionMrkdwn(text) {
+export function SectionMrkdwn(text) {
 	if (text == null || text == "") return [];
 	return [
 		{
@@ -49,7 +84,7 @@ export function BlockSectionMrkdwn(text) {
 	];
 }
 
-export function BlockContextMrkdwn(text) {
+export function ContextMrkdwn(text) {
     if (text == null || text == "") return [];
     return [
         {
@@ -66,7 +101,7 @@ export function BlockContextMrkdwn(text) {
 
 /* -------------------------- BUTTON BLOCKS --------------------------------- */
 
-export function BlockActionButtons(items) {
+export function ActionButtons(items) {
     items = items
         ?.filter((x) => x.text != null && x.text != "")
         .filter((x) => x.actionId != null && x.actionId != "")
@@ -89,7 +124,7 @@ export function BlockActionButtons(items) {
     ];
 }
 
-export function BlockSectionButton(descText, item, actionId) {
+export function SectionButton(descText, item, actionId) {
     if (descText == null || descText == "") return [];
     if (item.text == null || item.text == "") return [];
     if (item.value == null || item.value == "") return [];
@@ -115,7 +150,7 @@ export function BlockSectionButton(descText, item, actionId) {
     ];
 }
 
-export function BlockLinkButton(descText, item, actionId) {
+export function LinkButton(descText, item, actionId) {
 	if (descText == null || descText == "") return [];
     if (item.text == null || item.text == "") return [];
     if (item.value == null || item.value == "") return [];
@@ -144,7 +179,7 @@ export function BlockLinkButton(descText, item, actionId) {
 
 /* ---------------------------- INPUT BLOCKS --------------------------------- */
 
-export function BlockTextInput(labelText, actionId, blockId = "textInput") {
+export function TextInput(labelText, actionId, blockId = "textInput") {
     if (labelText == null || labelText == "" || actionId == null || actionId == "") return [];
 	return {
 		"dispatch_action": true,
@@ -167,7 +202,7 @@ export function BlockTextInput(labelText, actionId, blockId = "textInput") {
 
 /* -------------------------- SELECT BLOCKS --------------------------------- */
 
-export function BlockSectionSelect(desText, actionId, items, initialSelect) {
+export function SectionSelect(desText, actionId, items, initialSelect) {
 	let res = {
 		"type": "section",
 		"text": {
@@ -190,7 +225,7 @@ export function BlockSectionSelect(desText, actionId, items, initialSelect) {
     return [res];
 }
 
-export function BlockSingleStaicSelect(labelText, actionId, items) {
+export function SingleStaicSelect(labelText, actionId, items) {
     return {
 		"type": "input",
 		"element": {
@@ -211,7 +246,7 @@ export function BlockSingleStaicSelect(labelText, actionId, items) {
 	}
 }
 
-export function BlockMultiStaicSelect(labelText, actionId, items) {
+export function MultiStaicSelect(labelText, actionId, items) {
     return {
 		"type": "input",
 		"element": {
@@ -232,7 +267,7 @@ export function BlockMultiStaicSelect(labelText, actionId, items) {
 	}
 }
 
-export function BlockMultiUsersSelect(labelText, actionId, blockId = "multiUsersSelect") {
+export function MultiUsersSelect(labelText, actionId, blockId = "multiUsersSelect") {
     return {
 		"type": "input",
 		"block_id": blockId,

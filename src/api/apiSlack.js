@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import pkg from "@slack/bolt";
 import { WebClient } from "@slack/web-api";
-import pageMain from "./slack/Main.js";
-import pageGroupManage from "./slack/GroupManage.js";
-import pageAlarmManage from "./slack/AlarmManage.js";
-import pageMemberManage from "./slack/MemberManage.js";
+import pageMain from "../slack/Main.js";
+import pageGroupManage from "../slack/GroupManage.js";
+import pageAlarmManage from "../slack/AlarmManage.js";
+import pageMemberManage from "../slack/MemberManage.js";
 
 const { App, LogLevel } = pkg;
 dotenv.config();

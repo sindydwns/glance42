@@ -1,10 +1,10 @@
-import { Alarm, ErrorLog, StatisticsHost } from "../models/index.js";
-import { sequelize } from "../setting.js";
+import { Alarm, ErrorLog, StatisticsHost } from "../../models/index.js";
+import { sequelize } from "../../setting.js";
 
 /**
  * @param {string} intraId
  * @return {Array<object>}
- */
+*/
 export async function getAlarmList(intraId) {
 	try {
 		const alarmList = await Alarm.findAll({
@@ -16,6 +16,7 @@ export async function getAlarmList(intraId) {
 		return alarmList;
 	}
 	catch (e) {
+		//export const connection = await pool.getConnection(async (conn) => conn);
 		console.error(e);
 		return (false);
 	}

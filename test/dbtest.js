@@ -1,8 +1,8 @@
 import assert from "assert";
 import { sequelize } from "../setting.js"
-import * as userFuncs from "../DataBase/dbuser.js"; // ekwak
-import * as groupFuncs from "../DataBase/groupManage.js"; // hyeyukim
-import * as alarmFuncs from "../DataBase/alarm.js"; // sanghwal
+import * as userFuncs from "../DataBase/dbUser.js"; // ekwak
+import * as groupFuncs from "../DataBase/dbGroup.js"; // hyeyukim
+import * as alarmFuncs from "../DataBase/dbAlarm.js"; // sanghwal
 import { User, LocationStatus, Group, GroupMember, Alarm, StatisticsHost, ErrorLog } from "../models/index.js";
 
 const strcmp = (str1, str2) => str1 < str2 ? -1 : str1 > str2 ? 1 : 0;

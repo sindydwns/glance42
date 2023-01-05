@@ -1,5 +1,6 @@
-import * as dbgroup from "../DataBase/groupManage.js";
-import * as dbdbdbdb from "../DataBase/utils.js";
+import * as dbgroup from "../api/DataBase/dbGroup.js";
+import * as db from "../api/DataBase/dbGarbage.js";
+import { selectDuplicatedGroupMember } from "../api/DataBase/dbGroup"
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { mainHomeView, memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 
@@ -60,7 +61,7 @@ export default (app) => {
 		const selectedUsersIntraId = await Promise.all(selectedUsersSlackId.map(x => getUserNamebySlackId(client, x)));
 		const seekerId = await getClientIntraId(body, null, client);
 		const selectedGroupId = await dbgroup.getSelectedGroupId(seekerId);
-		const duplicatedGroupMember = await dbdbdbdb.selectDuplicatedGroupMember(selectedGroupId, selectedUsersIntraId);
+		const duplicatedGroupMember = await selectDuplicatedGroupMember(selectedGroupId, selectedUsersIntraId);
 
 		if (duplicatedGroupMember.length != 0) {
 			const duplicatedGroupMemberStr = duplicatedGroupMember.map(x => `'${x.target_id}'`).join(", ");

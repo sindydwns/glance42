@@ -1,8 +1,8 @@
 import _schedule from "node-schedule";
 import api42 from "../api42.js";
 import { postDM2User } from "../apiSlack.js";
-import * as dbuser from "../DataBase/dbuser.js";
-import * as dbalarm from "../DataBase/alarm.js";
+import * as dbLocation from "../DataBase/dbLocation.js";
+import * as dbAlarm from "../DataBase/dbAlarm.js";
 import scheduleObjs from "../constants.js";
 
 async function getAllpageInfo(path, params) {
@@ -41,7 +41,7 @@ export const schedule = {
 					await getChangedLocation(campusId, last, now);
 				if (total == null) {
 					last = 0;
-					dbalarm.insertErrorLog("42API ERROR");
+					dbAlarm.insertErrorLog("42API ERROR");
 					throw "42API ERROR";
 				}
 				const deleteTargets = total.reduce((acc, cur) => {
@@ -50,24 +50,24 @@ export const schedule = {
 					return acc;
 				}, []);
 				if (last == 0)
-					dbuser.deleteAllLocationTable();
+					dbLocation.deleteAllLocationTable();
 				else
-					dbuser.deleteLocationTable(deleteTargets);
+					dbLocation.deleteLocationTable(deleteTargets);
 				const locationTable = total.reduce((acc, cur) => {
 					if (cur.end_at == null)
 						acc[cur.user.login] = cur.host;
 					return acc;
 				}, {});
-				await dbuser.replaceLocationStatus(locationTable);
+				await dbLocation.replaceLocationStatus(locationTable);
 				last = now;
 
 				// alarm
-				const alarms = await dbalarm.getAllReservedAlarm();
+				const alarms = await dbAlarm.getAllReservedAlarm();
 				console.log("todo alarm", alarms);
 				for (let id in alarms)
 					if (alarms[id].notify_slack_id)
 						postDM2User(alarms[id].notify_slack_id, `${alarms[id].target_id} is online on ${alarms[id].host}`);
-				await dbalarm.deleteReservedAlarm(alarms.map(x => x.alarm_id));
+				await dbAlarm.deleteReservedAlarm(alarms.map(x => x.alarm_id));
 			} catch(e) {
 				console.error(e);
 			}
@@ -90,7 +90,7 @@ export const schedule = {
 				const maxCluster = 10;
 				const statisticHost = [...Array(maxCluster).keys()]
 					.map((x, i) => [i + 1, studentCount[i + 1] ?? 0]);
-				await dbalarm.insertStatisticHost(statisticHost);
+				await dbAlarm.insertStatisticHost(statisticHost);
 			} catch(e) {
 				console.error(e);
 			}

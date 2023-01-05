@@ -1,22 +1,22 @@
-import * as dbuser from "../DataBase/dbuser.js";
-import * as dbgroup from "../DataBase/groupManage.js";
+import * as dbUser from "../api/DataBase/dbUser.js.js";
+import * as dbgroup from "../api/DataBase/dbGroup.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
-import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectUserFromWorkspaceModalView } from "./views.js";
+import * as view from "./views.js";
 import { encrypt } from "../utils.js";
 
 export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {
         try {
-            const clientSlackId = await getClientSlackId(null, event, client);
+            const clientSlackId = body ? body.user.id : event.user;
 			const clientDisplayName = await getUserNamebySlackId(client, clientSlackId);
-			const userInfo = await dbuser.getUserInfo(clientDisplayName);
+			const userInfo = await dbUser.getUserInfo(clientDisplayName);
             const intraId = await getClientIntraId(null, event, client);
 
 			let view;
 			if (clientSlackId == userInfo?.slack_id)
-				view = await mainHomeView(intraId);
+				view = await view.mainHomeView(intraId);
 			else
-				view = await notRegisteredHomeView(encrypt(clientSlackId));
+				view = await view.notRegisteredHomeView(encrypt(clientSlackId));
             const result = await client.views.publish({
                 user_id: event.user,
                 view: view,
@@ -30,7 +30,7 @@ export default (app) => {
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
-			view: await requestRegisterHomeView(),
+			view: await view.requestRegisterHomeView(),
 		})
 	});
 	
@@ -45,7 +45,7 @@ export default (app) => {
 			try {
 				const result = await client.views.open({
 					trigger_id: body.trigger_id,
-					view: await selectUserFromWorkspaceModalView(),
+					view: await view.selectUserFromWorkspaceModalView(),
 				});
 			} catch (error) {
 				logger.error(error);
@@ -56,7 +56,7 @@ export default (app) => {
         	await client.views.update({
 				view_id: body.view.id,
 				hash: body.view.hash,
-				view: await mainHomeView(intraId),
+				view: await view.mainHomeView(intraId),
 			});
 		}
     });
@@ -74,7 +74,7 @@ export default (app) => {
 		try {
 			const result = await client.views.publish({
 				user_id: body.user.id,
-				view: await mainHomeView(seekerId, targetIds),
+				view: await view.mainHomeView(seekerId, targetIds),
 			});
 		} catch (e) {
 			logger.error(e);
@@ -93,7 +93,7 @@ export default (app) => {
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
-			view: await mainHomeView(seekerId)
+			view: await view.mainHomeView(seekerId)
 			})
 		}
 	);
@@ -106,7 +106,7 @@ export default (app) => {
             await client.views.update({
                 view_id: body.view.id,
                 hash: body.view.hash,
-                view: await groupManageHomeView(seekerId),
+                view: await view.groupManageHomeView(seekerId),
             });
         } catch (error) {
             logger.error(error);
@@ -120,7 +120,7 @@ export default (app) => {
 		await client.views.update({
 			view_id: body.view.id,
 			hash: body.view.hash,
-			view : await alarmManageHomeView(seekerId),
+			view : await view.alarmManageHomeView(seekerId),
 		});
 	})
 	
@@ -130,7 +130,7 @@ export default (app) => {
 	// 	await client.views.update({
 	// 		view_id: body.view.id,
 	// 		hash: body.view.hash,
-	// 		view: await memberManageHomeView(seekerId)
+	// 		view: await view.memberManageHomeView(seekerId)
 	// 	})
 	// });
 
@@ -141,7 +141,7 @@ export default (app) => {
             await client.views.update({
                 view_id: body.view.id,
                 hash: body.view.hash,
-                view: await manualHomeView(),
+                view: await view.manualHomeView(),
             });
         } catch (error) {
             logger.error(error);

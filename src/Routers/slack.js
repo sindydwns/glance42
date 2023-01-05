@@ -1,5 +1,5 @@
 import app from "express";
-import slackApp from "../apiSlack.js";
+import slackApp from "../api/apiSlack.js";
 
 const router = app.Router();
 router.post("/", (req, res, next) => {

@@ -1,5 +1,5 @@
-import { sequelize } from "../setting.js";
-import { Group, GroupMember } from "../models/index.js";
+import { sequelize } from "../../setting.js";
+import { Group, GroupMember } from "../../models/index.js";
 
 /**
  * @description 
