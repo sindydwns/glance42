@@ -1,23 +1,19 @@
 TARGET = app.zip
-SRC = \ 
-	$(addprefix ./src/,
-	DataBase/*.js \
-	models/*.js \
+SRC = \
 	Routers/*.js \
-	Schedule/*.js \
+	DataBase/*.js \
 	slack/*.js \
 	slack/utils/*.js \
 	api42.js \
-	apiDataBase.js \
 	apiSlack.js \
 	app.js \
-	constants.js \
 	error.js \
 	log.js \
 	setting.js \
+	package.json \
+	Schedule/schedule.js \
+	constants.js \
 	utils.js
-	)
-SRCS += package.json
 
 $(TARGET): $(SRC)
 	zip -r $@ $^
