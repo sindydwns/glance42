@@ -1,4 +1,4 @@
-import * as dbgroup from "../DataBase/groupManage.js";
+import * as dbgroup from "../DataBase/dbgroup.js";
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { mainHomeView, memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";
 

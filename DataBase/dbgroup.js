@@ -194,20 +194,6 @@ export async function deleteMember(groupId, targetId) {
 	}
 }
 
-export async function insertGroup(intraId, name) {
-    try {
-        await Group.create({
-          intraId: intraId,
-          name: name,
-          selected: 0
-    });
-    return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
-  }
-
 export async function updateGroupName(GroupId, newGroupName) {
     await Group.update({ name: newGroupName }, { where: { groupId: GroupId } });
     return true;

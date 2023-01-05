@@ -50,9 +50,9 @@ export const schedule = {
 					return acc;
 				}, []);
 				if (last == 0)
-					dbuser.deleteAllLocationTable();
+					await dbuser.deleteAllLocationTable();
 				else
-					dbuser.deleteLocationTable(deleteTargets);
+					await dbuser.deleteLocationTable(deleteTargets);
 				const locationTable = total.reduce((acc, cur) => {
 					if (cur.end_at == null)
 						acc[cur.user.login] = cur.host;

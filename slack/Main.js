@@ -1,5 +1,5 @@
 import * as dbuser from "../DataBase/dbuser.js";
-import * as dbgroup from "../DataBase/groupManage.js";
+import * as dbgroup from "../DataBase/dbgroup.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
 import { mainHomeView, notRegisteredHomeView, requestRegisterHomeView, groupManageHomeView, alarmManageHomeView, memberManageHomeView, manualHomeView, selectUserFromWorkspaceModalView } from "./views.js";
 import { encrypt } from "../utils.js";
