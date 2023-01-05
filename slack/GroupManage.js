@@ -1,5 +1,4 @@
-import * as dbgroup from "../DataBase/groupManage.js";
-import * as dbdbdbdb from "../DataBase/utils.js";
+import * as dbgroup from "../DataBase/dbgroup.js";
 import { getClientIntraId } from "./utils/data.js";
 import { groupManageHomeView, addGroupModalView, delGroupModalView, modifyGroupNameModalView } from "./views.js";
 
@@ -91,7 +90,7 @@ export default (app) => {
         const intraId = await getClientIntraId(body, null, client);
 		
 		let msg = "";
-		if (await dbdbdbdb.isRegisteredGroupName(intraId, inputVal)) {
+		if (await dbgroup.isRegisteredGroupName(intraId, inputVal)) {
 			await ack({response_action:"errors", errors:{
 				"textInput-groupName": "이미 존재하는 그룹의 이름입니다."
 			  }});
@@ -136,7 +135,7 @@ export default (app) => {
 		const modyfyGroupName = view['state']['values'][view.blocks[1].block_id]["writeModifyGroupName"]['value'];
 		const seekerId = await getClientIntraId(body, null, client);
 		let msg = "";
-		const result = await dbdbdbdb.updateGroupName(modyfyGroupId, modyfyGroupName);
+		const result = await dbgroup.updateGroupName(modyfyGroupId, modyfyGroupName);
 		if (result)
 			msg = "*성공적으로 수정되었습니다*";
 		try {

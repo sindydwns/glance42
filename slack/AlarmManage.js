@@ -1,5 +1,4 @@
 import * as dbalarm from "../DataBase/alarm.js";
-import * as dbdbdbdb from "../DataBase/utils.js";
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { alarmManageHomeView, addAlarmModalView, delAlarmModalView } from "./views.js";
 
@@ -59,7 +58,7 @@ export default (app) => {
 		const selectedUsersSlackId = view['state']['values'][view.blocks[0].block_id]['selectAddAlarm']['selected_users'];
 		const selectedUsersIntraId = await Promise.all(selectedUsersSlackId.map(x => getUserNamebySlackId(client, x)));
         const intraId = await getClientIntraId(body, null, client);
-		const duplicatedAlarm = await dbdbdbdb.selectDuplicatedAlarm(intraId, selectedUsersIntraId);
+		const duplicatedAlarm = await dbalarm.selectDuplicatedAlarm(intraId, selectedUsersIntraId);
 
 		if (duplicatedAlarm.length != 0) {
 			const duplicatedAlarmStr = duplicatedAlarm.map(x => `'${x.targetId}'`).join(", ");
