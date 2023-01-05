@@ -1,8 +1,8 @@
-import * as dbUser from "../api/DataBase/dbUser.js.js";
-import * as dbgroup from "../api/DataBase/dbGroup.js";
+import * as dbUser from "../api/DataBase/dbUser.js.js.js.js";
+import * as dbgroup from "../api/DataBase/dbGroup.js.js.js";
 import { getClientIntraId, getUserNamebySlackId, getClientSlackId } from "./utils/data.js";
 import * as view from "./views.js";
-import { encrypt } from "../utils.js";
+import { encrypt } from "../utils.js.js.js";
 
 export default (app) => {
     app.event("app_home_opened", async ({ event, client, logger }) => {

@@ -1,7 +1,7 @@
-import * as dbgroup from "../api/DataBase/dbGroup.js";
-import * as db from "../api/DataBase/dbGarbage.js";
+import * as dbgroup from "../api/DataBase/dbGroup.js.js.js";
+import * as db from "../api/DataBase/dbGarbage.js.js.js";
 import { getClientIntraId } from "./utils/data.js";
-import { isRegisteredGroupName } from "../api/DataBase/dbGroup.js"
+import { isRegisteredGroupName } from "../api/DataBase/dbGroup.js.js.js"
 import * as view from "./views.js";
 
 export default (app) => {

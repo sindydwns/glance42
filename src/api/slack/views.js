@@ -1,6 +1,6 @@
-import * as dbgroup from "../api/DataBase/dbGroup.js";
-import * as dbUser from "../api/DataBase/dbUser.js.js";
-import * as dbAlarm from "../api/DataBase/dbAlarm.js";
+import * as dbgroup from "../api/DataBase/dbGroup.js.js.js";
+import * as dbUser from "../api/DataBase/dbUser.js.js.js.js";
+import * as dbAlarm from "../api/DataBase/dbAlarm.js.js.js";
 import * as block from "./utils/blocks.js"
 
 function formatStrUnorderedList(items) {

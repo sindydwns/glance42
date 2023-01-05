@@ -1,5 +1,5 @@
-import * as dbgroup from "../api/DataBase/dbGroup.js";
-import * as db from "../api/DataBase/dbGarbage.js";
+import * as dbgroup from "../api/DataBase/dbGroup.js.js.js.js";
+import * as db from "../api/DataBase/dbGarbage.js.js.js.js";
 import { selectDuplicatedGroupMember } from "../api/DataBase/dbGroup"
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import { mainHomeView, memberManageHomeView, addMemberModalView, delMemberModalView } from "./views.js";

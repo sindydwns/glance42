@@ -1,5 +1,5 @@
-import * as dbAlarm from "../api/DataBase/dbAlarm.js";
-import { selectDuplicatedAlarm } from "../api/DataBase/dbAlarm.js";
+import * as dbAlarm from "../api/DataBase/dbAlarm.js.js.js";
+import { selectDuplicatedAlarm } from "../api/DataBase/dbAlarm.js.js.js";
 import { getClientIntraId, getUserNamebySlackId } from "./utils/data.js";
 import * as view from "./views.js";
 

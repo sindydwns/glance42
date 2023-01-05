@@ -1,4 +1,4 @@
-import * as dbUser from "../../api/DataBase/dbUser.js.js";
+import * as dbUser from "../../api/DataBase/dbUser.js.js.js.js.js";
 
 export async function getClientIntraId(body, event, client) {
 	const slackId = body ? body.user.id : event.user;

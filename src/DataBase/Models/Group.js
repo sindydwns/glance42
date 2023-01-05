@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import { sequelize } from "../setting.js";
+import { sequelize } from "../../setting.js";
 
 class Group extends Model { }
 Group.init({
