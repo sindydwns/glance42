@@ -11,9 +11,12 @@ SRC = \
 	log.js \
 	setting.js \
 	package.json \
-	Schedule/schedule.js \
+	Schedule/*.js \
 	constants.js \
-	utils.js
+	utils.js \
+	apiDataBase.js \
+	setting.js \
+	models/*.js
 
 $(TARGET): $(SRC)
 	zip -r $@ $^

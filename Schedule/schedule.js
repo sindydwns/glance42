@@ -1,6 +1,7 @@
 import _schedule from "node-schedule";
 import api42 from "../api42.js";
 import { postDM2User } from "../apiSlack.js";
+import * as dbuser from "../DataBase/dbuser.js";
 import * as dbalarm from "../DataBase/alarm.js";
 import scheduleObjs from "../constants.js";
 
@@ -49,15 +50,15 @@ export const schedule = {
 					return acc;
 				}, []);
 				if (last == 0)
-					dbalarm.deleteAllLocationTable();
+					dbuser.deleteAllLocationTable();
 				else
-					dbalarm.deleteLocationTable(deleteTargets);
+					dbuser.deleteLocationTable(deleteTargets);
 				const locationTable = total.reduce((acc, cur) => {
 					if (cur.end_at == null)
 						acc[cur.user.login] = cur.host;
 					return acc;
 				}, {});
-				await dbalarm.replaceLocationStatus(locationTable);
+				await dbuser.replaceLocationStatus(locationTable);
 				last = now;
 
 				// alarm
