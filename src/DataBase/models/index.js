@@ -1,7 +1,9 @@
-import { sequelize } from "../../setting.js"
+import { sequelize } from "../../setting.js";
+import association from "./Association.js";
+
 export default sequelize;
 export { default as Alarm } from "./Alarm.js";
-import association from "./Association.js";
+
 export { default as ErrorLog } from "./ErrorLog.js";
 export { default as Group } from "./Group.js";
 export { default as GroupMember } from "./GroupMember.js";

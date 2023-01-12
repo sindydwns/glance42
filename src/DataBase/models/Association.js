@@ -1,5 +1,5 @@
-import Group from './Group.js'
-import GroupMember from './GroupMember.js'
+import Group from "./Group.js";
+import GroupMember from "./GroupMember.js";
 
 Group.hasMany(GroupMember, {
 	as: "groupMembers",

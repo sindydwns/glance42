@@ -1,28 +1,27 @@
-import { sequelize } from "../setting.js";
 import { Group, GroupMember } from "./models/index.js";
 
 /**
- * @description 
+ * @description
  *  사용자가 현재 선택한 그룹의 groupId를 반환하는 함수.
  *  없으면 null 반환.
  * @param {string} intraId 사용자의 intraId.
  * @returns {int} 선택한 그룹의 groupId.
  */
- export async function getSelectedGroupId(intraId) {
+export async function getSelectedGroupId(intraId) {
 	try {
 		const selectedGroup = await Group.findOne({
-			attributes: ['groupId'],
+			attributes: ["groupId"],
 			where: {
-				intraId: intraId,
-				selected: 1
-			}
+				intraId,
+				selected: 1,
+			},
 		});
-		if (selectedGroup == null)
-			return (null);
+
+		if (selectedGroup == null) return null;
 		return selectedGroup.groupId;
-	} catch(e) {
+	} catch (e) {
 		console.error(e);
-		return (null);
+		return null;
 	}
 }
 
@@ -33,19 +32,20 @@ import { Group, GroupMember } from "./models/index.js";
  * @param {string} intraId 사용자의 intraId.
  * @returns {Array<string>} 사용자의 그룹 리스트.
  */
- export async function getGroupList(intraId) {
+export async function getGroupList(intraId) {
 	try {
 		const groupList = await Group.findAll({
-			attributes: ['groupId', 'name', 'selected'],
+			attributes: ["groupId", "name", "selected"],
 			where: { intraId },
 		});
-		return (groupList.reduce((acc, cur) => {
-				acc.push(cur.dataValues);
-				return acc;
-			}, []));
+
+		return groupList.reduce((acc, cur) => {
+			acc.push(cur.dataValues);
+			return acc;
+		}, []);
 	} catch (e) {
 		console.error(e);
-		return (null);
+		return null;
 	}
 }
 
@@ -67,50 +67,58 @@ export async function getMemberList(groupId) {
 	try {
 		const users = await Group.findAll({
 			where: { groupId },
-			attributes : [],
-			include : {
-				model : GroupMember,
+			attributes: [],
+			include: {
+				model: GroupMember,
 				attributes: ["targetId"],
 				as: "groupMembers",
 				required: true,
 			},
 		});
-		return (users[0].groupMembers.map(x => x.dataValues));
+
+		return users[0].groupMembers.map((x) => x.dataValues);
 	} catch (e) {
 		console.log(e);
-		return (null);
+		return null;
 	}
 }
 
 /**
  * @description 사용자가 메인 화면에서 선택한 그룹 정보를 업데이트하는 함수.
  * @param {string} intraId 사용자의 intraId.
- * @param {number} selectedGroupId 
+ * @param {number} selectedGroupId
  *  사용자가 선택한 그룹의 groupId.
  *  사용자가 "워크스페이스에서 유저 선택"을 선택한 경우 null 값이 들어온다.
  * @returns 반환값 x.
  */
 export async function updateSelectedGroup(intraId, selectedGroupId) {
 	try {
-		const [existingGroup, ...other] = await Group.findAll({
-			where: { 
-				intraId, 
-				groupId : selectedGroupId
-			}
+		const [existingGroup] = await Group.findAll({
+			where: {
+				intraId,
+				groupId: selectedGroupId,
+			},
 		});
+
 		if (existingGroup == null && selectedGroupId != null)
-			throw ("intraId and selectedGroupId doesn't match!");
-		await Group.update({
-				selected: 0
-			}, {
-				where: { intraId }
-			});
+			throw new Error("intraId and selectedGroupId doesn't match!");
+		await Group.update(
+			{
+				selected: 0,
+			},
+			{
+				where: { intraId },
+			}
+		);
 		if (selectedGroupId != null)
-			await Group.update({
-				selected: 1,
-			}, {
-				where: { groupId : selectedGroupId }
-			});
+			await Group.update(
+				{
+					selected: 1,
+				},
+				{
+					where: { groupId: selectedGroupId },
+				}
+			);
 	} catch (e) {
 		console.error(e);
 	}
@@ -122,17 +130,17 @@ export async function updateSelectedGroup(intraId, selectedGroupId) {
  * @param {string|Array<string>} groupName 추가하고 싶은 그룹의 이름.
  * @returns 성공하면 true, 실패하면 false 반환.
  */
-export async function insertGroup(intraId, groupName) {
+export async function insertGroup(intraId, _groupName) {
 	// console.error(`why?`, intraId);
-	groupName = Array.isArray(groupName) ? groupName : [groupName];
-	const values = groupName.map(x => ({intraId, name: x}));
+	const groupName = Array.isArray(_groupName) ? _groupName : [_groupName];
+	const values = groupName.map((x) => ({ intraId, name: x }));
+
 	try {
 		await Group.bulkCreate(values);
-		return (true);
-		
+		return true;
 	} catch (e) {
 		console.error(e);
-		return (false);
+		return false;
 	}
 }
 
@@ -146,15 +154,15 @@ export async function insertGroup(intraId, groupName) {
 export async function deleteGroup(intraId, groupId) {
 	try {
 		await Group.destroy({
-			where : { intraId, groupId }
+			where: { intraId, groupId },
 		});
 		await GroupMember.destroy({
-			where : { groupId }
-		})
-		return (true);
+			where: { groupId },
+		});
+		return true;
 	} catch (e) {
 		console.error(e);
-		return (false);
+		return false;
 	}
 }
 
@@ -164,15 +172,16 @@ export async function deleteGroup(intraId, groupId) {
  * @param {string|Array<string>} targetId 추가하고자 하는 멤버의 intraId.
  * @returns 성공하면 true, 실패하면 false.
  */
-export async function insertMember(groupId, targetId) {
-	targetId = Array.isArray(targetId) ? targetId : [targetId];
-	const values = targetId.map(x => ({groupId, targetId: x}));
+export async function insertMember(groupId, _targetId) {
+	const targetId = Array.isArray(_targetId) ? _targetId : [_targetId];
+	const values = targetId.map((x) => ({ groupId, targetId: x }));
+
 	try {
 		await GroupMember.bulkCreate(values);
-		return (true);
+		return true;
 	} catch (e) {
 		console.error(e);
-		return (false);
+		return false;
 	}
 }
 
@@ -185,38 +194,42 @@ export async function insertMember(groupId, targetId) {
 export async function deleteMember(groupId, targetId) {
 	try {
 		await GroupMember.destroy({
-			where : { groupId, targetId }
+			where: { groupId, targetId },
 		});
-		return (true);
+		return true;
 	} catch (e) {
 		console.error(e);
-		return (false);
+		return false;
 	}
 }
 
 export async function updateGroupName(GroupId, newGroupName) {
-    await Group.update({ name: newGroupName }, { where: { groupId: GroupId } });
-    return true;
-  }
-
-export async function isRegisteredGroupName(intraId, groupName) {
-  const group = await Group.findOne({
-    where: {
-    intraId,
-    name: groupName
-    }
-  });
-  return (group !== null);
+	await Group.update({ name: newGroupName }, { where: { groupId: GroupId } });
+	return true;
 }
 
-export async function selectDuplicatedGroupMember(groupId, groupMembers) {
-  groupMembers = Array.isArray(groupMembers) ? groupMembers : [groupMembers];
-  const res_ = await GroupMember.findAll({
-    where: {
-      groupId,
-      targetId : groupMembers,
-    }
-  });
-  const res = res_.map(x => x.dataValues);
-  return (res);
+export async function isRegisteredGroupName(intraId, groupName) {
+	const group = await Group.findOne({
+		where: {
+			intraId,
+			name: groupName,
+		},
+	});
+
+	return group !== null;
+}
+
+export async function selectDuplicatedGroupMember(groupId, _groupMembers) {
+	const groupMembers = Array.isArray(_groupMembers)
+		? _groupMembers
+		: [_groupMembers];
+	const res_ = await GroupMember.findAll({
+		where: {
+			groupId,
+			targetId: groupMembers,
+		},
+	});
+	const res = res_.map((x) => x.dataValues);
+
+	return res;
 }

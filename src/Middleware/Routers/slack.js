@@ -1,14 +1,15 @@
 import app from "express";
-import slackApp from "../../api/ApiSlack.js"
 
 const router = app.Router();
+
 router.post("/", (req, res, next) => {
 	try {
 		const json = req.body;
+
 		if (json.challenge) res.json({ challenge: json.challenge });
 		else next();
 	} catch (e) {
-		next({log:e});
+		next({ log: e });
 	}
 });
 

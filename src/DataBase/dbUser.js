@@ -1,23 +1,26 @@
 import Sequelize from "sequelize";
-import sequelize from "../setting.js";
-import { LocationStatus, User, Group, GroupMember } from "./models/index.js"
+import { sequelize } from "../setting.js";
+import { LocationStatus, User, Group, GroupMember } from "./models/index.js";
 
 /**
  * Replaces the location statuses of the specified targets with the provided table.
  * @param {Object} table An object containing target IDs as keys and host locations as values.
  * @returns {Promise} A promise that resolves when the location statuses have been replaced.
  */
- export async function replaceLocationStatus(table) {
+export async function replaceLocationStatus(table) {
 	const keys = Object.keys(table);
-	if (keys.length == 0)
-		return;
 
-	await sequelize.transaction(transaction => {
-		return LocationStatus.bulkCreate(keys.map(x => ({ targetId: x, host: table[x] })), {
-			fields: ['targetId', 'host'],
-			updateOnDuplicate: ['host'],
-			transaction
-		});
+	if (keys.length === 0) return;
+
+	await sequelize.transaction((transaction) => {
+		return LocationStatus.bulkCreate(
+			keys.map((x) => ({ targetId: x, host: table[x] })),
+			{
+				fields: ["targetId", "host"],
+				updateOnDuplicate: ["host"],
+				transaction,
+			}
+		);
 	});
 }
 
@@ -27,13 +30,13 @@ import { LocationStatus, User, Group, GroupMember } from "./models/index.js"
  */
 export async function deleteAllLocationTable() {
 	try {
-	  await LocationStatus.truncate();
-	  return true;
+		await LocationStatus.truncate();
+		return true;
 	} catch (e) {
-	  console.error(e);
-	  return false;
+		console.error(e);
+		return false;
 	}
-  }
+}
 
 /**
  * Deletes rows from the location table for the specified targets.
@@ -41,22 +44,22 @@ export async function deleteAllLocationTable() {
  * @returns {Promise<boolean>} A promise that resolves to `true` if the rows were successfully deleted, or `false` if an error occurred.
  */
 export async function deleteLocationTable(targets) {
-    if (targets == null) return false;
-    if (targets.length == 0) return true;
-  
+	if (targets == null) return false;
+	if (targets.length === 0) return true;
+
 	try {
-	  // Use the destroy method of the LocationStatus model to delete records
-	  await LocationStatus.destroy({
-		where: {
-		  targetId: {
-			[Sequelize.Op.in]: targets
-		  }
-		}
-	  });
-	  return true;
+		// Use the destroy method of the LocationStatus model to delete records
+		await LocationStatus.destroy({
+			where: {
+				targetId: {
+					[Sequelize.Op.in]: targets,
+				},
+			},
+		});
+		return true;
 	} catch (e) {
-	  console.error(e);
-	  return false;
+		console.error(e);
+		return false;
 	}
 }
 
@@ -65,8 +68,9 @@ export async function deleteLocationTable(targets) {
  * @param {string} intraId The Intranet ID to check.
  * @returns {Promise<boolean>} A promise that resolves to `true` if a user with the specified Intranet ID exists, or `false` if no such user exists.
  */
- export async function isExistIntraId(intraId) {
+export async function isExistIntraId(intraId) {
 	const user = await User.findByPk(intraId);
+
 	return user !== null;
 }
 
@@ -78,12 +82,13 @@ export async function deleteLocationTable(targets) {
  * @param {string} slackId The Slack ID of the client to register.
  * @returns {Promise} A promise that resolves when the registration is complete.
  */
- export async function registerNewClient(intraId, slackId) {
+export async function registerNewClient(intraId, slackId) {
 	const user = await User.findByPk(intraId);
+
 	if (user) {
-	  await user.update({ slackId: slackId });
+		await user.update({ slackId });
 	} else {
-	  await User.create({ intraId: intraId, slackId: slackId });
+		await User.create({ intraId, slackId });
 	}
 }
 
@@ -93,11 +98,11 @@ export async function deleteLocationTable(targets) {
  * @param {string} slackId The Slack ID of the user.
  * @returns {(string|null)} The Intranet ID of the user, or null if no such user exists.
  */
- export async function getIntraIdbySlackId(slackId) {
-	const user = await User.findOne({ where: { slackId: slackId } });
+export async function getIntraIdbySlackId(slackId) {
+	const user = await User.findOne({ where: { slackId } });
+
 	return user ? user.intraId : null;
 }
-
 
 /**
  * Returns location information for the specified user IDs.
@@ -106,15 +111,22 @@ export async function deleteLocationTable(targets) {
  * - `targetId`: the user ID.
  * - `host`: the hostname of the user's current location, or null if no location information is available for the user.
  */
- export async function getUsersLocationInfo(targetIds) {
-	let locationInfo = [];
+export async function getUsersLocationInfo(targetIds) {
+	const locationInfo = [];
+
 	for (const targetId of targetIds) {
-	  const locationStatus = await LocationStatus.findByPk(targetId);
-	  if (locationStatus) {
-		locationInfo.push({ targetId: locationStatus.targetId, host: locationStatus.host });
-	  } else {
-		locationInfo.push({ targetId: targetId, host: null });
-	  }
+		// TODO: edit please
+		// eslint-disable-next-line no-await-in-loop
+		const locationStatus = await LocationStatus.findByPk(targetId);
+
+		if (locationStatus) {
+			locationInfo.push({
+				targetId: locationStatus.targetId,
+				host: locationStatus.host,
+			});
+		} else {
+			locationInfo.push({ targetId, host: null });
+		}
 	}
 	return locationInfo;
 }
@@ -129,33 +141,40 @@ export async function deleteLocationTable(targets) {
  */
 export async function getGroupLocationInfo(intraId, groupId) {
 	const group = await Group.findOne({ where: { groupId } });
+
 	if (!group || group.intraId !== intraId) {
-	  return [];
+		return [];
 	}
 	const groupMembers = await GroupMember.findAll({ where: { groupId } });
-	const targetIds = groupMembers.map(member => member.targetId);
+	const targetIds = groupMembers.map((member) => member.targetId);
+
 	if (targetIds.length === 0) {
-	  return [];
+		return [];
 	}
-	const locations = await LocationStatus.findAll({ where: { targetId: targetIds } });
-	const locationMap = new Map();
-	for (const location of locations) {
-	  locationMap.set(location.targetId, location);
-	}
-	return targetIds.map(targetId => {
-	  const location = locationMap.get(targetId);
-	  return { targetId, host: location ? location.host : null };
+	const locations = await LocationStatus.findAll({
+		where: { targetId: targetIds },
 	});
-  }
+	const locationMap = new Map();
+
+	for (const location of locations) {
+		locationMap.set(location.targetId, location);
+	}
+	return targetIds.map((targetId) => {
+		const location = locationMap.get(targetId);
+
+		return { targetId, host: location ? location.host : null };
+	});
+}
 
 /**
  * Get the user information for the given intraId
  * @param {string} intraId - The intraId of the user to get information for
  * @returns {Object} The user information, or null if no user was found
  */
- export async function getUserInfo(intraId) {
+export async function getUserInfo(intraId) {
 	const user = await User.findOne({
-	  where: { intraId }
+		where: { intraId },
 	});
+
 	return user;
 }

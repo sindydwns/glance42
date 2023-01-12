@@ -4,10 +4,12 @@ let issuedToken = null;
 
 async function getAccessToken(issuedToken) {
 	if (issuedToken != null) {
-		const expireAt = new Date((+issuedToken.created_at + +issuedToken.expires_in) * 1000);
+		const expireAt = new Date(
+			(+issuedToken.created_at + +issuedToken.expires_in) * 1000
+		);
 		const now = new Date();
-		if (expireAt > now)
-			return issuedToken;
+
+		if (expireAt > now) return issuedToken;
 	}
 	try {
 		return await axios({
@@ -17,9 +19,15 @@ async function getAccessToken(issuedToken) {
 				grant_type: "client_credentials",
 				client_id: process.env.API_FT_UID,
 				client_secret: process.env.API_FT_SECRET,
-			}
-		}).then(x => x.data).catch(e => {throw new Api42Error(e)});
-	} catch(e) {throw e;}
+			},
+		})
+			.then((x) => x.data)
+			.catch((e) => {
+				throw new Api42Error(e);
+			});
+	} catch (e) {
+		throw e;
+	}
 }
 
 export default async function api42(method, path, config) {
@@ -29,14 +37,21 @@ export default async function api42(method, path, config) {
 			...config?.headers,
 			Authorization: `Bearer ${issuedToken.access_token}`,
 		};
+
 		return axios({
 			...config,
 			method,
 			url: `${process.env.API_FT_ENDPOINT}${path}`,
 			headers,
-			validateStatus: status => status == 200,
-		}).then(x => x.data).catch(e => {throw new Api42Error(e)});
-	} catch(e) {throw e;}
+			validateStatus: (status) => status == 200,
+		})
+			.then((x) => x.data)
+			.catch((e) => {
+				throw new Api42Error(e);
+			});
+	} catch (e) {
+		throw e;
+	}
 }
 
 export class Api42Error extends Error {
