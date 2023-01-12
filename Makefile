@@ -1,22 +1,8 @@
+.DEFAULT_GOAL = all
+
 TARGET = app.zip
-SRC = \
-	Routers/*.js \
-	DataBase/*.js \
-	slack/*.js \
-	slack/utils/*.js \
-	api42.js \
-	apiSlack.js \
-	app.js \
-	error.js \
-	log.js \
-	setting.js \
-	package.json \
-	Schedule/*.js \
-	constants.js \
-	utils.js \
-	apiDataBase.js \
-	setting.js \
-	models/*.js
+SRC = src/ \
+		package.json
 
 $(TARGET): $(SRC)
 	zip -r $@ $^
@@ -27,6 +13,6 @@ fclean:
 	rm -rf $(TARGET)
 
 re:	fclean
-	make all
+	$(MAKE)
 
 .PHONY: all fclean re

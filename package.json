@@ -2,11 +2,11 @@
   "name": "glance42",
   "version": "0.1.0",
   "description": "",
-  "main": "app.js",
+  "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js --watch ./",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js --watch ./",
     "test": "node test/dbtest.js"
   },
   "author": "",
