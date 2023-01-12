@@ -114,7 +114,7 @@ export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 		...Blocks.Divider(),
 		...Blocks.Header("🛠️ 설정 및 관리"),
 		...Blocks.SectionMrkdwn("\n"),
-		...Blocks.BActionButtons([
+		...Blocks.ActionButtons([
 			{text: "그룹 관리", actionId: "goGroupManageView", value: "goGroupManageView",},
 			{text: "알람 관리", actionId: "goAlarmManageView", value: "goAlarmManageView",},
 		]),
