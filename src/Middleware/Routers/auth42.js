@@ -3,7 +3,7 @@ import app from "express";
 import session from "express-session";
 import passport from "passport";
 import passport42 from "passport-42";
-import * as dbuser from "../../DataBase/dbUser.js"
+import * as dbUser from "../../DataBase/dbUser.js"
 import { decrypt } from "../../utils/crypto.js"
 
 const FortyTwoStrategy = passport42.Strategy;
@@ -40,7 +40,7 @@ const passportOptions = { failureRedirect: '/login' };
 router.get('/return', passport.authenticate('42', passportOptions), async (req, res) => {
 	const slackId = decrypt(req.query.state);
 	const intraId = req.user;
-	await dbuser.registerNewClient(intraId, slackId);
+	await dbUser.registerNewClient(intraId, slackId);
     res.redirect('/');
 });
 
