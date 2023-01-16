@@ -1,5 +1,5 @@
 import assert from "assert";
-import { sequelize } from "../setting.js";
+import { sequelize } from "../src/setting.js";
 import * as userFuncs from "../DataBase/dbUser.js"; // ekwak
 import * as groupFuncs from "../DataBase/dbGroup.js"; // hyeyukim
 import * as alarmFuncs from "../DataBase/alarm.js"; // sanghwal
