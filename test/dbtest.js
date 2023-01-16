@@ -10,7 +10,7 @@ import {
 	GroupMember,
 	Alarm,
 	ErrorLog,
-} from "../models/index.js";
+} from "../src/DataBase/models/index.js";
 
 const strcmp = (str1, str2) => {
 	if (str1 < str2) return -1;
