@@ -26,8 +26,6 @@ jobs:
 
       - name: Run ESlint
         run: npx --fix eslint
-        with:
-          eslint-config-path: "../.eslintrc.cjs"
       
       - name: Create env file
         run: |
