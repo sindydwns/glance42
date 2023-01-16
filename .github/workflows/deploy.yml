@@ -3,7 +3,7 @@ name: Deploy to EB
 on:
   push:
     branches:
-      - main
+      - feature/10-ci-test-eslint
 
 jobs:
   buildAndTest:
