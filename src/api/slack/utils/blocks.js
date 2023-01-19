@@ -154,7 +154,7 @@ export function TextInput(labelText, actionId, Id = "textInput") {
 	return {
 		dispatch_action: true,
 		type: "input",
-		_id: Id,
+		block_id: Id,
 		element: {
 			type: "plain_text_input",
 			dispatch_action_config: {
@@ -241,7 +241,7 @@ export function MultiStaicSelect(labelText, actionId, items) {
 export function MultiUsersSelect(labelText, actionId, Id = "multiUsersSelect") {
 	return {
 		type: "input",
-		_id: Id,
+		block_id: Id,
 		element: {
 			type: "multi_users_select",
 			placeholder: {
