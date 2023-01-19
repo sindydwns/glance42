@@ -589,6 +589,7 @@ async function test2() {
 		),
 		[{ targetId: "yonshin" }].sort(sortByTargetId)
 	);
+	assert.deepEqual(await groupFuncs.getMemberList(-1), []);
 
 	// groupFuncs.deleteMember();
 	await groupFuncs.deleteMember(yonshinGroup1.groupId, "ekwak");
