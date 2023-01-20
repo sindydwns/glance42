@@ -7,9 +7,19 @@ import {
 	StatisticsHost,
 } from "./models/index.js";
 
+//양식
+/**
+ * @param {}
+ * @brief 
+ * @return {}
+ * @throws {}
+ */
+
 /**
  * @param {string} intraId
- * @return {Array<object>}
+ * @brief Alarm 테이블에서 intraId와 일치한 객체들을 targetId와 함께 반환한다.
+ * @return {Array<object>} alarmList
+ * @throws {boolean} false
  */
 export async function getAlarmList(intraId) {
 	try {
@@ -30,14 +40,16 @@ export async function getAlarmList(intraId) {
 /**
  * @param {string} intraId
  * @param {string|Array<string>} targetId
- * @returns {boolean}
+ * @brief Alarm테이블에 입력받은 intraId와 targetId의 데이터를 생성해준다.
+ * @return {boolean} true
+ * @throws {boolean} false
  */
 export async function insertAlarm(intraId, targetId) {
 	targetId = Array.isArray(targetId) ? targetId : [targetId];
 	const values = targetId.map((x) => ({ intraId, targetId: x }));
 
 	try {
-		await Alarm.bulkCreate(values);
+		await Alarm.bulkCreate(values); //@이미 있는 경우?
 		return true;
 	} catch (e) {
 		console.error(e);
@@ -48,7 +60,9 @@ export async function insertAlarm(intraId, targetId) {
 /**
  * @param {string} intraId
  * @param {string|Array<string>} targetId
- * @returns {boolean}
+ * @brief Alarm테이블에 입력받은 intraId와 targetId의 데이터를 삭제해준다.
+ * @return {boolean} true
+ * @throws {boolean} false
  */
 export async function deleteAlarm(intraId, targetId) {
 	targetId = Array.isArray(targetId) ? targetId : [targetId];
@@ -67,9 +81,9 @@ export async function deleteAlarm(intraId, targetId) {
 }
 
 /**
- *
  * @param {Array<integer>} ids
- * @returns {void}
+ * @brief 
+ * @return {void}
  */
 export async function deleteReservedAlarm(ids) {
 	if (ids.length == 0) return;
