@@ -3,8 +3,7 @@ import { Group, GroupMember } from "./models/index.js";
 /**
  * @param {string} intraId
  * @brief intraId의 사용자가 현재 선택한 그룹의 groupId를 반환한다.
- * @return {int} 선택한 그룹의 groupId
- * @throws {null} 반환값이 없을 시 return null
+ * @return {int|null} 선택한 그룹의 groupId 반환값이 없을 시 return null
  */
 export async function getSelectedGroupId(intraId) {
 	try {
@@ -27,8 +26,7 @@ export async function getSelectedGroupId(intraId) {
 /**
  * @param {string} intraId
  * @brief intraId의 사용자가 생성한 모든 그룹의 리스트를 반환하는 함수.
- * @return {Array<string>} 사용자의 그룹 리스트.
- * @throws {null} 반환값이 없을 시 return null
+ * @return {Array<string>|null} 사용자의 그룹 리스트. 반환값이 없을 시 return null
  */
 export async function getGroupList(intraId) {
 	try {
@@ -50,8 +48,7 @@ export async function getGroupList(intraId) {
 /**
  * @param {number} groupId
  * @brief 그룹(groupId)에 속하는 모든 멤버를 배열 형태로 반환하는 함수.
- * @return {Array<string>} 해당 그룹의 멤버들의 리스트
- * @throws {null} 반환값이 없을 시 return null
+ * @return {Array<string>|null} 해당 그룹의 멤버들의 리스트 반환값이 없을 시 return null
  */
 export async function getMemberList(groupId) {
 	try {

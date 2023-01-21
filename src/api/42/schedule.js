@@ -5,6 +5,12 @@ import * as dbUser from "../../DataBase/dbUser.js";
 import * as dbAlarm from "../../DataBase/dbAlarm.js";
 import scheduleObjs from "./constants.js";
 
+/**
+ * @param {} path
+ * @param {} params
+ * @brief 
+ * @return {} 
+ */
 async function getAllpageInfo(path, params) {
 	let total = [];
 
@@ -106,12 +112,24 @@ export const schedule = {
 	},
 };
 
+/**
+ * @param {number} campusId
+ * @brief 
+ * @return {} 
+ */
 async function getAllActiveLocation(campusId) {
 	const path = `/v2/campus/${campusId}/locations`;
-
+	
 	return await getAllpageInfo(path, scheduleObjs.getAllActiveLocationParams);
 }
 
+/**
+ * @param {number} campusId
+ * @param {number} past
+ * @param {Date} now
+ * @brief 
+ * @return {} 
+ */
 async function getChangedLocation(campusId, past, now) {
 	const path = `/v2/campus/${campusId}/locations`;
 
