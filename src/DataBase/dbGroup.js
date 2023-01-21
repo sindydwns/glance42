@@ -1,11 +1,10 @@
 import { Group, GroupMember } from "./models/index.js";
 
 /**
- * @description
- *  사용자가 현재 선택한 그룹의 groupId를 반환하는 함수.
- *  없으면 null 반환.
- * @param {string} intraId 사용자의 intraId.
- * @returns {int} 선택한 그룹의 groupId.
+ * @param {string} intraId
+ * @brief intraId의 사용자가 현재 선택한 그룹의 groupId를 반환한다.
+ * @return {int} 선택한 그룹의 groupId
+ * @throws {null} 반환값이 없을 시 return null
  */
 export async function getSelectedGroupId(intraId) {
 	try {
@@ -26,11 +25,10 @@ export async function getSelectedGroupId(intraId) {
 }
 
 /**
- * @description
- *  사용자(intraId)가 생성한 모든 그룹의 리스트를 반환하는 함수.
- *  실패하면 null 반환.
- * @param {string} intraId 사용자의 intraId.
- * @returns {Array<string>} 사용자의 그룹 리스트.
+ * @param {string} intraId
+ * @brief intraId의 사용자가 생성한 모든 그룹의 리스트를 반환하는 함수.
+ * @return {Array<string>} 사용자의 그룹 리스트.
+ * @throws {null} 반환값이 없을 시 return null
  */
 export async function getGroupList(intraId) {
 	try {
@@ -50,19 +48,11 @@ export async function getGroupList(intraId) {
 }
 
 /**
- * @description 그룹(groupId)에 속하는 모든 멤버를 배열 형태로 반환하는 함수.
- * @param {number} groupId 그룹의 groupId.
- * @returns {Array<string>} 해당 그룹의 멤버들의 리스트. 실패하면 null 반환.
+ * @param {number} groupId
+ * @brief 그룹(groupId)에 속하는 모든 멤버를 배열 형태로 반환하는 함수.
+ * @return {Array<string>} 해당 그룹의 멤버들의 리스트
+ * @throws {null} 반환값이 없을 시 return null
  */
-// Group.hasMany(GroupMember, {
-// 	as: "groupMembers",
-// 	foreignKey: "groupId",
-// });
-
-// GroupMember.belongsTo(Group, {
-// 	as: "groups",
-// 	foreignKey: "groupId",
-// });
 export async function getMemberList(groupId) {
 	try {
 		const users = await Group.findAll({
@@ -84,12 +74,9 @@ export async function getMemberList(groupId) {
 }
 
 /**
- * @description 사용자가 메인 화면에서 선택한 그룹 정보를 업데이트하는 함수.
- * @param {string} intraId 사용자의 intraId.
- * @param {number} selectedGroupId
- *  사용자가 선택한 그룹의 groupId.
- *  사용자가 "워크스페이스에서 유저 선택"을 선택한 경우 null 값이 들어온다.
- * @returns 반환값 x.
+ * @param {string} intraId
+ * @param {number} selectedGroupId 선택한 그룹 Id, 그룹을 선택하지 않은 경우 null이 들어온다.
+ * @brief 사용자가 선택한 그룹 정보를 업데이트하는 함수.
  */
 export async function updateSelectedGroup(intraId, selectedGroupId) {
 	try {
@@ -125,16 +112,15 @@ export async function updateSelectedGroup(intraId, selectedGroupId) {
 }
 
 /**
- * @description 사용자가 새로운 그룹을 추가하면 데이터베이스에 그룹을 추가하는 함수.
- * @param {string} intraId 사용자의 intraId.
- * @param {string|Array<string>} groupName 추가하고 싶은 그룹의 이름.
- * @returns 성공하면 true, 실패하면 false 반환.
+ * @param {string} intraId
+ * @param {string|Array<string>} groupName
+ * @brief 사용자가 새로운 그룹을 추가하면 데이터베이스에 그룹을 추가하는 함수.
+ * @return {boolean} return true or return false if fail
  */
 export async function insertGroup(intraId, _groupName) {
-	// console.error(`why?`, intraId);
 	const groupName = Array.isArray(_groupName) ? _groupName : [_groupName];
 	const values = groupName.map((x) => ({ intraId, name: x }));
-
+	
 	try {
 		await Group.bulkCreate(values);
 		return true;
@@ -145,11 +131,10 @@ export async function insertGroup(intraId, _groupName) {
 }
 
 /**
- * @description
- *  사용자가 선택한 그룹을 데이터베이스에서 제거하는 함수.
- * @param {string} intraId 사용자의 intraId.
- * @param {number} groupId 사용자가 삭제하고자 하는 groupId.
- * @returns 성공하면 true, 실패하면 false.
+ * @param {string} intraId
+ * @param {number} groupId
+ * @brief 사용자가 선택한 그룹을 데이터베이스에서 제거하는 함수.
+ * @return {boolean} return true or return false if fail
  */
 export async function deleteGroup(intraId, groupId) {
 	try {
@@ -167,15 +152,15 @@ export async function deleteGroup(intraId, groupId) {
 }
 
 /**
- * @description 특정 그룹에 멤버를 추가하는 함수.
- * @param {number} groupId 멤버를 추가하고자 하는 groupId.
- * @param {string|Array<string>} targetId 추가하고자 하는 멤버의 intraId.
- * @returns 성공하면 true, 실패하면 false.
+ * @param {number} groupId
+ * @param {string|Array<string>} _targetId
+ * @brief groupId 그룹에 targetId 멤버를 추가하는 함수.
+ * @return {boolean} return true or return false if fail
  */
 export async function insertMember(groupId, _targetId) {
 	const targetId = Array.isArray(_targetId) ? _targetId : [_targetId];
 	const values = targetId.map((x) => ({ groupId, targetId: x }));
-
+	
 	try {
 		await GroupMember.bulkCreate(values);
 		return true;
@@ -186,10 +171,10 @@ export async function insertMember(groupId, _targetId) {
 }
 
 /**
- * @description 특정 그룹에서 멤버를 삭제하는 함수.
  * @param {number} groupId 삭제하고자 하는 멤버가 있는 그룹의 groupId.
  * @param {string} targetId 삭제하고자 하는 멤버의 intraId.
- * @returns 성공하면 true, 실패하면 false.
+ * @brief 특정 그룹에서 멤버를 삭제하는 함수.
+ * @return {boolean} return true or return false if fail
  */
 export async function deleteMember(groupId, targetId) {
 	try {
@@ -203,11 +188,23 @@ export async function deleteMember(groupId, targetId) {
 	}
 }
 
+/**
+ * @param {number} GroupId
+ * @param {string} newGroupName
+ * @brief GroupId에 해당하는 그룹의 이음을 newGroupName으로 업데이트 하는 함수.
+ * @return {boolean} return true
+ */
 export async function updateGroupName(GroupId, newGroupName) {
 	await Group.update({ name: newGroupName }, { where: { groupId: GroupId } });
 	return true;
 }
 
+/**
+ * @param {string} intraId
+ * @param {string} groupName
+ * @brief groupName에 이미 존재하는 intraId인지 반환하는 함수.
+ * @return {boolean} 그룹이 존재할 시 true반환. 아닐 시 false반환.
+ */
 export async function isRegisteredGroupName(intraId, groupName) {
 	const group = await Group.findOne({
 		where: {
@@ -215,10 +212,16 @@ export async function isRegisteredGroupName(intraId, groupName) {
 			name: groupName,
 		},
 	});
-
+	
 	return group !== null;
 }
 
+/**
+ * @param {number} groupId
+ * @param {number} _groupMembers
+ * @brief groupId 그룹에 groupMembers가 존재하면 그대로 반환
+ * @return {object|null} 그룹에 멤버가 존재할 시 담은 배열을 반환. 아닐 시 null반환.
+ */
 export async function selectDuplicatedGroupMember(groupId, _groupMembers) {
 	const groupMembers = Array.isArray(_groupMembers)
 		? _groupMembers

@@ -7,19 +7,10 @@ import {
 	StatisticsHost,
 } from "./models/index.js";
 
-//양식
-/**
- * @param {}
- * @brief 
- * @return {}
- * @throws {}
- */
-
 /**
  * @param {string} intraId
  * @brief Alarm 테이블에서 intraId와 일치한 객체들을 targetId와 함께 반환한다.
- * @return {Array<object>} alarmList
- * @throws {boolean} false
+ * @return {Array<object>} alarmList or return false if fail
  */
 export async function getAlarmList(intraId) {
 	try {
@@ -41,8 +32,7 @@ export async function getAlarmList(intraId) {
  * @param {string} intraId
  * @param {string|Array<string>} targetId
  * @brief Alarm테이블에 입력받은 intraId와 targetId의 데이터를 생성해준다.
- * @return {boolean} true
- * @throws {boolean} false
+ * @return {boolean} true or return false if fail
  */
 export async function insertAlarm(intraId, targetId) {
 	targetId = Array.isArray(targetId) ? targetId : [targetId];
@@ -61,8 +51,7 @@ export async function insertAlarm(intraId, targetId) {
  * @param {string} intraId
  * @param {string|Array<string>} targetId
  * @brief Alarm테이블에 입력받은 intraId와 targetId의 데이터를 삭제해준다.
- * @return {boolean} true
- * @throws {boolean} false
+ * @return {boolean} true or return false if fail
  */
 export async function deleteAlarm(intraId, targetId) {
 	targetId = Array.isArray(targetId) ? targetId : [targetId];
@@ -82,8 +71,7 @@ export async function deleteAlarm(intraId, targetId) {
 
 /**
  * @param {Array<integer>} ids
- * @brief 
- * @return {void}
+ * @brief 삭제할 알람 id 배열을 받아 Alarm테이블에서 삭제해준다
  */
 export async function deleteReservedAlarm(ids) {
 	if (ids.length == 0) return;
@@ -95,9 +83,9 @@ export async function deleteReservedAlarm(ids) {
 }
 
 /**
- *
- * @param {STRING} message
- * @returns {boolean}
+ * @param {string} message
+ * @brief ErrorLog테이블에 message의 에러 생성
+ * @return {boolean} true or return false if fail
  */
 export async function insertErrorLog(message) {
 	try {
@@ -112,9 +100,9 @@ export async function insertErrorLog(message) {
 }
 
 /**
- *
  * @param {Array<Array<integer>>} data
- * @returns {boolean}
+ * @brief data
+ * @return {boolean} true or return false if fail
  */
 export async function insertStatisticHost(data) {
 	const values = data.map((item) => ({
@@ -135,8 +123,12 @@ export async function insertStatisticHost(data) {
 }
 
 /**
- *
- * @returns {object}
+ * @brief 현재 자리에 앉아있는 사람들을
+ * User에서 slackId컬럼을 INNER JOIN하고
+ * LocationStatus에서 host컬럼을 OUTTER JOIN하여
+ * alarmId, intraId, targetId를 가져온 후
+ * alarmId, intraId, targetId, host(LS), slackId(User)를 모아 반환
+ * @return {Object} alarm or return false if fail
  */
 export async function getAllReservedAlarm() {
 	try {
@@ -175,6 +167,12 @@ export async function getAllReservedAlarm() {
 	}
 }
 
+/**
+ * @param {string} intraId
+ * @param {string|Array<string>} alarms
+ * @brief Alarm테이블에서 intraId와 alarms가 맞는 객체들을 반환한다.
+ * @return {Object} 매칭되는게 없었다면 null반환
+ */
 export async function selectDuplicatedAlarm(intraId, alarms) {
 	alarms = Array.isArray(alarms) ? alarms : [alarms];
 	const res_ = await Alarm.findAll({

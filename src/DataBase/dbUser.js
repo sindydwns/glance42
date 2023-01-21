@@ -3,10 +3,11 @@ import { sequelize } from "../setting.js";
 import { LocationStatus, User, Group, GroupMember } from "./models/index.js";
 
 /**
- * Replaces the location statuses of the specified targets with the provided table.
- * @param {Object} table An object containing target IDs as keys and host locations as values.
- * @returns {Promise} A promise that resolves when the location statuses have been replaced.
+ * @param {object} table key: targetId, value: host location
+ * @brief table에 지정된 targetId의 location이 업데이트 된다. 트랜잭션이 적용됨.
+ * @return {Promise | null} 자리가 업데이트 된 후의 table을 반환. 없으면 null이 반환됨.
  */
+//@왜 여기있는 bulkCreate함수는 그대로 반환되는지? (다른곳에서는 true, false반환)
 export async function replaceLocationStatus(table) {
 	const keys = Object.keys(table);
 
@@ -25,8 +26,8 @@ export async function replaceLocationStatus(table) {
 }
 
 /**
- * Deletes all rows from the location table.
- * @returns {Promise<boolean>} A promise that resolves to `true` if the rows were successfully deleted, or `false` if an error occurred.
+ * @brief location 테이블의 모든 내용을 지우는 함수.
+ * @return {boolean} return true or return false if fail
  */
 export async function deleteAllLocationTable() {
 	try {
@@ -39,9 +40,9 @@ export async function deleteAllLocationTable() {
 }
 
 /**
- * Deletes rows from the location table for the specified targets.
  * @param {string[]} targets An array of target IDs.
- * @returns {Promise<boolean>} A promise that resolves to `true` if the rows were successfully deleted, or `false` if an error occurred.
+ * @brief Location 테이블에 대한 targets 열을 삭제함
+ * @return {boolean} return true or return false if fail
  */
 export async function deleteLocationTable(targets) {
 	if (targets == null) return false;
@@ -64,9 +65,9 @@ export async function deleteLocationTable(targets) {
 }
 
 /**
- * Determines if a user with the specified Intranet ID exists.
- * @param {string} intraId The Intranet ID to check.
- * @returns {Promise<boolean>} A promise that resolves to `true` if a user with the specified Intranet ID exists, or `false` if no such user exists.
+ * @param {string} intraId
+ * @brief intraId로 User 테이블에서 찾아 반환하는 함수.
+ * @return {boolean} A promise that resolves to `true` if a user with the specified Intranet ID exists, or `false` if no such user exists.
  */
 export async function isExistIntraId(intraId) {
 	const user = await User.findByPk(intraId);
@@ -81,7 +82,14 @@ export async function isExistIntraId(intraId) {
  * @param {string} intraId The Intranet ID of the client to register.
  * @param {string} slackId The Slack ID of the client to register.
  * @returns {Promise} A promise that resolves when the registration is complete.
+ *
+/**
+ * @param {}
+ * @brief 
+ * @return {}
+ * @throws {}
  */
+
 export async function registerNewClient(intraId, slackId) {
 	const user = await User.findByPk(intraId);
 
@@ -98,6 +106,13 @@ export async function registerNewClient(intraId, slackId) {
  * @param {string} slackId The Slack ID of the user.
  * @returns {(string|null)} The Intranet ID of the user, or null if no such user exists.
  */
+/**
+ * @param {}
+ * @brief 
+ * @return {}
+ * @throws {}
+ */
+
 export async function getIntraIdbySlackId(slackId) {
 	const user = await User.findOne({ where: { slackId } });
 
@@ -111,6 +126,13 @@ export async function getIntraIdbySlackId(slackId) {
  * - `targetId`: the user ID.
  * - `host`: the hostname of the user's current location, or null if no location information is available for the user.
  */
+/**
+ * @param {}
+ * @brief 
+ * @return {}
+ * @throws {}
+ */
+
 export async function getUsersLocationInfo(targetIds) {
 	const locationInfo = [];
 
@@ -139,6 +161,13 @@ export async function getUsersLocationInfo(targetIds) {
  *   - targetId {string}: The intraId of a group member.
  *   - host {string}: The host of the group member's location, or null if the location is unknown.
  */
+/**
+ * @param {}
+ * @brief 
+ * @return {}
+ * @throws {}
+ */
+
 export async function getGroupLocationInfo(intraId, groupId) {
 	const group = await Group.findOne({ where: { groupId } });
 
@@ -171,6 +200,13 @@ export async function getGroupLocationInfo(intraId, groupId) {
  * @param {string} intraId - The intraId of the user to get information for
  * @returns {Object} The user information, or null if no user was found
  */
+/**
+ * @param {}
+ * @brief 
+ * @return {}
+ * @throws {}
+ */
+
 export async function getUserInfo(intraId) {
 	const user = await User.findOne({
 		where: { intraId },
