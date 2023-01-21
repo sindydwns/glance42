@@ -67,7 +67,7 @@ export async function deleteLocationTable(targets) {
 /**
  * @param {string} intraId
  * @brief intraId로 User 테이블에서 찾아 반환하는 함수.
- * @return {boolean} A promise that resolves to `true` if a user with the specified Intranet ID exists, or `false` if no such user exists.
+ * @return {boolean} 찾지 못하면 false
  */
 export async function isExistIntraId(intraId) {
 	const user = await User.findByPk(intraId);
@@ -76,20 +76,10 @@ export async function isExistIntraId(intraId) {
 }
 
 /**
- * Registers a new client with the specified Intranet ID and Slack ID.
- * If a user with the specified Intranet ID already exists, their Slack ID will be updated.
- * If no such user exists, a new user will be created with the specified Intranet and Slack IDs.
- * @param {string} intraId The Intranet ID of the client to register.
- * @param {string} slackId The Slack ID of the client to register.
- * @returns {Promise} A promise that resolves when the registration is complete.
- *
-/**
- * @param {}
- * @brief 
- * @return {}
- * @throws {}
+ * @param {string} intraId
+ * @param {string} slackId
+ * @brief User테이블에 intraId, slackId가 존재하면 update하고 없으면 create한다.
  */
-
 export async function registerNewClient(intraId, slackId) {
 	const user = await User.findByPk(intraId);
 
@@ -101,18 +91,10 @@ export async function registerNewClient(intraId, slackId) {
 }
 
 /**
- * Returns the Intranet ID of the user with the specified Slack ID.
- * If no such user exists, returns null.
- * @param {string} slackId The Slack ID of the user.
- * @returns {(string|null)} The Intranet ID of the user, or null if no such user exists.
+ * @param {string} slackId
+ * @brief User테이블에서 slackId로 찾아본 후 있으면 intraId를 반환, 없으면 null을 반환하는 함수.
+ * @return {string|null} The Intranet ID of the user, or null if no such user exists.
  */
-/**
- * @param {}
- * @brief 
- * @return {}
- * @throws {}
- */
-
 export async function getIntraIdbySlackId(slackId) {
 	const user = await User.findOne({ where: { slackId } });
 
@@ -120,24 +102,15 @@ export async function getIntraIdbySlackId(slackId) {
 }
 
 /**
- * Returns location information for the specified user IDs.
- * @param {string[]} targetIds An array of user IDs.
- * @returns {Object[]} An array of objects containing location information for the specified user IDs. Each object has the following properties:
- * - `targetId`: the user ID.
- * - `host`: the hostname of the user's current location, or null if no location information is available for the user.
+ * @param {string[]} targetIds
+ * @brief targetIds에 대한 자리위치 (location)을 찾아 반환한다. 자리 위치가 null이어도 함께 반환하는 함수.
+ * @return {Object[]} locationInfo
  */
-/**
- * @param {}
- * @brief 
- * @return {}
- * @throws {}
- */
-
 export async function getUsersLocationInfo(targetIds) {
 	const locationInfo = [];
 
 	for (const targetId of targetIds) {
-		// TODO: edit please
+		// @ TODO: edit please
 		// eslint-disable-next-line no-await-in-loop
 		const locationStatus = await LocationStatus.findByPk(targetId);
 
@@ -154,57 +127,46 @@ export async function getUsersLocationInfo(targetIds) {
 }
 
 /**
- * Retrieves the location information for the members of a group.
- * @param {string} intraId - The intraId of the user who owns the group.
- * @param {number} groupId - The ID of the group.
- * @returns {Array} An array of objects, where each object has the following properties:
- *   - targetId {string}: The intraId of a group member.
- *   - host {string}: The host of the group member's location, or null if the location is unknown.
- */
-/**
- * @param {}
- * @brief 
- * @return {}
- * @throws {}
+ * @param {string} intraId
+ * @param {number} groupId
+ * @brief 그룹 리스트에서 그룹에 속한 맴버 정보를 가져온후 
+ * 해당 맴버를 기준으로 locationStatus에서 자리 정보를 가져와 값을 이어준다 
+ * 이를 통해 그룹에 속한 맴버의 자리정보를 수집하고 배열로 만들어 반환한다.
+ * @return {Array}
  */
 
 export async function getGroupLocationInfo(intraId, groupId) {
-	const group = await Group.findOne({ where: { groupId } });
-
-	if (!group || group.intraId !== intraId) {
-		return [];
-	}
-	const groupMembers = await GroupMember.findAll({ where: { groupId } });
-	const targetIds = groupMembers.map((member) => member.targetId);
-
-	if (targetIds.length === 0) {
-		return [];
-	}
-	const locations = await LocationStatus.findAll({
-		where: { targetId: targetIds },
+	const group = await groupList.findAll({
+		where: {
+			targetId, host
+		},
+		include: [{
+			model: groupMember,
+			attributes: ['groupId'],
+			require: true,
+		}, {
+			model: LocationStatus,
+			attributes: ['target_id'],
+			require: false,
+			where: intraId, groupId,
+		}]
 	});
-	const locationMap = new Map();
 
-	for (const location of locations) {
-		locationMap.set(location.targetId, location);
-	}
-	return targetIds.map((targetId) => {
-		const location = locationMap.get(targetId);
+	const locationInfo = group.map(x => ({
+		targetId : x.targetId,
+		host : x.host,
+		intraId : x.intraId, //@check here: change to seekerId
+		groupId : x.groupId,
+	}));
 
-		return { targetId, host: location ? location.host : null };
-	});
+	console.log(locationInfo);
+	return locationInfo;
 }
 
 /**
- * Get the user information for the given intraId
- * @param {string} intraId - The intraId of the user to get information for
- * @returns {Object} The user information, or null if no user was found
- */
-/**
- * @param {}
- * @brief 
- * @return {}
- * @throws {}
+ * @param {string} intraId
+ * @brief intraId로 User테이블에서 정보를 찾아 반환하는 함수.
+ * @return {Object} user object 찾지 못한 경우 null반환
  */
 
 export async function getUserInfo(intraId) {
