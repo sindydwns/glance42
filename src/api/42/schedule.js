@@ -6,10 +6,10 @@ import * as dbAlarm from "../../DataBase/dbAlarm.js";
 import scheduleObjs from "./constants.js";
 
 /**
- * @param {} path
- * @param {} params
- * @brief 
- * @return {} 
+ * @param {string} path api endpoints
+ * @param {object} params page, range, filter
+ * @return {Array<Promise<> >|null} data를 더한 배열을 반환한다. 오류일시 null반환하는 함수.
+ * //@-@
  */
 async function getAllpageInfo(path, params) {
 	let total = [];
@@ -114,8 +114,9 @@ export const schedule = {
 
 /**
  * @param {number} campusId
- * @brief 
- * @return {} 
+ * @brief 캠퍼스 id에 맞는 캠퍼스의 위치정보를 들고오는 함수.
+ * @return {}
+ * //@-@
  */
 async function getAllActiveLocation(campusId) {
 	const path = `/v2/campus/${campusId}/locations`;
@@ -127,7 +128,7 @@ async function getAllActiveLocation(campusId) {
  * @param {number} campusId
  * @param {number} past
  * @param {Date} now
- * @brief 
+ * @brief 위치정보 변경하는 함수.
  * @return {} 
  */
 async function getChangedLocation(campusId, past, now) {
