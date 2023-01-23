@@ -166,6 +166,33 @@ export async function getGroupLocationInfo(intraId, groupId) {
 	});
 }
 
+//export async function getGroupLocationInfo(seekerId, groupId) {
+//	const group = await groupList.findAll({
+//		where: {
+//			targetId, host
+//		},
+//		include: [{
+//			model: groupMember,
+//			attributes: ['groupId'],
+//			require: true,
+//		}, {
+//			model: LocationStatus,
+//			attributes: ['target_id'],
+//			require: false,
+//			where: seekerId, groupId,
+//		}]
+//	});
+
+//	const locationInfo = group.map(x => ({
+//		targetId : x.targetId,
+//		host : x.host,
+//		seekerId : x.seekerId,
+//		groupId : x.groupId,
+//	}));
+//	//console.log(locationInfo);
+//	return locationInfo;
+//}
+
 /**
  * Get the user information for the given intraId
  * @param {string} intraId - The intraId of the user to get information for
