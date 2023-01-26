@@ -43,3 +43,41 @@ npm install
 // 코드 실행
 npm start
 ```
+
+#### [1기]
+<table>
+  <tr>
+    <td align=center>👑 leader</td>
+    <td align=center><a>jgo</a></td>
+  </tr>
+    <td align=center>🐧</td>
+    <td align=center><a>yeonhkim</a></td>
+  <tr>
+    <td align=center>🎮</td>
+    <td align=center><a>yonshin</a></td>
+  </tr>
+</table>
+
+#### [2기]
+<table>
+  <tr>
+    <td align=center>🧑‍</td>
+    <td align=center><a>ekwak</a></td>
+  </tr>
+  <tr>
+    <td align=center>🍐</td>
+    <td align=center><a>hyeyukim</a></td>
+  </tr>
+  <tr>
+    <td align=center>🍉</td>
+    <td align=center><a>juykang</a></td>
+  </tr>
+  <tr>
+    <td align=center>🌸</td>
+    <td align=center><a>sanghwal</a></td>
+  </tr>
+  <tr>
+    <td align=center>🐹</td>
+    <td align=center><a>yeju</a></td>
+  </tr>
+</table>
