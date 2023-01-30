@@ -86,7 +86,7 @@ export async function registerNewClient(intraId, slackId) {
 	const user = await User.findByPk(intraId);
 
 	if (user) {
-		await user.update({ slackId });
+		await User.update({ slackId });
 	} else {
 		await User.create({ intraId, slackId });
 	}
