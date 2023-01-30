@@ -1,8 +1,8 @@
 import assert from "assert";
-import { sequelize } from "../setting.js";
-import * as userFuncs from "../DataBase/dbUser.js"; // ekwak
-import * as groupFuncs from "../DataBase/dbGroup.js"; // hyeyukim
-import * as alarmFuncs from "../DataBase/alarm.js"; // sanghwal
+import { sequelize } from "../src/setting.js";
+import * as userFuncs from "../src/DataBase/dbUser.js"; // ekwak
+import * as groupFuncs from "../src/DataBase/dbGroup.js"; // hyeyukim
+import * as alarmFuncs from "../src/DataBase/dbAlarm.js"; // sanghwal
 import {
 	User,
 	LocationStatus,
@@ -10,7 +10,7 @@ import {
 	GroupMember,
 	Alarm,
 	ErrorLog,
-} from "../models/index.js";
+} from "../src/Database/models/index.js";
 
 const strcmp = (str1, str2) => {
 	if (str1 < str2) return -1;
@@ -20,7 +20,7 @@ const strcmp = (str1, str2) => {
 const sortByTargetId = (o1, o2) => strcmp(o1.targetId, o2.targetId);
 
 async function test1() {
-	await sequelize.sync({ force: true });
+			await sequelize.sync({ force: true });
 
 	// userFuncs.replaceLocationStatus
 	await userFuncs.replaceLocationStatus({
@@ -236,9 +236,6 @@ async function test1() {
 		name: "test group 4",
 	});
 
-	assert.equal(
-		await userFuncs.getGroupLocationInfo("yonshin", createdGroup1.groupId)
-	);
 	assert.deepEqual(
 		(
 			await userFuncs.getGroupLocationInfo(
