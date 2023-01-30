@@ -44,11 +44,7 @@ router.use(passport.initialize());
 router.use(passport.session());
 router.get("/", (req, res, next) => {
 	const passportOptions = { state: req.query.guess };
-	const slackId = decrypt(req.query.state);
-	const intraId = req.user;
 
-	if (process.env.DEV_MODE)
-		await dbUser.registerNewClient(intraId, slackId);
 	passport.authenticate("42", passportOptions)(req, res, next);
 });
 const passportOptions = { failureRedirect: "/login" };

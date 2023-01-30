@@ -27,9 +27,10 @@ export default (app) => {
 			);
 			const userInfo = await dbUser.getUserInfo(clientDisplayName);
 			const intraId = await getClientIntraId(null, event, client);
-
 			let view;
-
+	
+			if (process.env.DEV_MODE)
+				await dbUser.registerNewClient(clientDisplayName, clientSlackId);
 			if (clientSlackId == userInfo?.slackId)
 				view = await mainHomeView(intraId);
 			else view = await notRegisteredHomeView(encrypt(clientSlackId));
