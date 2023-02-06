@@ -11,14 +11,14 @@ class Api42 {
 	constructor() {
 		this.issuedToken = null;
 	}
-	
-	async getAccessToken(issuedToken) {
+
+	static async getAccessToken(issuedToken) {
 		if (issuedToken != null) {
 			const expireAt = new Date(
 				(+issuedToken.created_at + +issuedToken.expires_in) * 1000
 			);
 			const now = new Date();
-	
+
 			if (expireAt > now) return issuedToken;
 		}
 		try {
@@ -39,7 +39,7 @@ class Api42 {
 			throw e;
 		}
 	}
-	
+
 	async fetch(method, path, config) {
 		try {
 			this.issuedToken = await this.getAccessToken(this.issuedToken);
@@ -47,13 +47,13 @@ class Api42 {
 				...config?.headers,
 				Authorization: `Bearer ${this.issuedToken.access_token}`,
 			};
-	
+
 			return axios({
 				...config,
 				method,
 				url: `${process.env.API_FT_ENDPOINT}${path}`,
 				headers,
-				validateStatus: (status) => status == 200,
+				validateStatus: (status) => status === 200,
 			})
 				.then((x) => x.data)
 				.catch((e) => {
