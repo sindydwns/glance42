@@ -2,7 +2,7 @@ const scheduleObjs = {};
 
 scheduleObjs.api42pagingParams = {
 	"page[size]": "100",
-	"range[host]": "c10,c9r9s9",
+	"range[host]": "c10, cx2r8s5",
 	"filter[primary]": true,
 };
 
