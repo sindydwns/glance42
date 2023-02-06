@@ -83,10 +83,8 @@ export async function isExistIntraId(intraId) {
  * @returns {Promise} A promise that resolves when the registration is complete.
  */
 export async function registerNewClient(intraId, slackId) {
-	const user = await User.findByPk(intraId);
-
-	if (user) {
-		await User.update({ slackId });
+	if (isExistIntraId(intraId)) {
+		await User.update({ slackId }, { where: { intraId } });
 	} else {
 		await User.create({ intraId, slackId });
 	}
