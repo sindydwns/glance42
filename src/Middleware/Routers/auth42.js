@@ -12,8 +12,8 @@ dotenv.config();
 passport.use(
 	new FortyTwoStrategy(
 		{
-			clientID: process.env.OAUTH42_CLIENT_ID,
-			clientSecret: process.env.OAUTH42_CLIENT_SECRET,
+			clientID: process.env.API_FT_UID,
+			clientSecret: process.env.API_FT_SECRET,
 			callbackURL: process.env.OAUTH42_RETURN_URL,
 		},
 		async function (accessToken, refreshToken, profile, cb) {

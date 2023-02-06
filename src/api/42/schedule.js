@@ -17,7 +17,7 @@ async function getAllpageInfo(path, params) {
 		};
 
 		try {
-			const data = await api42("GET", path, config);
+			const data = await api42.fetch("GET", path, config);
 
 			if (data.length === 0) break;
 			total = [...total, ...data];
@@ -28,8 +28,6 @@ async function getAllpageInfo(path, params) {
 	}
 	return total;
 }
-
-const campusId = 29;
 
 export const schedule = {
 	loadLocations: (delay) => {
@@ -42,8 +40,8 @@ export const schedule = {
 				const now = new Date();
 				const total =
 					last == 0
-						? await getAllActiveLocation(campusId)
-						: await getChangedLocation(campusId, last, now);
+						? await getAllActiveLocation(process.env.CAMPUS_ID)
+						: await getChangedLocation(process.env.CAMPUS_ID, last, now);
 
 				if (total == null) {
 					last = 0;
@@ -85,7 +83,7 @@ export const schedule = {
 		_schedule.scheduleJob(`45 59 */${+delay} * * *`, async () => {
 			try {
 				console.log(`${new Date()} | statisticHost`);
-				const total = await getAllActiveLocation(campusId);
+				const total = await getAllActiveLocation(process.env.CAMPUS_ID);
 				const studentCount = total.reduce((acc, cur) => {
 					const cluster = /c(\d+)r\d+s\d+/.exec(cur.host)[1];
 
