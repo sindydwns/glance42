@@ -333,6 +333,11 @@ export async function memberManageHomeView(intraId, selectGroup, msg) {
 					actionId: "OpenModalAddMember",
 				},
 				{
+					text: "멤버 직접 추가",
+					value: "멤버 직접 추가",
+					actionId: "OpenModalAddTextMember",
+				},
+				{
 					text: "멤버 삭제",
 					value: "멤버 삭제",
 					actionId: "OpenModalDelMember",
