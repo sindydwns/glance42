@@ -4,6 +4,7 @@ import {
 	mainHomeView,
 	memberManageHomeView,
 	addMemberModalView,
+	addTextMemberModalView,
 	delMemberModalView,
 } from "./views.js";
 
@@ -16,6 +17,28 @@ export default (app) => {
 			const result = await client.views.open({
 				trigger_id: body.trigger_id,
 				view: await addMemberModalView(),
+			});
+		} catch (error) {
+			logger.error(error);
+		}
+		try {
+			const result = await client.views.publish({
+				user_id: body.user.id,
+				view: await mainHomeView(seekerId),
+			});
+		} catch (e) {
+			logger.error(e);
+		}
+	});
+
+	app.action("OpenModalAddTextMember", async ({ ack, body, client, logger }) => {
+		await ack();
+		const seekerId = await getClientIntraId(body, null, client);
+
+		try {
+			const result = await client.views.open({
+				trigger_id: body.trigger_id,
+				view: await addTextMemberModalView(),
 			});
 		} catch (error) {
 			logger.error(error);

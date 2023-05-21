@@ -123,6 +123,11 @@ export async function mainHomeView(intraId, selectedUsersFromWorkspace, msg) {
 				actionId: "OpenModalAddMember",
 			},
 			{
+				text: "멤버 직접 추가",
+				value: "멤버 직접 추가",
+				actionId: "OpenModalAddTextMember",
+			},
+			{
 				text: "멤버 삭제",
 				value: "멤버 삭제",
 				actionId: "OpenModalDelMember",
@@ -461,6 +466,15 @@ export async function addMemberModalView() {
 			"멤버로 추가할 유저를 선택해주세요\n(물론, 카뎃만 선택 가능합니다!)",
 			"selectAddMember",
 			"multiUsersSelect-groupMember"
+		),
+	]);
+}
+
+export async function addTextMemberModalView() {
+	return ModalViewTemplete("멤버 직접 추가", "callbackAddMember", [
+		Blocks.TextInput(
+			"멤버로 추가할 유저를 선택해주세요\n(물론, 카뎃만 선택 가능합니다!)",
+			"selectAddMember"
 		),
 	]);
 }
